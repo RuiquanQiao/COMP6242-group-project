@@ -1,0 +1,20 @@
+seed: 42
+device: "auto"
+output_dir: "outputs/mobilenetv2_baseline"
+
+dataset:
+  root: "data/egtea_frames"
+  metadata_csv: "data/metadata.csv"
+  num_classes: 61
+  image_size: 224
+  num_workers: 4
+
+training:
+  epochs: 5
+  batch_size: 32
+  lr: 0.0003
+  weight_decay: 0.0001
+  train_backbone: false
+
+evaluation:
+  split: "val"
