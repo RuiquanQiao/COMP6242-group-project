@@ -1,6 +1,8 @@
 seed: 42
 device: "auto"
 output_dir: "outputs/eurosat_mobilenetv2"
+runtime:
+  gpu_id: 0
 
 dataset:
   root: "data/eurosat/2750"

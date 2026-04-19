@@ -11,14 +11,9 @@ sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
 from eurosat_baseline.config import load_config
 from eurosat_baseline.data import DatasetConfig, build_dataloader
+from eurosat_baseline.device import device_summary, resolve_device
 from eurosat_baseline.evaluate import evaluate
 from eurosat_baseline.model import build_mobilenetv2, configure_trainable_layers
-
-
-def _resolve_device(device_str: str) -> torch.device:
-    if device_str == "auto":
-        return torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    return torch.device(device_str)
 
 
 def parse_args() -> argparse.Namespace:
@@ -35,7 +30,8 @@ def main() -> None:
     raw = cfg.raw
     ds = raw["dataset"]
     split = args.split or raw["evaluation"]["split"]
-    device = _resolve_device(cfg.device)
+    device = resolve_device(raw)
+    print(f"runtime device: {device_summary(device)}")
 
     ds_cfg = DatasetConfig(
         root=Path(ds["root"]),

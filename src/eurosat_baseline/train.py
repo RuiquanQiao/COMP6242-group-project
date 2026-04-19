@@ -13,6 +13,7 @@ from tqdm import tqdm
 
 from .config import Config
 from .data import DatasetConfig, build_dataloader
+from .device import device_summary, resolve_device
 from .evaluate import evaluate
 from .model import build_mobilenetv2, configure_trainable_layers
 
@@ -24,16 +25,11 @@ class RunArtifacts:
     summary_json: Path
 
 
-def _resolve_device(device_str: str) -> torch.device:
-    if device_str == "auto":
-        return torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    return torch.device(device_str)
-
-
 def _set_seed(seed: int) -> None:
     random.seed(seed)
     torch.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
 
 
 def _dataset_cfg_from_raw(raw: Dict) -> DatasetConfig:
@@ -49,7 +45,8 @@ def _dataset_cfg_from_raw(raw: Dict) -> DatasetConfig:
 
 def train_main(cfg: Config, dummy: bool = False) -> RunArtifacts:
     _set_seed(cfg.seed)
-    device = _resolve_device(cfg.device)
+    device = resolve_device(cfg.raw)
+    print(f"runtime device: {device_summary(device)}")
     out_dir = cfg.output_dir
     out_dir.mkdir(parents=True, exist_ok=True)
 

@@ -87,6 +87,8 @@ python scripts/run_ablation.py --config configs/base.yaml
 
 `configs/base.yaml` 重点字段：
 
+- `device`：建议保持 `auto`，会自动优先使用 GPU（CUDA），否则回退 CPU
+- `runtime.gpu_id`：多卡机器可指定卡号（如 `0`、`1`）
 - `training.strategy`：`zero_shot | linear_probe | partial_unfreeze | full_finetune`
 - `training.partial_blocks`：`partial_unfreeze` 时解冻末端 block 数量
 - `dataset.num_classes`：EuroSAT 为 `10`
