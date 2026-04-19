@@ -3,7 +3,7 @@
   "epochs": 8,
   "trainable_params": 12810,
   "total_params": 2236682,
-  "train_seconds": 2079.7372634000058,
+  "train_seconds": 2213.0697882000095,
   "best_val_top1": 0.8992235346103278,
   "test_loss": 0.34510186955508754,
   "test_top1_acc": 0.8976924757319172,
