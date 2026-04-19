@@ -30,8 +30,24 @@ src/
 
 ## 安装
 
+GPU（CUDA 12.4）环境推荐：
+
 ```bash
+pip install -r requirements-cu124.txt
 pip install -r requirements.txt
+```
+
+CPU 环境：
+
+```bash
+pip install -r requirements-cpu.txt
+pip install -r requirements.txt
+```
+
+验证 PyTorch 是否启用 CUDA：
+
+```bash
+python -c "import torch; print(torch.__version__, torch.version.cuda, torch.cuda.is_available())"
 ```
 
 ## 1) 数据准备
