@@ -7,8 +7,8 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
-from egtea_baseline.config import load_config
-from egtea_baseline.train import train_main
+from eurosat_baseline.config import load_config
+from eurosat_baseline.train import train_main
 
 
 def parse_args() -> argparse.Namespace:
@@ -24,6 +24,7 @@ def main() -> None:
     artifacts = train_main(cfg, dummy=args.dummy)
     print(f"best checkpoint: {artifacts.best_ckpt}")
     print(f"metrics log: {artifacts.metrics_json}")
+    print(f"summary: {artifacts.summary_json}")
 
 
 if __name__ == "__main__":

@@ -9,10 +9,10 @@ import torch
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
-from egtea_baseline.config import load_config
-from egtea_baseline.data import DatasetConfig, build_dataloader
-from egtea_baseline.evaluate import evaluate
-from egtea_baseline.model import build_mobilenetv2
+from eurosat_baseline.config import load_config
+from eurosat_baseline.data import DatasetConfig, build_dataloader
+from eurosat_baseline.evaluate import evaluate
+from eurosat_baseline.model import build_mobilenetv2, configure_trainable_layers
 
 
 def _resolve_device(device_str: str) -> torch.device:
@@ -51,11 +51,13 @@ def main() -> None:
         dummy=args.dummy,
     )
 
-    # Zero-shot baseline approximation:
-    # keep ImageNet backbone frozen and use random classification head on target classes.
-    model = build_mobilenetv2(num_classes=ds_cfg.num_classes, train_backbone=False).to(device)
+    model = build_mobilenetv2(num_classes=ds_cfg.num_classes).to(device)
+    configure_trainable_layers(model=model, strategy="zero_shot")
     metrics = evaluate(model, loader, device)
-    print(f"[zero-shot] split={split} loss={metrics['loss']:.4f} top1={metrics['top1_acc']:.4f}")
+    print(
+        f"[zero-shot] split={split} loss={metrics['loss']:.4f} "
+        f"top1={metrics['top1_acc']:.4f} macro_f1={metrics['macro_f1']:.4f}"
+    )
 
 
 if __name__ == "__main__":

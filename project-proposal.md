@@ -4,27 +4,30 @@
 
 ## 📄 Formal Academic Submission (For Professor/TA)
 
-**Title:** Bridging the Domain Gap in Egocentric Vision: Transfer Learning for Object Recognition on Edge Devices
+**Title:** Bridging the Aerial Domain Gap: A Comparative Analysis of Transfer Learning Strategies for Satellite Image Classification
 
 ### Abstract
 
-The proliferation of smart glasses and wearable devices has highlighted a critical challenge in computer vision: models pre-trained on conventional, third-person perspective datasets (e.g., ImageNet) suffer significant performance degradation when applied to egocentric (first-person) views. This domain gap is primarily driven by severe hand occlusions, perspective distortions, and motion blur inherent in wearable camera data. This project focuses on object recognition in egocentric images and investigates efficient transfer learning strategies to adapt lightweight convolutional neural networks, specifically MobileNetV2, under strict computational constraints.
+The application of deep learning to remote sensing has revolutionized Earth observation tasks, yet training models from scratch on specialized satellite imagery remains computationally prohibitive. While transfer learning from models pre-trained on natural images (e.g., ImageNet) offers a practical solution, it introduces a significant domain gap. Unlike natural images, which are typically object-centric and captured from a horizontal perspective, satellite images (such as those from Sentinel-2) present a top-down, bird's-eye view where features are heavily dependent on dense textures, spectral bands, and spatial patterns rather than object shapes.
 
-Rather than relying on computationally expensive full-parameter fine-tuning, this study aims to evaluate the optimal trade-off between object recognition accuracy and computational cost (CPU-friendly training). We will conduct a rigorous ablation study comparing four transfer learning paradigms on an egocentric object-labeled subset (derived from EGTEA Gaze+): (1) Zero-shot inference (baseline), (2) Linear probing, (3) Partial unfreezing of high-level convolutional blocks, and (4) Full fine-tuning. By analyzing the learning curves and catastrophic forgetting across these strategies, this project hypothesizes that partial unfreezing will offer a "sweet spot" that significantly mitigates the egocentric domain gap while maintaining the low computational overhead required for practical edge-device deployment.
+This project investigates efficient transfer learning strategies to adapt lightweight convolutional neural networks (e.g., MobileNetV2 or ResNet18) to the EuroSAT land-use and land-cover classification dataset. Adhering to strict computational constraints (CPU/Edge-friendly), we will conduct a rigorous ablation study comparing four transfer learning paradigms: (1) Zero-shot inference (baseline), (2) Linear probing (training only the classification head), (3) Partial unfreezing of high-level convolutional blocks, and (4) Full fine-tuning. By analyzing the accuracy versus computational cost trade-offs, this study aims to determine the optimal layer-freezing strategy that effectively mitigates the horizontal-to-aerial domain shift while minimizing training overhead.
 
 ***
 
 ## 💬 团队内部讨论版 (For Team Discussion)
 
-**一句话目标：** 使用极低算力（迁移学习），将普通的图像模型改造为能在“智能眼镜（第一人称视角）”上高效运行的边缘 AI。
+**一句话目标：** 使用极低算力（迁移学习），将平时用来“认猫认狗”的通用 AI 模型，改造为能从高空卫星图上认出“森林、高速公路和工业区”的遥感分析专家。
 
 ### 📝 极简开题报告 (Abstract)
 
-- **核心痛点 (Domain Gap)：** 现成模型（基于第三人称视角训练）在智能眼镜上会因为手部遮挡、运动模糊和奇怪的俯视角度导致准确率暴跌。
-- **解决方案：** 拿一个专为手机设计的轻量级模型 (**MobileNetV2**)，在第一人称视角数据上做**物体识别微调**（使用物体类别标签，而非动作标签）。
-- **消融实验 ：** 为了满足课程 "注重分析" 的要求，我们将跑 4 个对比实验：
-  1. **Zero-shot (基线)：** 啥也不训练，直接测准确率有多惨。
+- **核心痛点 (Domain Gap)：** 现成模型（基于 ImageNet 训练）习惯了看“平视、有明确轮廓”的物体。但卫星遥感图是“从上往下看”的，没有上下之分，且全是一堆纹理和颜色块。直接拿去识别遥感图，模型会“水土不服”。
+- **解决方案：** 拿一个极其好跑的轻量级模型 (**MobileNetV2**)，在超级干净、完美的遥感分类数据集 (**EuroSAT**，全是切好的 64x64 纯图片，0 预处理) 上进行微调。
+- **消融实验 (高分关键)：** 为了满足课程 "重分析" 的要求，我们将跑 4 个对比实验：
+  1. **Zero-shot (基线)：** 啥也不训练，直接测准确率有多惨（证明卫星图和日常图的差异有多大）。
   2. **Linear Probing (线性探测)：** 冻结全网，只微调最后的一层分类头。
   3. **Partial Unfreezing (部分解冻)：** 解冻最后 1-2 个卷积块（这是算力和准确率性价比最高的商业 Sweet Spot）。
   4. **Full Fine-Tuning (全参数微调)：** 所有层全部重新训练。
-- **最终产出：** 画一张图表，对比这 4 种策略在**物体识别任务**上的“准确率 vs 训练耗时”，在报告里讨论商业落地时的成本 Trade-off。
+- **最终产出：** 画一张图表，对比这 4 种策略的“准确率 vs 训练耗时”。
+
+<br />
+

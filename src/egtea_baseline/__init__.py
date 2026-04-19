@@ -1,1 +1,0 @@
-"""EGTEA baseline training package."""

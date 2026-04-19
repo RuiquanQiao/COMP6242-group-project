@@ -9,10 +9,10 @@ import torch
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
-from egtea_baseline.config import load_config
-from egtea_baseline.data import DatasetConfig, build_dataloader
-from egtea_baseline.evaluate import evaluate
-from egtea_baseline.model import build_mobilenetv2
+from eurosat_baseline.config import load_config
+from eurosat_baseline.data import DatasetConfig, build_dataloader
+from eurosat_baseline.evaluate import evaluate
+from eurosat_baseline.model import build_mobilenetv2, configure_trainable_layers
 
 
 def _resolve_device(device_str: str) -> torch.device:
@@ -51,17 +51,23 @@ def main() -> None:
         batch_size=int(raw["training"]["batch_size"]),
         dummy=args.dummy,
     )
-    model = build_mobilenetv2(
-        num_classes=ds_cfg.num_classes,
-        train_backbone=bool(raw["training"]["train_backbone"]),
-    ).to(device)
+    model = build_mobilenetv2(num_classes=ds_cfg.num_classes).to(device)
+    strategy = str(raw["training"].get("strategy", "linear_probe"))
+    configure_trainable_layers(
+        model=model,
+        strategy=strategy,
+        partial_blocks=int(raw["training"].get("partial_blocks", 2)),
+    )
 
     if args.ckpt:
         state = torch.load(args.ckpt, map_location="cpu")
         model.load_state_dict(state["model"], strict=True)
 
     metrics = evaluate(model, loader, device)
-    print(f"split={split} loss={metrics['loss']:.4f} top1={metrics['top1_acc']:.4f}")
+    print(
+        f"split={split} loss={metrics['loss']:.4f} "
+        f"top1={metrics['top1_acc']:.4f} macro_f1={metrics['macro_f1']:.4f}"
+    )
 
 
 if __name__ == "__main__":

@@ -1,65 +1,92 @@
-# COMP6242 MobileNetV2 Baseline Starter
+# COMP6242 EuroSAT Transfer Learning
 
-这个仓库是一个先行原型：在还没下载 EGTEA Gaze+ 的情况下，先把训练/评估流程系统化搭好。
+这个仓库用于完成 `MobileNetV2 -> EuroSAT` 的迁移学习实验，并提供可直接复现的 4 组消融对比：
 
-## 功能
+- `zero_shot`
+- `linear_probe`
+- `partial_unfreeze`
+- `full_finetune`
 
-- `train`：微调 `MobileNetV2`（支持只训练分类头 or 全量微调）。
-- `eval`：在验证/测试集上评估 Top-1 准确率。
-- `zero-shot` 基线：冻结 backbone，仅用随机初始化分类头直接评估（模拟“啥也不训练”）。
-- `dummy` 数据模式：即使没有真实数据，也能先把工程管线跑通。
-
-## 目录结构
+## 项目结构
 
 ```text
 configs/
   base.yaml
 scripts/
+  prepare_eurosat.py
   train.py
   eval.py
   zero_shot.py
+  run_ablation.py
 src/
-  egtea_baseline/
-    __init__.py
+  eurosat_baseline/
     config.py
     data.py
     model.py
-    train.py
     evaluate.py
+    train.py
 ```
 
-## 环境安装
+## 安装
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## 数据准备（后续）
+## 1) 数据准备
 
-当前代码支持从一个 `metadata.csv` 读取数据，字段如下：
-
-- `image_path`：图片路径（相对 `dataset.root` 或绝对路径）
-- `label`：整数类别 id
-- `split`：`train` / `val` / `test`
-
-等你把 EGTEA 下载好，我们再补一个视频解帧脚本，把数据整理成这个格式即可。
-
-## 快速运行（无真实数据）
+自动下载并生成 `metadata.csv`（推荐）：
 
 ```bash
-python scripts/train.py --config configs/base.yaml --dummy
-python scripts/eval.py --config configs/base.yaml --dummy
-python scripts/zero_shot.py --config configs/base.yaml --dummy
+python scripts/prepare_eurosat.py --root data --download --out_csv data/metadata.csv
 ```
 
-## 使用真实数据
+如果你已经手动下载过 EuroSAT，可直接指定图片目录：
 
-1. 修改 `configs/base.yaml` 里的 `dataset.root` 和 `dataset.metadata_csv`。
-2. 去掉命令中的 `--dummy`。
-3. 训练与评估：
+```bash
+python scripts/prepare_eurosat.py --images_root "E:/datasets/EuroSAT/2750" --out_csv data/metadata.csv
+```
+
+`metadata.csv` 字段：
+
+- `image_path`：相对 `dataset.root` 的图片路径
+- `label`：类别 id
+- `label_name`：类别名
+- `split`：`train/val/test`
+
+## 2) 单策略训练
 
 ```bash
 python scripts/train.py --config configs/base.yaml
-python scripts/eval.py --config configs/base.yaml
-python scripts/zero_shot.py --config configs/base.yaml
 ```
+
+## 3) 单策略评估
+
+```bash
+python scripts/eval.py --config configs/base.yaml --split test
+```
+
+## 4) Zero-shot 基线
+
+```bash
+python scripts/zero_shot.py --config configs/base.yaml --split test
+```
+
+## 5) 一键跑四组消融
+
+```bash
+python scripts/run_ablation.py --config configs/base.yaml
+```
+
+输出结果会保存在：
+
+- `outputs/eurosat_mobilenetv2/<strategy>/summary.json`
+- `outputs/eurosat_mobilenetv2/ablation_results.csv`
+
+## 配置说明
+
+`configs/base.yaml` 重点字段：
+
+- `training.strategy`：`zero_shot | linear_probe | partial_unfreeze | full_finetune`
+- `training.partial_blocks`：`partial_unfreeze` 时解冻末端 block 数量
+- `dataset.num_classes`：EuroSAT 为 `10`
