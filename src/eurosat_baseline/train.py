@@ -74,7 +74,8 @@ def train_main(cfg: Config, dummy: bool = False) -> RunArtifacts:
         dummy=dummy,
     )
 
-    model = build_mobilenetv2(num_classes=ds_cfg.num_classes).to(device)
+    use_pretrained = strategy != "from_scratch"
+    model = build_mobilenetv2(num_classes=ds_cfg.num_classes, pretrained=use_pretrained).to(device)
     configure_trainable_layers(model, strategy=strategy, partial_blocks=partial_blocks)
 
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)

@@ -12,7 +12,7 @@ dataset:
   num_workers: 4
 
 training:
-  strategy: "linear_probe"  # zero_shot | linear_probe | partial_unfreeze | full_finetune
+  strategy: "__CLI__"  # must pass --strategy in CLI; options: zero_shot | from_scratch | linear_probe | partial_unfreeze | full_finetune
   partial_blocks: 2
   epochs: 8
   batch_size: 32

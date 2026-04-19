@@ -5,8 +5,9 @@ from torch import nn
 from torchvision.models import MobileNet_V2_Weights, mobilenet_v2
 
 
-def build_mobilenetv2(num_classes: int) -> nn.Module:
-    model = mobilenet_v2(weights=MobileNet_V2_Weights.IMAGENET1K_V2)
+def build_mobilenetv2(num_classes: int, pretrained: bool = True) -> nn.Module:
+    weights = MobileNet_V2_Weights.IMAGENET1K_V2 if pretrained else None
+    model = mobilenet_v2(weights=weights)
     in_features = model.classifier[1].in_features
     model.classifier[1] = nn.Linear(in_features, num_classes)
     return model
@@ -27,7 +28,7 @@ def configure_trainable_layers(model: nn.Module, strategy: str, partial_blocks: 
 
     if strategy == "linear_probe":
         return
-    if strategy == "full_finetune":
+    if strategy in {"full_finetune", "from_scratch"}:
         for param in model.features.parameters():
             param.requires_grad = True
         return
