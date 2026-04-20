@@ -1,6 +1,6 @@
 # COMP6242 EuroSAT Transfer Learning
 
-这个仓库用于完成 `MobileNetV2 -> EuroSAT` 的迁移学习实验，并提供可直接复现的 5 组消融对比：
+This repository runs a `MobileNetV2 -> EuroSAT` transfer learning study with 5 reproducible strategies:
 
 - `zero_shot`
 - `from_scratch`
@@ -8,11 +8,12 @@
 - `partial_unfreeze`
 - `full_finetune`
 
-## 项目结构
+## Project Structure
 
 ```text
 configs/
   base.yaml
+eurosat_experiments.ipynb
 scripts/
   prepare_eurosat.py
   train.py
@@ -28,103 +29,130 @@ src/
     train.py
 ```
 
-## 安装
+Optional: run the full workflow in notebook form (with saved logs and summary outputs):
 
-GPU（CUDA 12.4）环境推荐：
+```bash
+eurosat_experiments.ipynb
+```
+
+## Terminal-First Workflow (Recommended)
+
+No notebook required. No file edits required.
+
+Run one strategy:
+
+```bash
+python scripts/train.py --config configs/base.yaml --strategy from_scratch --output_dir outputs/eurosat_mobilenetv2/from_scratch
+python scripts/eval.py --config configs/base.yaml --split test --strategy from_scratch --ckpt outputs/eurosat_mobilenetv2/from_scratch/best.pt
+```
+
+Run each strategy explicitly:
+
+```bash
+python scripts/train.py --config configs/base.yaml --strategy zero_shot --output_dir outputs/eurosat_mobilenetv2/zero_shot
+python scripts/train.py --config configs/base.yaml --strategy from_scratch --output_dir outputs/eurosat_mobilenetv2/from_scratch
+python scripts/train.py --config configs/base.yaml --strategy linear_probe --output_dir outputs/eurosat_mobilenetv2/linear_probe
+python scripts/train.py --config configs/base.yaml --strategy partial_unfreeze --output_dir outputs/eurosat_mobilenetv2/partial_unfreeze
+python scripts/train.py --config configs/base.yaml --strategy full_finetune --output_dir outputs/eurosat_mobilenetv2/full_finetune
+```
+
+## Installation
+
+Recommended GPU environment (CUDA 12.4):
 
 ```bash
 pip install -r requirements-cu124.txt
 pip install -r requirements.txt
 ```
 
-CPU 环境：
+CPU environment:
 
 ```bash
 pip install -r requirements-cpu.txt
 pip install -r requirements.txt
 ```
 
-验证 PyTorch 是否启用 CUDA：
+Verify CUDA availability in PyTorch:
 
 ```bash
 python -c "import torch; print(torch.__version__, torch.version.cuda, torch.cuda.is_available())"
 ```
 
-## 1) 数据准备
+## 1) Data Preparation
 
-自动下载并生成 `metadata.csv`（推荐）：
+Download EuroSAT and generate `metadata.csv`:
 
 ```bash
 python scripts/prepare_eurosat.py --root data --download --out_csv data/metadata.csv
 ```
 
-如果你已经手动下载过 EuroSAT，可直接指定图片目录：
+If EuroSAT is already downloaded, provide the local image root directly:
 
 ```bash
 python scripts/prepare_eurosat.py --images_root "E:/datasets/EuroSAT/2750" --out_csv data/metadata.csv
 ```
 
-`metadata.csv` 字段：
+`metadata.csv` columns:
 
-- `image_path`：相对 `dataset.root` 的图片路径
-- `label`：类别 id
-- `label_name`：类别名
-- `split`：`train/val/test`
+- `image_path`: image path relative to `dataset.root`
+- `label`: integer class id
+- `label_name`: class name
+- `split`: `train/val/test`
 
-## 2) 单策略训练
+## 2) Single-Strategy Training
 
 ```bash
 python scripts/train.py --config configs/base.yaml --strategy linear_probe
 ```
 
-不改 `base.yaml`，直接在命令行指定本次策略：
+CLI overrides (no `base.yaml` edits needed):
 
 ```bash
 python scripts/train.py --config configs/base.yaml --strategy linear_probe
 python scripts/train.py --config configs/base.yaml --strategy from_scratch --epochs 12 --output_dir outputs/eurosat_mobilenetv2/from_scratch
 ```
 
-## 3) 单策略评估
+## 3) Single-Strategy Evaluation
 
 ```bash
 python scripts/eval.py --config configs/base.yaml --split test --strategy linear_probe
 ```
 
-评估时也可覆盖策略（用于无 checkpoint 的即时对比）：
+Strategy can also be overridden during evaluation:
 
 ```bash
 python scripts/eval.py --config configs/base.yaml --split test --strategy from_scratch
 ```
 
-## 4) Zero-shot 基线
+## 4) Zero-Shot Baseline
 
 ```bash
 python scripts/zero_shot.py --config configs/base.yaml --split test
 ```
 
-## 5) 一键跑五组消融
+## 5) Run Five-Strategy Ablation
 
 ```bash
 python scripts/run_ablation.py --config configs/base.yaml
 ```
 
-只跑部分策略：
+Run only selected strategies:
 
 ```bash
 python scripts/run_ablation.py --config configs/base.yaml --strategies from_scratch,linear_probe,full_finetune
 ```
 
-输出结果会保存在：
+Output files:
 
 - `outputs/eurosat_mobilenetv2/<strategy>/summary.json`
 - `outputs/eurosat_mobilenetv2/ablation_results.csv`
 
-## 配置说明
+## Config Notes
 
-`configs/base.yaml` 重点字段：
+Key fields in `configs/base.yaml`:
 
-- `device`：建议保持 `auto`，会自动优先使用 GPU（CUDA），否则回退 CPU
-- `runtime.gpu_id`：多卡机器可指定卡号（如 `0`、`1`）
-- `training.strategy`：默认占位为 `__CLI__`，需通过命令行 `--strategy` 显式指定
-- `training.partial_blocks`：`partial_unfreeze` 时解冻末端 block 数量
-- `dataset.num_classes`：EuroSAT 为 `10`
+- `device`: keep `auto` to prefer GPU (CUDA) and fallback to CPU
+- `runtime.gpu_id`: GPU index on multi-GPU machines (`0`, `1`, ...)
+- `training.strategy`: default placeholder is `__CLI__`; pass `--strategy` explicitly in CLI
+- `training.partial_blocks`: number of tail blocks to unfreeze for `partial_unfreeze`
+- `dataset.num_classes`: `10` for EuroSAT

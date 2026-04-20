@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+import os
 import random
+import sys
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -9,7 +11,7 @@ from typing import Dict
 
 import torch
 from torch import nn
-from tqdm import tqdm
+from tqdm.auto import tqdm
 
 from .config import Config
 from .data import DatasetConfig, build_dataloader
@@ -46,7 +48,7 @@ def _dataset_cfg_from_raw(raw: Dict) -> DatasetConfig:
 def train_main(cfg: Config, dummy: bool = False) -> RunArtifacts:
     _set_seed(cfg.seed)
     device = resolve_device(cfg.raw)
-    print(f"runtime device: {device_summary(device)}")
+    print(f"runtime device: {device_summary(device)}", flush=True)
     out_dir = cfg.output_dir
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -93,6 +95,9 @@ def train_main(cfg: Config, dummy: bool = False) -> RunArtifacts:
     best_ckpt = out_dir / "best.pt"
     history = []
     start_time = time.perf_counter()
+    force_progress = os.environ.get("EUROSAT_FORCE_PROGRESS", "0") == "1"
+    runtime_force = bool(cfg.raw.get("runtime", {}).get("force_progress", False))
+    show_progress = sys.stdout.isatty() or force_progress or runtime_force
 
     for epoch in range(1, int(train_cfg["epochs"]) + 1):
         if optimizer is None:
@@ -101,7 +106,12 @@ def train_main(cfg: Config, dummy: bool = False) -> RunArtifacts:
             model.train()
         total_loss = 0.0
         total_steps = 0
-        for images, labels in tqdm(train_loader, desc=f"train epoch {epoch}", leave=False):
+        for images, labels in tqdm(
+            train_loader,
+            desc=f"train epoch {epoch}",
+            leave=False,
+            disable=not show_progress,
+        ):
             images = images.to(device, non_blocking=True)
             labels = labels.to(device, non_blocking=True)
 
@@ -128,7 +138,8 @@ def train_main(cfg: Config, dummy: bool = False) -> RunArtifacts:
         print(
             f"epoch={epoch} train_loss={train_loss:.4f} "
             f"val_loss={val_metrics['loss']:.4f} val_top1={val_metrics['top1_acc']:.4f} "
-            f"val_f1={val_metrics['macro_f1']:.4f}"
+            f"val_f1={val_metrics['macro_f1']:.4f}",
+            flush=True,
         )
 
         if val_metrics["top1_acc"] > best_val_acc:
@@ -160,6 +171,7 @@ def train_main(cfg: Config, dummy: bool = False) -> RunArtifacts:
     summary_json.write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(
         f"strategy={strategy} test_top1={test_metrics['top1_acc']:.4f} "
-        f"test_f1={test_metrics['macro_f1']:.4f} time={elapsed:.1f}s"
+        f"test_f1={test_metrics['macro_f1']:.4f} time={elapsed:.1f}s",
+        flush=True,
     )
     return RunArtifacts(best_ckpt=best_ckpt, metrics_json=metrics_json, summary_json=summary_json)

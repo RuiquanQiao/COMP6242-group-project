@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import os
+import sys
 from typing import Dict
 
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
-from tqdm import tqdm
+from tqdm.auto import tqdm
 
 from .model import compute_top1_accuracy
 
@@ -19,8 +21,10 @@ def evaluate(model: nn.Module, dataloader: DataLoader, device: torch.device) -> 
     criterion = nn.CrossEntropyLoss()
     all_preds: list[torch.Tensor] = []
     all_targets: list[torch.Tensor] = []
+    force_progress = os.environ.get("EUROSAT_FORCE_PROGRESS", "0") == "1"
+    show_progress = sys.stdout.isatty() or force_progress
 
-    for images, labels in tqdm(dataloader, desc="eval", leave=False):
+    for images, labels in tqdm(dataloader, desc="eval", leave=False, disable=not show_progress):
         images = images.to(device, non_blocking=True)
         labels = labels.to(device, non_blocking=True)
         logits = model(images)
