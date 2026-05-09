@@ -27,7 +27,7 @@ COMP6242-group-project
 
 ## configs
 
-### base.yaml
+### `base.yaml`
 
 ```yaml
 # 文件路径: configs/base.yaml
@@ -78,7 +78,7 @@ evaluation:
 
 ## scripts
 
-### prepare\_eurosat.py
+### `prepare_eurosat.py`
 
 ```python
 # 文件路径: scripts/prepare_eurosat.py
@@ -245,7 +245,7 @@ if __name__ == "__main__":
     main()
 ```
 
-### train.py
+### `train.py`
 
 ```python
 # 文件路径: scripts/train.py
@@ -344,7 +344,7 @@ if __name__ == "__main__":
     main()
 ```
 
-### eval.py
+### `eval.py`
 
 ```python
 # 文件路径: scripts/eval.py
@@ -472,7 +472,7 @@ if __name__ == "__main__":
     main()
 ```
 
-### zero\_shot.py
+### `zero_shot.py`
 
 ```python
 # 文件路径: scripts/zero_shot.py
@@ -548,7 +548,7 @@ if __name__ == "__main__":
     main()
 ```
 
-### run\_ablation.py
+### `run_ablation.py`
 
 ```python
 # 文件路径: scripts/run_ablation.py
@@ -685,7 +685,7 @@ if __name__ == "__main__":
 
 ### eurosat\_baseline
 
-#### __init__.py
+#### `__init__.py`
 
 ```python
 # 文件路径: src/eurosat_baseline/__init__.py
@@ -693,7 +693,7 @@ if __name__ == "__main__":
 """EuroSAT transfer learning baseline package."""
 ```
 
-#### config.py
+#### `config.py`
 
 ```python
 # 文件路径: src/eurosat_baseline/config.py
@@ -736,7 +736,7 @@ def load_config(path: str | Path) -> Config:
     return Config(raw=data)
 ```
 
-#### device.py
+#### `device.py`
 
 ```python
 # 文件路径: src/eurosat_baseline/device.py
@@ -794,7 +794,7 @@ def device_summary(device: torch.device) -> str:
     return str(device)
 ```
 
-#### data.py
+#### `data.py`
 
 ```python
 # 文件路径: src/eurosat_baseline/data.py
@@ -956,7 +956,7 @@ def read_label_names(metadata_csv: Path) -> dict[int, str]:
     return labels
 ```
 
-#### model.py
+#### `model.py`
 
 ```python
 # 文件路径: src/eurosat_baseline/model.py
@@ -1024,7 +1024,7 @@ def compute_top1_accuracy(logits: torch.Tensor, targets: torch.Tensor) -> float:
     return (preds == targets).float().mean().item()
 ```
 
-#### evaluate.py
+#### `evaluate.py`
 
 ```python
 # 文件路径: src/eurosat_baseline/evaluate.py
@@ -1113,7 +1113,7 @@ def _macro_f1(preds: torch.Tensor, targets: torch.Tensor) -> float:
     return float(sum(f1s) / max(len(f1s), 1))
 ```
 
-#### train.py
+#### `train.py`
 
 ```python
 # 文件路径: src/eurosat_baseline/train.py
@@ -1356,4 +1356,3 @@ def train_main(cfg: Config, dummy: bool = False) -> RunArtifacts:
     # 返回关键产物路径：外层脚本会打印路径或继续做汇总处理
     return RunArtifacts(best_ckpt=best_ckpt, metrics_json=metrics_json, summary_json=summary_json)
 ```
-
