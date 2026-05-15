@@ -7,7 +7,7 @@ Experiments covered:
 - 4.1 EuroSAT strategy ablation
 - 4.2 EuroSAT vs CIFAR-10 same-size domain comparison
 - 4.3 EuroSAT data-size comparison
-- 5 Forgetting analysis
+- Forgetting analysis across the domain-gap and data-size settings
 
 For detailed code explanation, see `interpretation.md`.
 
@@ -147,23 +147,24 @@ outputs/data_fraction/val_top1_acc_curve.png
 outputs/data_fraction/val_macro_f1_curve.png
 ```
 
-### 5 Forgetting Analysis
+### Forgetting Analysis Across Settings
 
 ```bash
 python scripts/run_forgetting.py --config configs/base.yaml --download_cifar
 ```
 
-This script also uses CIFAR-10. Use `--download_cifar` if CIFAR-10 has not been
-downloaded yet, or omit it if the dataset already exists under `data/`. Use
-`--cifar_root PATH` to point to another location.
-
-Default forgetting scenarios:
+This script measures how much Task A performance drops after the model is
+continued on Task B. The default run covers three forgetting scenarios:
 
 ```text
 domain_gap          EuroSAT -> CIFAR-10, same-size splits
 reverse_domain_gap  CIFAR-10 -> EuroSAT, same-size splits
 data_fraction       EuroSAT 10% / 30% / 60% / 100% -> CIFAR-10
 ```
+
+CIFAR-10 is downloaded only when needed. Use `--download_cifar` if it has not
+been downloaded yet, or omit it if the dataset already exists under `data/`.
+Use `--cifar_root PATH` to point to another location.
 
 Run a subset of scenarios with:
 
