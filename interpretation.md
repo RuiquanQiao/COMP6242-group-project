@@ -64,6 +64,11 @@ test_samples: 0
 that many samples if available". This is used when comparing EuroSAT and
 CIFAR-10 with the same split sizes.
 
+The current scripts run one seed at a time. They do not automatically repeat an
+experiment across multiple random seeds or aggregate mean and standard deviation
+statistics. To report repeated runs, the scripts would need to be run separately
+with different seed values and the resulting CSV files aggregated.
+
 ## Config Loader: `src/transfer_learning/config.py`
 
 This module is intentionally small.
@@ -593,23 +598,50 @@ Final outputs:
 
 This runs the forgetting analysis.
 
-For each strategy, the script does:
+By default, the script runs three scenarios:
 
 ```text
-train Task A on EuroSAT
-evaluate EuroSAT checkpoint on EuroSAT test set -> A_before
-train Task B on CIFAR-10 starting from the EuroSAT checkpoint
-evaluate the CIFAR-10-trained checkpoint on EuroSAT test set -> A_after
+domain_gap          EuroSAT -> CIFAR-10, using same-size splits
+reverse_domain_gap  CIFAR-10 -> EuroSAT, using same-size splits
+data_fraction       EuroSAT 10% / 30% / 60% / 100% -> CIFAR-10
+```
+
+For each selected scenario and strategy, the script does:
+
+```text
+train Task A
+evaluate the Task A checkpoint on Task A test data -> A_before
+train Task B starting from the Task A checkpoint
+evaluate the Task B checkpoint on Task A test data -> A_after
 compute forgetting = A_before - A_after
 ```
 
-The output also records CIFAR-10 performance after Task B, because a low
-forgetting score is not useful if the model did not learn the new task.
+The output also records Task B test performance after the second training stage,
+because a low forgetting score is not useful if the model did not learn the new
+task.
+
+The forgetting implementation uses a single classifier head. This is a deliberate
+single-head sequential transfer setup, not a multi-head continual-learning setup.
+EuroSAT and CIFAR-10 both have 10 classes, so the same output shape can be
+reused, but the class meanings are different. As a result, the forgetting values
+should be interpreted as performance loss under single-head sequential transfer,
+not as a pure measurement of feature forgetting alone.
+
+The default strategies are:
+
+```text
+linear_probe
+partial_ft
+full_ft
+```
 
 Final outputs:
 
 - `forgetting_results.csv`
 - `forgetting_top1.png`
+- `forgetting_macro_f1.png`
+- `forgetting_by_fraction_top1.png`
+- `forgetting_by_fraction_macro_f1.png`
 
 ## Output Files
 
