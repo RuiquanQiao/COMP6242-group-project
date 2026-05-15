@@ -1,102 +1,73 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import argparse
-import csv
-import json
 import sys
-from copy import deepcopy
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
+sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
 
-from eurosat_baseline.config import Config, load_config
-from eurosat_baseline.train import train_main
+from experiment_utils import make_run_config, read_summary, save_bar_chart, write_csv
+from transfer_learning.config import load_config
+from transfer_learning.train import train_main
 
-DEFAULT_STRATEGIES = [
-    "zero_shot",
-    "from_scratch",
-    "linear_probe",
-    "partial_unfreeze",
-    "full_finetune",
-]
+STRATEGIES = ["scratch", "linear_probe", "partial_ft", "full_ft"]
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run transfer-learning ablation on EuroSAT.")
-    parser.add_argument("--config", type=str, required=True, help="Path to base YAML config.")
-    parser.add_argument(
-        "--strategies",
-        type=str,
-        default="",
-        help="Comma-separated list. Default: zero_shot,from_scratch,linear_probe,partial_unfreeze,full_finetune",
-    )
-    parser.add_argument("--dummy", action="store_true", help="Use dummy synthetic data.")
+    parser = argparse.ArgumentParser(description="Experiment 4.1: ResNet18 strategy ablation on EuroSAT.")
+    parser.add_argument("--config", type=str, required=True)
+    parser.add_argument("--metadata_csv", type=str, default="data/metadata.csv")
+    parser.add_argument("--data_root", type=str, default="data/eurosat/2750")
+    parser.add_argument("--output_dir", type=str, default="outputs/eurosat_ablation")
+    parser.add_argument("--strategies", type=str, default=",".join(STRATEGIES))
+    parser.add_argument("--epochs", type=int, default=0)
+    parser.add_argument("--dummy", action="store_true")
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
     base_cfg = load_config(args.config)
-    strategies = parse_strategies(args.strategies)
-    rows: list[dict[str, str | float | int]] = []
-    base_out = Path(base_cfg.raw["output_dir"])
+    strategies = [s.strip() for s in args.strategies.split(",") if s.strip()]
+    rows: list[dict] = []
 
     for strategy in strategies:
-        cfg = with_strategy(base_cfg, strategy=strategy, output_dir=base_out / strategy)
-        print(f"\n=== Running strategy: {strategy} ===")
+        cfg = make_run_config(
+            base_cfg,
+            output_dir=Path(args.output_dir) / strategy,
+            dataset_name="eurosat",
+            data_root=args.data_root,
+            metadata_csv=args.metadata_csv,
+            strategy=strategy,
+            epochs=args.epochs,
+        )
         artifacts = train_main(cfg, dummy=args.dummy)
-        summary = json.loads(Path(artifacts.summary_json).read_text(encoding="utf-8"))
-        rows.append(
-            {
-                "strategy": strategy,
-                "best_val_top1": summary["best_val_top1"],
-                "test_top1_acc": summary["test_top1_acc"],
-                "test_macro_f1": summary["test_macro_f1"],
-                "train_seconds": summary["train_seconds"],
-                "trainable_params": summary["trainable_params"],
-                "total_params": summary["total_params"],
-            }
-        )
+        summary = read_summary(artifacts.summary_json)
+        rows.append(_row(summary))
 
-    out_csv = base_out / "ablation_results.csv"
-    out_csv.parent.mkdir(parents=True, exist_ok=True)
-    with out_csv.open("w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(
-            f,
-            fieldnames=[
-                "strategy",
-                "best_val_top1",
-                "test_top1_acc",
-                "test_macro_f1",
-                "train_seconds",
-                "trainable_params",
-                "total_params",
-            ],
-        )
-        writer.writeheader()
-        writer.writerows(rows)
-    print(f"\nAblation results saved: {out_csv}")
+    out_dir = Path(args.output_dir)
+    write_csv(out_dir / "results.csv", rows)
+    save_bar_chart(out_dir / "test_top1_acc.png", rows, "dataset", "strategy", "test_top1_acc")
+    print(f"saved: {out_dir / 'results.csv'}")
+    print(f"saved: {out_dir / 'test_top1_acc.png'}")
 
 
-def parse_strategies(s: str) -> list[str]:
-    if not s:
-        return DEFAULT_STRATEGIES
-    values = [x.strip() for x in s.split(",") if x.strip()]
-    invalid = [x for x in values if x not in DEFAULT_STRATEGIES]
-    if invalid:
-        raise ValueError(f"Invalid strategies: {invalid}")
-    return values
-
-
-def with_strategy(base_cfg: Config, strategy: str, output_dir: Path) -> Config:
-    raw = deepcopy(base_cfg.raw)
-    raw["output_dir"] = str(output_dir).replace("\\", "/")
-    raw["training"]["strategy"] = strategy
-    if strategy == "zero_shot":
-        raw["training"]["epochs"] = 1
-    return Config(raw=raw)
+def _row(summary: dict) -> dict:
+    return {
+        "dataset": summary["dataset"],
+        "model": summary["model"],
+        "strategy": summary["strategy"],
+        "best_val_top1": summary["best_val_top1"],
+        "test_top1_acc": summary["test_top1_acc"],
+        "test_macro_f1": summary["test_macro_f1"],
+        "train_seconds": summary["train_seconds"],
+        "trainable_params": summary["trainable_params"],
+        "total_params": summary["total_params"],
+    }
 
 
 if __name__ == "__main__":
     main()
+

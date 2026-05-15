@@ -1,158 +1,193 @@
-# COMP6242 EuroSAT Transfer Learning
+﻿# COMP6242 Transfer Learning Experiments
 
-This repository runs a `MobileNetV2 -> EuroSAT` transfer learning study with 5 reproducible strategies:
+Terminal-first code for the ResNet18 transfer-learning experiments in `report.md`.
 
-- `zero_shot`
-- `from_scratch`
-- `linear_probe`
-- `partial_unfreeze`
-- `full_finetune`
+Experiments covered:
 
-## Project Structure
+- 4.1 EuroSAT strategy ablation
+- 4.2 EuroSAT vs CIFAR-10 same-size domain comparison
+- 4.3 EuroSAT data-size comparison
+- 5 Forgetting analysis
 
-```text
-configs/
-  base.yaml
-eurosat_experiments.ipynb
-scripts/
-  prepare_eurosat.py
-  train.py
-  eval.py
-  zero_shot.py
-  run_ablation.py
-src/
-  eurosat_baseline/
-    config.py
-    data.py
-    model.py
-    evaluate.py
-    train.py
-```
+For detailed code explanation, see `interpretation.md`.
 
-Optional: run the full workflow in notebook form (with saved logs and summary outputs):
+## Install
 
-```bash
-eurosat_experiments.ipynb
-```
+Choose one environment file.
 
-## Terminal-First Workflow (Recommended)
-
-No notebook required. No file edits required.
-
-Run one strategy:
-
-```bash
-python scripts/train.py --config configs/base.yaml --strategy from_scratch --output_dir outputs/eurosat_mobilenetv2/from_scratch
-python scripts/eval.py --config configs/base.yaml --split test --strategy from_scratch --ckpt outputs/eurosat_mobilenetv2/from_scratch/best.pt
-```
-
-Run each strategy explicitly:
-
-```bash
-python scripts/train.py --config configs/base.yaml --strategy zero_shot --output_dir outputs/eurosat_mobilenetv2/zero_shot
-python scripts/train.py --config configs/base.yaml --strategy from_scratch --output_dir outputs/eurosat_mobilenetv2/from_scratch
-python scripts/train.py --config configs/base.yaml --strategy linear_probe --output_dir outputs/eurosat_mobilenetv2/linear_probe
-python scripts/train.py --config configs/base.yaml --strategy partial_unfreeze --output_dir outputs/eurosat_mobilenetv2/partial_unfreeze
-python scripts/train.py --config configs/base.yaml --strategy full_finetune --output_dir outputs/eurosat_mobilenetv2/full_finetune
-```
-
-## Installation
-
-Recommended GPU environment (CUDA 12.4):
-
-```bash
-pip install -r requirements-cu124.txt
-pip install -r requirements.txt
-```
-
-CPU environment:
+CPU:
 
 ```bash
 pip install -r requirements-cpu.txt
-pip install -r requirements.txt
 ```
 
-Verify CUDA availability in PyTorch:
+CUDA 12.4:
 
 ```bash
-python -c "import torch; print(torch.__version__, torch.version.cuda, torch.cuda.is_available())"
+pip install -r requirements-cu124.txt
 ```
 
-## 1) Data Preparation
+Check PyTorch:
 
-Download EuroSAT and generate `metadata.csv`:
+```bash
+python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
+```
+
+## Prepare EuroSAT
+
+Generate the metadata file used by all EuroSAT experiments:
 
 ```bash
 python scripts/prepare_eurosat.py --root data --download --out_csv data/metadata.csv
 ```
 
-If EuroSAT is already downloaded, provide the local image root directly:
+If EuroSAT is already downloaded:
 
 ```bash
-python scripts/prepare_eurosat.py --images_root "E:/datasets/EuroSAT/2750" --out_csv data/metadata.csv
+python scripts/prepare_eurosat.py --images_root "data/eurosat/2750" --out_csv data/metadata.csv
 ```
 
-`metadata.csv` columns:
+CIFAR-10 is loaded directly through torchvision. It does not use this preparation script.
 
-- `image_path`: image path relative to `dataset.root`
-- `label`: integer class id
-- `label_name`: class name
-- `split`: `train/val/test`
+## Strategies
 
-## 2) Single-Strategy Training
+All experiments use ResNet18.
+
+```text
+scratch       random initialization, train all layers
+linear_probe  ImageNet initialization, train classifier only
+partial_ft    ImageNet initialization, train layer4 + classifier
+full_ft       ImageNet initialization, train all layers
+```
+
+## Run One Model
 
 ```bash
-python scripts/train.py --config configs/base.yaml --strategy linear_probe
+python scripts/train.py --config configs/base.yaml --strategy full_ft --output_dir outputs/single_full_ft
 ```
 
-CLI overrides (no `base.yaml` edits needed):
+Evaluate a saved checkpoint:
 
 ```bash
-python scripts/train.py --config configs/base.yaml --strategy linear_probe
-python scripts/train.py --config configs/base.yaml --strategy from_scratch --epochs 12 --output_dir outputs/eurosat_mobilenetv2/from_scratch
+python scripts/eval.py --config configs/base.yaml --strategy full_ft --ckpt outputs/single_full_ft/best.pt
 ```
 
-## 3) Single-Strategy Evaluation
+Each run saves:
 
-```bash
-python scripts/eval.py --config configs/base.yaml --split test --strategy linear_probe
+```text
+best.pt        best validation checkpoint
+metrics.json   epoch-by-epoch train/validation metrics
+summary.json   final test metrics, convergence epoch, and run summary
 ```
 
-Strategy can also be overridden during evaluation:
+## Run Experiments
 
-```bash
-python scripts/eval.py --config configs/base.yaml --split test --strategy from_scratch
-```
-
-## 4) Zero-Shot Baseline
-
-```bash
-python scripts/zero_shot.py --config configs/base.yaml --split test
-```
-
-## 5) Run Five-Strategy Ablation
+### 4.1 EuroSAT Strategy Ablation
 
 ```bash
 python scripts/run_ablation.py --config configs/base.yaml
 ```
 
-Run only selected strategies:
+Outputs:
 
-```bash
-python scripts/run_ablation.py --config configs/base.yaml --strategies from_scratch,linear_probe,full_finetune
+```text
+outputs/eurosat_ablation/results.csv
+outputs/eurosat_ablation/test_top1_acc.png
 ```
 
-Output files:
+### 4.2 EuroSAT vs CIFAR-10 Same-Size Comparison
 
-- `outputs/eurosat_mobilenetv2/<strategy>/summary.json`
-- `outputs/eurosat_mobilenetv2/ablation_results.csv`
+```bash
+python scripts/run_domain_gap.py --config configs/base.yaml --download_cifar
+```
 
-## Config Notes
+Use `--download_cifar` the first time you run this experiment. CIFAR-10 is
+downloaded by torchvision to `data/` by default. If CIFAR-10 already exists
+there, torchvision reuses the local files. After the first successful download,
+you can omit `--download_cifar`.
 
-Key fields in `configs/base.yaml`:
+Use another CIFAR-10 location with:
 
-- `device`: keep `auto` to prefer GPU (CUDA) and fallback to CPU
-- `runtime.gpu_id`: GPU index on multi-GPU machines (`0`, `1`, ...)
-- `training.strategy`: default placeholder is `__CLI__`; pass `--strategy` explicitly in CLI
-- `training.partial_blocks`: number of tail blocks to unfreeze for `partial_unfreeze`
-- `dataset.num_classes`: `10` for EuroSAT
+```bash
+python scripts/run_domain_gap.py --config configs/base.yaml --cifar_root "PATH/TO/CIFAR_ROOT"
+```
+
+Default same-size split:
+
+```text
+train=18900, val=4050, test=4050
+```
+
+Outputs:
+
+```text
+outputs/domain_gap/results.csv
+outputs/domain_gap/test_top1_acc.png
+outputs/domain_gap/test_macro_f1.png
+```
+
+### 4.3 EuroSAT Data-Size Comparison
+
+```bash
+python scripts/run_data_fraction.py --config configs/base.yaml
+```
+
+Outputs:
+
+```text
+outputs/data_fraction/results.csv
+outputs/data_fraction/transfer_gain.csv
+outputs/data_fraction/test_top1_acc.png
+outputs/data_fraction/transfer_gain_top1.png
+```
+
+### 5 Forgetting Analysis
+
+```bash
+python scripts/run_forgetting.py --config configs/base.yaml --download_cifar
+```
+
+This script also uses CIFAR-10. Use `--download_cifar` if CIFAR-10 has not been
+downloaded yet, or omit it if the dataset already exists under `data/`. Use
+`--cifar_root PATH` to point to another location.
+
+Outputs:
+
+```text
+outputs/forgetting/forgetting_results.csv
+outputs/forgetting/forgetting_top1.png
+```
+
+## Useful Arguments
+
+Most scripts support:
+
+```text
+--epochs N
+--strategies scratch,partial_ft,full_ft
+--output_dir PATH
+--dummy
+```
+
+Dataset-size experiments also support:
+
+```text
+--train_samples N
+--val_samples N
+--test_samples N
+```
+
+`--dummy` uses fake data for a quick code-path check:
+
+```bash
+python scripts/run_domain_gap.py --config configs/base.yaml --dummy --strategies scratch --epochs 1 --train_samples 32 --val_samples 16 --test_samples 16
+```
+
+## Where to Read Results
+
+Start with the top-level CSV in each experiment output folder.
+
+For training curves, open each run's `metrics.json`.
+
+For final test metrics of a single run, open `summary.json`.
+

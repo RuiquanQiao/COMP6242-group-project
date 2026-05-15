@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import argparse
 import csv
@@ -113,3 +113,4 @@ def auto_find_images_root(root: Path) -> Path:
 
 if __name__ == "__main__":
     main()
+
