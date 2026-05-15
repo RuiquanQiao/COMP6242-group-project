@@ -7,7 +7,7 @@ Experiments covered:
 - 4.1 EuroSAT strategy ablation
 - 4.2 EuroSAT vs CIFAR-10 same-size domain comparison
 - 4.3 EuroSAT data-size comparison
-- ImageNet forgetting analysis after every downstream transfer experiment
+- ImageNet forgetting analysis after every ImageNet-pretrained downstream run
 
 For detailed code explanation, see `interpretation.md`.
 
@@ -49,16 +49,6 @@ python scripts/prepare_eurosat.py --images_root "data/eurosat/2750" --out_csv da
 
 CIFAR-10 is loaded directly through torchvision. It does not use this preparation script.
 
-## Strategies
-
-All experiments use ResNet18.
-
-```text
-scratch       random initialization, train all layers
-linear_probe  ImageNet initialization, train classifier only
-partial_ft    ImageNet initialization, train layer4 + classifier
-full_ft       ImageNet initialization, train all layers
-```
 
 ## Run One Model
 
@@ -114,21 +104,6 @@ Use another CIFAR-10 location with:
 python scripts/run_domain_gap.py --config configs/base.yaml --cifar_root "PATH/TO/CIFAR_ROOT"
 ```
 
-Default same-size split:
-
-```text
-train=18900, val=4050, test=4050
-```
-
-Outputs:
-
-```text
-outputs/domain_gap/results.csv
-outputs/domain_gap/test_top1_acc.png
-outputs/domain_gap/test_macro_f1.png
-outputs/domain_gap/val_top1_acc_curve.png
-outputs/domain_gap/val_macro_f1_curve.png
-```
 
 ### 4.3 EuroSAT Data-Size Comparison
 
@@ -136,18 +111,17 @@ outputs/domain_gap/val_macro_f1_curve.png
 python scripts/run_data_fraction.py --config configs/base.yaml
 ```
 
-Outputs:
-
-```text
-outputs/data_fraction/results.csv
-outputs/data_fraction/transfer_gain.csv
-outputs/data_fraction/test_top1_acc.png
-outputs/data_fraction/transfer_gain_top1.png
-outputs/data_fraction/val_top1_acc_curve.png
-outputs/data_fraction/val_macro_f1_curve.png
-```
 
 ### ImageNet Forgetting Analysis
+
+If ImageNet, EuroSAT, and CIFAR-10 are already available locally:
+
+```bash
+python scripts/run_forgetting.py --config configs/base.yaml --imagenet_root "PATH/TO/IMAGENET"
+```
+
+For the first full run, add `--download_cifar` because the default scenarios
+include `domain_gap`, which uses CIFAR-10:
 
 ```bash
 python scripts/run_forgetting.py --config configs/base.yaml --imagenet_root "PATH/TO/IMAGENET" --download_cifar
@@ -157,6 +131,18 @@ This script measures how much ImageNet validation performance drops after an
 ImageNet-pretrained ResNet18 is fine-tuned on each downstream transfer setting.
 ImageNet is always the retained pretraining task. EuroSAT and CIFAR-10 are
 downstream fine-tuning tasks.
+
+The forgetting script re-runs the selected downstream settings, saves their
+checkpoints under `outputs/forgetting/`, then evaluates each fine-tuned
+backbone on ImageNet. It does not read checkpoints from `outputs/eurosat_ablation/`,
+`outputs/domain_gap/`, or `outputs/data_fraction/`.
+
+`--download_cifar` is only for the CIFAR-10 part of this script. Use it when
+the selected scenarios include `domain_gap` and CIFAR-10 has not already been
+downloaded under `--cifar_root` (`data/` by default). It does not download
+EuroSAT or ImageNet. If CIFAR-10 already exists locally, or if you run only
+EuroSAT scenarios such as `eurosat_ablation` or `data_fraction`, omit
+`--download_cifar`.
 
 ImageNet is not downloaded automatically; provide a local ImageFolder-style
 validation split with standard ImageNet WNID class folders:
@@ -184,30 +170,23 @@ full_ft
 ```
 
 The `scratch` strategy is excluded from ImageNet forgetting because it has no
-ImageNet pretraining to forget.
+ImageNet pretraining to forget. If `scratch` is passed in `--strategies`, the
+script skips it.
 
-For quick checks or limited compute, evaluate on a balanced ImageNet subset:
+For EuroSAT-only quick checks or limited compute, evaluate on a balanced
+ImageNet subset and skip the CIFAR-10 scenario:
 
 ```bash
-python scripts/run_forgetting.py --config configs/base.yaml --imagenet_root "PATH/TO/IMAGENET" --imagenet_samples 5000 --download_cifar
+python scripts/run_forgetting.py --config configs/base.yaml --scenarios eurosat_ablation,data_fraction --imagenet_root "PATH/TO/IMAGENET" --imagenet_samples 5000
 ```
 
 Run a subset of scenarios with:
 
 ```bash
-python scripts/run_forgetting.py --config configs/base.yaml --scenarios domain_gap --imagenet_root "PATH/TO/IMAGENET" --download_cifar
 python scripts/run_forgetting.py --config configs/base.yaml --scenarios data_fraction --imagenet_root "PATH/TO/IMAGENET"
+python scripts/run_forgetting.py --config configs/base.yaml --scenarios domain_gap --imagenet_root "PATH/TO/IMAGENET" --download_cifar
 ```
 
-Outputs:
-
-```text
-outputs/forgetting/forgetting_results.csv
-outputs/forgetting/forgetting_top1.png
-outputs/forgetting/forgetting_macro_f1.png
-outputs/forgetting/forgetting_by_fraction_top1.png
-outputs/forgetting/forgetting_by_fraction_macro_f1.png
-```
 
 ## Useful Arguments
 
@@ -243,4 +222,3 @@ For training curves, use each experiment folder's `val_top1_acc_curve.png` and
 values.
 
 For final test metrics of a single run, open `summary.json`.
-
