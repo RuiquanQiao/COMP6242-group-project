@@ -36,7 +36,7 @@
 - CIFAR-10 (跨领域对比)
 - 关键设置:
   - 同领域不同大小: EuroSAT 10% / 30% / 60% / 100%
-  - 同样大小不同领域: EuroSAT(30k) vs CIFAR-10(30k)
+  - 同样大小不同领域: EuroSAT(27,000) vs CIFAR-10(27,000)
 
 ### 3.3 训练策略(核心变量)
 - Scratch: 从零训练
@@ -67,7 +67,7 @@
 
 ### 4.2 When Transfer Helps (1): 同样大小不同领域
 - 模型: ResNet18
-- 数据: EuroSAT(30k) vs CIFAR-10(30k)
+- 数据: EuroSAT(27,000) vs CIFAR-10(27,000)
 - 策略: 至少比较 Scratch / Partial FT / Full FT
 - 目标:
   - 观察 domain gap 对 transfer 收益的影响

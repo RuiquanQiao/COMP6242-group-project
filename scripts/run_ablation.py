@@ -8,7 +8,14 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
 
-from experiment_utils import make_run_config, read_summary, save_bar_chart, write_csv
+from experiment_utils import (
+    make_run_config,
+    read_metrics,
+    read_summary,
+    save_bar_chart,
+    save_training_metric_curve,
+    write_csv,
+)
 from transfer_learning.config import load_config
 from transfer_learning.train import train_main
 
@@ -32,6 +39,7 @@ def main() -> None:
     base_cfg = load_config(args.config)
     strategies = [s.strip() for s in args.strategies.split(",") if s.strip()]
     rows: list[dict] = []
+    curves: list[dict] = []
 
     for strategy in strategies:
         cfg = make_run_config(
@@ -46,12 +54,17 @@ def main() -> None:
         artifacts = train_main(cfg, dummy=args.dummy)
         summary = read_summary(artifacts.summary_json)
         rows.append(_row(summary))
+        curves.append({"label": strategy, "metrics": read_metrics(artifacts.metrics_json)})
 
     out_dir = Path(args.output_dir)
     write_csv(out_dir / "results.csv", rows)
     save_bar_chart(out_dir / "test_top1_acc.png", rows, "dataset", "strategy", "test_top1_acc")
+    save_training_metric_curve(out_dir / "val_top1_acc_curve.png", curves, "val_top1_acc")
+    save_training_metric_curve(out_dir / "val_macro_f1_curve.png", curves, "val_macro_f1")
     print(f"saved: {out_dir / 'results.csv'}")
     print(f"saved: {out_dir / 'test_top1_acc.png'}")
+    print(f"saved: {out_dir / 'val_top1_acc_curve.png'}")
+    print(f"saved: {out_dir / 'val_macro_f1_curve.png'}")
 
 
 def _row(summary: dict) -> dict:

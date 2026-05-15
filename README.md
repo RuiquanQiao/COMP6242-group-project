@@ -93,6 +93,8 @@ Outputs:
 ```text
 outputs/eurosat_ablation/results.csv
 outputs/eurosat_ablation/test_top1_acc.png
+outputs/eurosat_ablation/val_top1_acc_curve.png
+outputs/eurosat_ablation/val_macro_f1_curve.png
 ```
 
 ### 4.2 EuroSAT vs CIFAR-10 Same-Size Comparison
@@ -124,6 +126,8 @@ Outputs:
 outputs/domain_gap/results.csv
 outputs/domain_gap/test_top1_acc.png
 outputs/domain_gap/test_macro_f1.png
+outputs/domain_gap/val_top1_acc_curve.png
+outputs/domain_gap/val_macro_f1_curve.png
 ```
 
 ### 4.3 EuroSAT Data-Size Comparison
@@ -139,6 +143,8 @@ outputs/data_fraction/results.csv
 outputs/data_fraction/transfer_gain.csv
 outputs/data_fraction/test_top1_acc.png
 outputs/data_fraction/transfer_gain_top1.png
+outputs/data_fraction/val_top1_acc_curve.png
+outputs/data_fraction/val_macro_f1_curve.png
 ```
 
 ### 5 Forgetting Analysis
@@ -151,11 +157,28 @@ This script also uses CIFAR-10. Use `--download_cifar` if CIFAR-10 has not been
 downloaded yet, or omit it if the dataset already exists under `data/`. Use
 `--cifar_root PATH` to point to another location.
 
+Default forgetting scenarios:
+
+```text
+domain_gap          EuroSAT -> CIFAR-10, same-size splits
+reverse_domain_gap  CIFAR-10 -> EuroSAT, same-size splits
+data_fraction       EuroSAT 10% / 30% / 60% / 100% -> CIFAR-10
+```
+
+Run a subset of scenarios with:
+
+```bash
+python scripts/run_forgetting.py --config configs/base.yaml --scenarios domain_gap,data_fraction --download_cifar
+```
+
 Outputs:
 
 ```text
 outputs/forgetting/forgetting_results.csv
 outputs/forgetting/forgetting_top1.png
+outputs/forgetting/forgetting_macro_f1.png
+outputs/forgetting/forgetting_by_fraction_top1.png
+outputs/forgetting/forgetting_by_fraction_macro_f1.png
 ```
 
 ## Useful Arguments
@@ -187,7 +210,9 @@ python scripts/run_domain_gap.py --config configs/base.yaml --dummy --strategies
 
 Start with the top-level CSV in each experiment output folder.
 
-For training curves, open each run's `metrics.json`.
+For training curves, use each experiment folder's `val_top1_acc_curve.png` and
+`val_macro_f1_curve.png`, or open each run's `metrics.json` for raw epoch-level
+values.
 
 For final test metrics of a single run, open `summary.json`.
 

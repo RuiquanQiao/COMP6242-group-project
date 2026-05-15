@@ -44,6 +44,10 @@ def read_summary(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def read_metrics(path: Path) -> list[dict]:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 def write_csv(path: Path, rows: list[dict]) -> None:
     if not rows:
         return
@@ -105,6 +109,32 @@ def save_line_chart(path: Path, rows: list[dict], x_key: str, label_key: str, va
 
     ax.set_xlabel(x_key)
     ax.set_ylabel(value_key)
+    ax.legend()
+    fig.tight_layout()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(path, dpi=200)
+    plt.close(fig)
+
+
+def save_training_metric_curve(path: Path, curves: list[dict], metric_key: str) -> None:
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots(figsize=(9, 5))
+    for curve in curves:
+        metrics = curve["metrics"]
+        points = [
+            (int(row["epoch"]), float(row[metric_key]))
+            for row in metrics
+            if metric_key in row
+        ]
+        if not points:
+            continue
+        points.sort(key=lambda item: item[0])
+        xs, ys = zip(*points)
+        ax.plot(xs, ys, marker="o", label=str(curve["label"]))
+
+    ax.set_xlabel("epoch")
+    ax.set_ylabel(metric_key)
     ax.legend()
     fig.tight_layout()
     path.parent.mkdir(parents=True, exist_ok=True)
