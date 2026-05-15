@@ -7,7 +7,7 @@ Experiments covered:
 - 4.1 EuroSAT strategy ablation
 - 4.2 EuroSAT vs CIFAR-10 same-size domain comparison
 - 4.3 EuroSAT data-size comparison
-- Forgetting analysis across the domain-gap and data-size settings
+- ImageNet forgetting analysis after every downstream transfer experiment
 
 For detailed code explanation, see `interpretation.md`.
 
@@ -147,29 +147,56 @@ outputs/data_fraction/val_top1_acc_curve.png
 outputs/data_fraction/val_macro_f1_curve.png
 ```
 
-### Forgetting Analysis Across Settings
+### ImageNet Forgetting Analysis
 
 ```bash
-python scripts/run_forgetting.py --config configs/base.yaml --download_cifar
+python scripts/run_forgetting.py --config configs/base.yaml --imagenet_root "PATH/TO/IMAGENET" --download_cifar
 ```
 
-This script measures how much Task A performance drops after the model is
-continued on Task B. The default run covers three forgetting scenarios:
+This script measures how much ImageNet validation performance drops after an
+ImageNet-pretrained ResNet18 is fine-tuned on each downstream transfer setting.
+ImageNet is always the retained pretraining task. EuroSAT and CIFAR-10 are
+downstream fine-tuning tasks.
+
+ImageNet is not downloaded automatically; provide a local ImageFolder-style
+validation split with standard ImageNet WNID class folders:
 
 ```text
-domain_gap          EuroSAT -> CIFAR-10, same-size splits
-reverse_domain_gap  CIFAR-10 -> EuroSAT, same-size splits
-data_fraction       EuroSAT 10% / 30% / 60% / 100% -> CIFAR-10
+PATH/TO/IMAGENET/val/n01440764/*.JPEG
+PATH/TO/IMAGENET/val/n01443537/*.JPEG
+...
 ```
 
-CIFAR-10 is downloaded only when needed. Use `--download_cifar` if it has not
-been downloaded yet, or omit it if the dataset already exists under `data/`.
-Use `--cifar_root PATH` to point to another location.
+The default run covers the transfer experiments in the report:
+
+```text
+eurosat_ablation  4.1 EuroSAT strategy ablation
+domain_gap        4.2 EuroSAT and CIFAR-10 same-size comparison
+data_fraction     4.3 EuroSAT 10% / 30% / 60% / 100% comparison
+```
+
+Only ImageNet-pretrained strategies are included by default:
+
+```text
+linear_probe
+partial_ft
+full_ft
+```
+
+The `scratch` strategy is excluded from ImageNet forgetting because it has no
+ImageNet pretraining to forget.
+
+For quick checks or limited compute, evaluate on a balanced ImageNet subset:
+
+```bash
+python scripts/run_forgetting.py --config configs/base.yaml --imagenet_root "PATH/TO/IMAGENET" --imagenet_samples 5000 --download_cifar
+```
 
 Run a subset of scenarios with:
 
 ```bash
-python scripts/run_forgetting.py --config configs/base.yaml --scenarios domain_gap,data_fraction --download_cifar
+python scripts/run_forgetting.py --config configs/base.yaml --scenarios domain_gap --imagenet_root "PATH/TO/IMAGENET" --download_cifar
+python scripts/run_forgetting.py --config configs/base.yaml --scenarios data_fraction --imagenet_root "PATH/TO/IMAGENET"
 ```
 
 Outputs:

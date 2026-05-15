@@ -9,7 +9,7 @@ import torch
 from PIL import Image
 from torch.utils.data import DataLoader, Dataset, Subset
 from torchvision import transforms
-from torchvision.datasets import CIFAR10
+from torchvision.datasets import CIFAR10, ImageFolder
 
 
 @dataclass
@@ -89,6 +89,8 @@ def build_dataloader(
         dataset = _build_eurosat(dataset_cfg, split, seed)
     elif dataset_cfg.name.lower() in {"cifar10", "cifar-10"}:
         dataset = _build_cifar10(dataset_cfg, split, seed)
+    elif dataset_cfg.name.lower() in {"imagenet", "imagenet1k", "imagenet-1k"}:
+        dataset = _build_imagenet(dataset_cfg, split, seed)
     else:
         raise ValueError(f"Unknown dataset: {dataset_cfg.name}")
 
@@ -142,6 +144,27 @@ def _build_cifar10(dataset_cfg: DatasetConfig, split: str, seed: int) -> Dataset
     pairs = list(zip(indices, labels))
     selected = [idx for idx, _ in _balanced_sample(pairs, _split_limit(dataset_cfg, split), seed)]
     return Subset(dataset, selected)
+
+
+def _build_imagenet(dataset_cfg: DatasetConfig, split: str, seed: int) -> Dataset:
+    if split not in {"train", "val", "test"}:
+        raise ValueError(f"Unsupported split for ImageNet: {split}")
+
+    split_dir = "val" if split == "test" else split
+    root = dataset_cfg.root / split_dir
+    if not root.exists():
+        raise FileNotFoundError(
+            f"ImageNet split directory not found: {root}. "
+            "Expected an ImageFolder layout such as root/val/n01440764/*.JPEG."
+        )
+
+    dataset = ImageFolder(
+        root=str(root),
+        transform=_build_transforms(dataset_cfg.image_size, is_train=False),
+    )
+    pairs = [(idx, int(label)) for idx, (_, label) in enumerate(dataset.samples)]
+    selected = [idx for idx, _ in _balanced_sample(pairs, _split_limit(dataset_cfg, split), seed)]
+    return Subset(dataset, selected) if selected else dataset
 
 
 def _read_eurosat_rows(metadata_csv: Path, split: str) -> list[tuple[str, int]]:

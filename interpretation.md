@@ -9,7 +9,7 @@ datasets. The code is designed around four questions:
 1. How do different fine-tuning strategies perform on EuroSAT?
 2. Does transfer learning help equally on EuroSAT and CIFAR-10?
 3. Does transfer learning help more when EuroSAT has less training data?
-4. How much EuroSAT performance is forgotten after later training on CIFAR-10?
+4. How much ImageNet performance is forgotten after each downstream fine-tuning experiment?
 
 ## High-Level Flow
 
@@ -44,8 +44,9 @@ Important fields:
 - `device`: `auto`, `cpu`, or a specific device string.
 - `output_dir`: where outputs are written unless a script overrides it.
 - `model.name`: kept as `resnet18` for documentation clarity.
-- `dataset.name`: either `eurosat` or `cifar10`.
-- `dataset.root`: image root for EuroSAT, or torchvision data root for CIFAR-10.
+- `dataset.name`: `eurosat`, `cifar10`, or `imagenet`.
+- `dataset.root`: image root for EuroSAT, torchvision data root for CIFAR-10,
+  or an ImageFolder-style ImageNet root.
 - `dataset.metadata_csv`: EuroSAT metadata file.
 - `dataset.train_samples`, `val_samples`, `test_samples`: optional sample limits.
 - `training.strategy`: one of `scratch`, `linear_probe`, `partial_ft`, `full_ft`.
@@ -91,7 +92,8 @@ simple and avoids a large configuration system.
 ## Data Module: `src/transfer_learning/data.py`
 
 This module turns a dataset name and configuration into a PyTorch `DataLoader`.
-It supports EuroSAT, CIFAR-10, and a dummy dataset for quick code-path checks.
+It supports EuroSAT, CIFAR-10, ImageNet, and a dummy dataset for quick code-path
+checks.
 
 ### `DatasetConfig`
 
@@ -155,6 +157,7 @@ Then it chooses the correct dataset builder:
 
 - `_build_eurosat(...)` for EuroSAT
 - `_build_cifar10(...)` for CIFAR-10
+- `_build_imagenet(...)` for ImageNet
 - `DummyDataset` if `dummy=True`
 
 Finally, it wraps the dataset in a PyTorch `DataLoader`.
@@ -215,6 +218,23 @@ For `train` and `val`, the code:
 
 This makes CIFAR-10 match the same train/validation/test structure as EuroSAT.
 
+### `_build_imagenet(...)`
+
+ImageNet is used by the forgetting analysis to evaluate whether ImageNet
+pretraining performance drops after downstream fine-tuning.
+
+The code expects a local ImageFolder-style directory with standard ImageNet WNID
+class folders, for example:
+
+```text
+imagenet_root/val/n01440764/*.JPEG
+imagenet_root/val/n01443537/*.JPEG
+```
+
+The `test` split is mapped to the same `val` directory because ImageNet test
+labels are not publicly available in the usual benchmark setup. Optional sample
+limits are applied with balanced sampling.
+
 ### `_balanced_sample(...)`
 
 This helper takes items shaped like:
@@ -263,14 +283,17 @@ ResNet18_Weights.IMAGENET1K_V1
 
 If `pretrained=False`, the model is randomly initialized.
 
-The original ResNet18 classification layer is replaced:
+The original ResNet18 classification layer is replaced only when the requested
+number of classes differs from the model's current output size:
 
 ```python
-model.fc = nn.Linear(model.fc.in_features, num_classes)
+if model.fc.out_features != num_classes:
+    model.fc = nn.Linear(model.fc.in_features, num_classes)
 ```
 
-This is necessary because ImageNet has 1000 classes, while both EuroSAT and
-CIFAR-10 have 10 classes.
+This keeps the original pretrained 1000-class ImageNet head when the code builds
+an ImageNet evaluation model, while still replacing the head for EuroSAT and
+CIFAR-10.
 
 ### `configure_trainable_layers(...)`
 
@@ -415,10 +438,9 @@ This function loads a checkpoint and evaluates it on a selected split.
 It is used by:
 
 - `scripts/eval.py`
-- `scripts/run_forgetting.py`
 
-For forgetting analysis, it allows the code to evaluate the same model on the
-old task after it has been trained on the new task.
+The ImageNet forgetting script performs its own evaluation because it needs to
+attach the fine-tuned backbone to the original 1000-class ImageNet head.
 
 ## Script Utilities: `scripts/experiment_utils.py`
 
@@ -596,43 +618,54 @@ Final outputs:
 
 ### `scripts/run_forgetting.py`
 
-This runs the forgetting analysis.
+This runs the ImageNet catastrophic forgetting analysis for every downstream
+transfer experiment in the report.
 
 By default, the script runs three scenarios:
 
 ```text
-domain_gap          EuroSAT -> CIFAR-10, using same-size splits
-reverse_domain_gap  CIFAR-10 -> EuroSAT, using same-size splits
-data_fraction       EuroSAT 10% / 30% / 60% / 100% -> CIFAR-10
+eurosat_ablation  4.1 EuroSAT strategy ablation
+domain_gap        4.2 EuroSAT and CIFAR-10 same-size comparison
+data_fraction     4.3 EuroSAT 10% / 30% / 60% / 100% comparison
 ```
 
 For each selected scenario and strategy, the script does:
 
 ```text
-train Task A
-evaluate the Task A checkpoint on Task A test data -> A_before
-train Task B starting from the Task A checkpoint
-evaluate the Task B checkpoint on Task A test data -> A_after
-compute forgetting = A_before - A_after
+build the original ImageNet-pretrained ResNet18 with its 1000-class head
+evaluate it on ImageNet validation data -> ImageNet_before
+fine-tune a 10-class ResNet18 copy on the downstream dataset
+load the fine-tuned backbone into a fresh 1000-class ImageNet model
+evaluate it again on ImageNet validation data -> ImageNet_after
+compute forgetting = ImageNet_before - ImageNet_after
 ```
 
-The output also records Task B test performance after the second training stage,
-because a low forgetting score is not useful if the model did not learn the new
-task.
+The output also records downstream test performance, because a low forgetting
+score is not useful if the model did not learn the downstream task.
 
-The forgetting implementation uses a single classifier head. This is a deliberate
-single-head sequential transfer setup, not a multi-head continual-learning setup.
-EuroSAT and CIFAR-10 both have 10 classes, so the same output shape can be
-reused, but the class meanings are different. As a result, the forgetting values
-should be interpreted as performance loss under single-head sequential transfer,
-not as a pure measurement of feature forgetting alone.
+The ImageNet head is not trained during downstream fine-tuning. It is restored
+for evaluation so the metric reflects how much the fine-tuned backbone no longer
+supports the original ImageNet classifier. This directly addresses forgetting of
+the pretraining task rather than sequential transfer between EuroSAT and
+CIFAR-10.
 
-The default strategies are:
+The default forgetting strategies are ImageNet-pretrained strategies only:
 
 ```text
 linear_probe
 partial_ft
 full_ft
+```
+
+The `scratch` strategy is intentionally excluded because it does not start from
+ImageNet pretraining, so ImageNet catastrophic forgetting is not defined for it.
+
+Scenario coverage:
+
+```text
+4.1: EuroSAT full-data fine-tuning
+4.2: EuroSAT same-size fine-tuning and CIFAR-10 same-size fine-tuning
+4.3: EuroSAT 10% / 30% / 60% / 100% fine-tuning
 ```
 
 Final outputs:
