@@ -7,7 +7,7 @@ Experiments covered:
 - 4.1 EuroSAT strategy ablation
 - 4.2 EuroSAT vs CIFAR-10 same-size domain comparison
 - 4.3 EuroSAT data-size comparison
-- ImageNet forgetting analysis after every ImageNet-pretrained downstream run
+- previous-task forgetting analysis after CIFAR-10 to EuroSAT fine-tuning
 
 For detailed code explanation, see `interpretation.md`.
 
@@ -178,56 +178,55 @@ Use the same `--fractions`, `--strategies`, and `--output_dir` values that were
 used for the original run when aggregating a subset or custom output folder.
 
 
-### ImageNet Forgetting Analysis
+### Previous-Task Forgetting Analysis
 
-If ImageNet, EuroSAT, and CIFAR-10 are already available locally:
+The forgetting experiment is designed to run locally without ImageNet. It uses
+the CIFAR-10 model from the domain-gap experiment as the previous-task model,
+then fine-tunes it on EuroSAT and measures how much CIFAR-10 performance is
+forgotten.
+
+First run the CIFAR-10 part of the domain-gap experiment, or run the full
+domain-gap experiment:
 
 ```bash
-python scripts/run_forgetting.py --config configs/base.yaml --imagenet_root "PATH/TO/IMAGENET"
+python scripts/run_domain_gap.py --config configs/base.yaml --download_cifar
 ```
 
-For the first full run, add `--download_cifar` because the default scenarios
-include `domain_gap`, which uses CIFAR-10:
+By default, the forgetting script expects the previous-task checkpoint here:
+
+```text
+outputs/domain_gap/cifar10/full_ft/best.pt
+```
+
+Then run:
 
 ```bash
-python scripts/run_forgetting.py --config configs/base.yaml --imagenet_root "PATH/TO/IMAGENET" --download_cifar
+python scripts/run_forgetting.py --config configs/base.yaml
 ```
 
-This script measures how much ImageNet validation performance drops after an
-ImageNet-pretrained ResNet18 is fine-tuned on each downstream transfer setting.
-ImageNet is always the retained pretraining task. EuroSAT and CIFAR-10 are
-downstream fine-tuning tasks.
+If the CIFAR-10 checkpoint is somewhere else, pass it explicitly:
 
-The forgetting script re-runs the selected downstream settings, saves their
-checkpoints under `outputs/forgetting/`, then evaluates each fine-tuned
-backbone on ImageNet. It does not read checkpoints from `outputs/eurosat_ablation/`,
-`outputs/domain_gap/`, or `outputs/data_fraction/`.
+```bash
+python scripts/run_forgetting.py --config configs/base.yaml --source_ckpt "PATH/TO/CIFAR10/best.pt"
+```
 
-`--download_cifar` is only for the CIFAR-10 part of this script. Use it when
-the selected scenarios include `domain_gap` and CIFAR-10 has not already been
-downloaded under `--cifar_root` (`data/` by default). It does not download
-EuroSAT or ImageNet. If CIFAR-10 already exists locally, or if you run only
-EuroSAT scenarios such as `eurosat_ablation` or `data_fraction`, omit
-`--download_cifar`.
-
-ImageNet is not downloaded automatically; provide a local ImageFolder-style
-validation split with standard ImageNet WNID class folders:
+This script performs the following sequence:
 
 ```text
-PATH/TO/IMAGENET/val/n01440764/*.JPEG
-PATH/TO/IMAGENET/val/n01443537/*.JPEG
-...
+evaluate CIFAR-10 checkpoint on CIFAR-10 -> CIFAR_before
+fine-tune the same checkpoint on EuroSAT
+restore the original CIFAR-10 classifier head
+load the EuroSAT fine-tuned backbone
+evaluate on CIFAR-10 again -> CIFAR_after
+compute forgetting = CIFAR_before - CIFAR_after
 ```
 
-The default run covers the transfer experiments in the report:
+The classifier head restoration is important because CIFAR-10 and EuroSAT both
+have 10 classes, but their class meanings are different. The forgetting score
+therefore measures how much the EuroSAT-adapted backbone still supports the
+previous CIFAR-10 task.
 
-```text
-eurosat_ablation  4.1 EuroSAT strategy ablation
-domain_gap        4.2 EuroSAT and CIFAR-10 same-size comparison
-data_fraction     4.3 EuroSAT 10% / 30% / 60% / 100% comparison
-```
-
-Only ImageNet-pretrained strategies are included by default:
+The default target fine-tuning strategies are:
 
 ```text
 linear_probe
@@ -235,22 +234,21 @@ partial_ft
 full_ft
 ```
 
-The `scratch` strategy is excluded from ImageNet forgetting because it has no
-ImageNet pretraining to forget. If `scratch` is passed in `--strategies`, the
-script skips it.
+The `scratch` strategy is excluded because this experiment starts from an
+already-trained previous-task checkpoint.
 
-For EuroSAT-only quick checks or limited compute, evaluate on a balanced
-ImageNet subset and skip the CIFAR-10 scenario:
+Use smaller sample limits for quick local checks:
 
 ```bash
-python scripts/run_forgetting.py --config configs/base.yaml --scenarios eurosat_ablation,data_fraction --imagenet_root "PATH/TO/IMAGENET" --imagenet_samples 5000
+python scripts/run_forgetting.py --config configs/base.yaml --target_train_samples 3000 --target_val_samples 1000 --target_test_samples 1000
 ```
 
-Run a subset of scenarios with:
+Outputs:
 
-```bash
-python scripts/run_forgetting.py --config configs/base.yaml --scenarios data_fraction --imagenet_root "PATH/TO/IMAGENET"
-python scripts/run_forgetting.py --config configs/base.yaml --scenarios domain_gap --imagenet_root "PATH/TO/IMAGENET" --download_cifar
+```text
+outputs/forgetting/forgetting_results.csv
+outputs/forgetting/forgetting_top1.png
+outputs/forgetting/forgetting_macro_f1.png
 ```
 
 
@@ -286,9 +284,9 @@ complete but the top-level CSV or plots are stale. Keep `--strategies`,
 `--fractions`, and `--output_dir` consistent with the run you want to recover;
 otherwise the script will look for its default output layout.
 
-The ImageNet forgetting script is different: its final rows include an
-additional ImageNet re-evaluation step and are not currently recoverable from
-per-run `summary.json` files alone.
+The forgetting script is different: its final rows include an additional
+previous-task re-evaluation step after EuroSAT fine-tuning and are not currently
+recoverable from per-run `summary.json` files alone.
 
 `--dummy` uses fake data for a quick code-path check:
 
