@@ -14,7 +14,7 @@ dataset:
   metadata_csv: "data/metadata.csv"
   num_classes: 10
   image_size: 224
-  num_workers: 4
+  num_workers: 0
   download: false
   val_ratio: 0.15
   train_samples: 0

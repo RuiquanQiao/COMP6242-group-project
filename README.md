@@ -87,6 +87,20 @@ outputs/eurosat_ablation/val_top1_acc_curve.png
 outputs/eurosat_ablation/val_macro_f1_curve.png
 ```
 
+If the run was interrupted, reuse completed strategy folders and train only
+missing ones with:
+
+```bash
+python scripts/run_ablation.py --config configs/base.yaml --skip_existing
+```
+
+If every selected strategy folder already has `summary.json` and `metrics.json`,
+refresh only the top-level CSV and plots with:
+
+```bash
+python scripts/run_ablation.py --config configs/base.yaml --aggregate_only
+```
+
 ### 4.2 EuroSAT vs CIFAR-10 Same-Size Comparison
 
 ```bash
@@ -104,12 +118,64 @@ Use another CIFAR-10 location with:
 python scripts/run_domain_gap.py --config configs/base.yaml --cifar_root "PATH/TO/CIFAR_ROOT"
 ```
 
+If training was interrupted after some runs completed, reuse completed
+subdirectories and train only missing runs with:
+
+```bash
+python scripts/run_domain_gap.py --config configs/base.yaml --download_cifar --skip_existing
+```
+
+If the per-run folders already contain `summary.json` and `metrics.json`, but
+the top-level CSV or plots are stale, regenerate only the aggregate outputs with:
+
+```bash
+python scripts/run_domain_gap.py --config configs/base.yaml --aggregate_only
+```
+
+`--aggregate_only` uses the same strategy selection as the normal run. With
+default arguments, it expects EuroSAT and CIFAR-10 folders for `scratch`,
+`partial_ft`, and `full_ft`. If the original run used a strategy subset or a
+custom output directory, pass the same options again:
+
+```bash
+python scripts/run_domain_gap.py --config configs/base.yaml --aggregate_only --strategies scratch,full_ft
+python scripts/run_domain_gap.py --config configs/base.yaml --aggregate_only --output_dir outputs/my_domain_gap
+```
+
+This rewrites:
+
+```text
+outputs/domain_gap/results.csv
+outputs/domain_gap/test_top1_acc.png
+outputs/domain_gap/test_macro_f1.png
+outputs/domain_gap/val_top1_acc_curve.png
+outputs/domain_gap/val_macro_f1_curve.png
+```
+
+It does not retrain models or overwrite the per-run checkpoints and JSON files.
 
 ### 4.3 EuroSAT Data-Size Comparison
 
 ```bash
 python scripts/run_data_fraction.py --config configs/base.yaml
 ```
+
+If the run was interrupted, reuse completed fraction/strategy folders and train
+only missing ones with:
+
+```bash
+python scripts/run_data_fraction.py --config configs/base.yaml --skip_existing
+```
+
+If every selected fraction/strategy folder already has `summary.json` and
+`metrics.json`, refresh only the top-level CSV and plots with:
+
+```bash
+python scripts/run_data_fraction.py --config configs/base.yaml --aggregate_only
+```
+
+Use the same `--fractions`, `--strategies`, and `--output_dir` values that were
+used for the original run when aggregating a subset or custom output folder.
 
 
 ### ImageNet Forgetting Analysis
@@ -206,6 +272,23 @@ Dataset-size experiments also support:
 --val_samples N
 --test_samples N
 ```
+
+Batch experiment scripts for 4.1, 4.2, and 4.3 also support:
+
+```text
+--skip_existing     reuse run folders that already have summary.json and metrics.json
+--aggregate_only    rebuild top-level CSV and plots from existing run folders
+```
+
+Use `--skip_existing` after an interrupted run when some child runs are complete
+and some are missing. Use `--aggregate_only` when all selected child runs are
+complete but the top-level CSV or plots are stale. Keep `--strategies`,
+`--fractions`, and `--output_dir` consistent with the run you want to recover;
+otherwise the script will look for its default output layout.
+
+The ImageNet forgetting script is different: its final rows include an
+additional ImageNet re-evaluation step and are not currently recoverable from
+per-run `summary.json` files alone.
 
 `--dummy` uses fake data for a quick code-path check:
 

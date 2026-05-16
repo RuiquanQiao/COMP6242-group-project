@@ -3,9 +3,26 @@
 import csv
 import json
 from copy import deepcopy
+from dataclasses import dataclass
 from pathlib import Path
 
 from transfer_learning.config import Config
+
+
+@dataclass
+class ArtifactPaths:
+    best_ckpt: Path
+    metrics_json: Path
+    summary_json: Path
+
+
+def existing_artifacts(run_dir: Path) -> ArtifactPaths | None:
+    best_ckpt = run_dir / "best.pt"
+    metrics_json = run_dir / "metrics.json"
+    summary_json = run_dir / "summary.json"
+    if metrics_json.exists() and summary_json.exists():
+        return ArtifactPaths(best_ckpt=best_ckpt, metrics_json=metrics_json, summary_json=summary_json)
+    return None
 
 
 def make_run_config(

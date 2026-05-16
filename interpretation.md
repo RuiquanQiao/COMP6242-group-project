@@ -550,6 +550,14 @@ Final outputs:
 - `results.csv`
 - `test_top1_acc.png`
 
+The script supports the same recovery modes used by the other batch
+experiments:
+
+- `--skip_existing` reuses a strategy folder when both `summary.json` and
+  `metrics.json` already exist.
+- `--aggregate_only` skips training and rebuilds the top-level CSV and plots
+  from existing strategy folders.
+
 ### `scripts/run_domain_gap.py`
 
 This runs Experiment 4.2.
@@ -581,6 +589,22 @@ Final outputs:
 - `results.csv`
 - `test_top1_acc.png`
 - `test_macro_f1.png`
+
+The script also supports recovery and aggregation modes for long runs:
+
+- `--skip_existing` checks each run directory for `summary.json` and
+  `metrics.json`. If both files exist, the script reads them and skips training
+  that dataset/strategy pair. If either file is missing, the script trains that
+  run normally.
+- `--aggregate_only` never trains. It requires every selected dataset/strategy
+  run to already have `summary.json` and `metrics.json`, then regenerates the
+  top-level CSV and plot files from those artifacts.
+
+These modes are useful because `run_domain_gap.py` writes the top-level CSV and
+plots only after the full experiment loop finishes. If the final training run is
+interrupted, earlier per-run artifacts are still valid, but the aggregate
+outputs may still reflect an older run. `--aggregate_only` refreshes those
+aggregate outputs without changing model checkpoints.
 
 ### `scripts/run_data_fraction.py`
 
@@ -615,6 +639,11 @@ Final outputs:
 - `transfer_gain.csv`
 - `test_top1_acc.png`
 - `transfer_gain_top1.png`
+
+This script also supports `--skip_existing` and `--aggregate_only`. The recovery
+check is applied to each fraction/strategy folder, such as
+`frac_0.3/full_ft`. When using these options, the `--fractions`, `--strategies`,
+and `--output_dir` arguments should match the run being recovered.
 
 ### `scripts/run_forgetting.py`
 
