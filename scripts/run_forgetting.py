@@ -19,24 +19,26 @@ from transfer_learning.model import build_resnet18
 from transfer_learning.train import train_main
 
 STRATEGIES = ["linear_probe", "partial_ft", "full_ft"]
+DATASET_NUM_CLASSES = {"cifar10": 10, "eurosat": 10, "imagenet": 1000}
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Measure CIFAR-10 forgetting after EuroSAT fine-tuning."
+        description="Measure previous-task forgetting after target fine-tuning."
     )
     parser.add_argument("--config", type=str, required=True)
     parser.add_argument("--output_dir", type=str, default="outputs/forgetting")
-    parser.add_argument("--source_ckpt", type=str, default="outputs/domain_gap/cifar10/full_ft/best.pt")
-    parser.add_argument("--source_dataset", type=str, default="cifar10", choices=["cifar10", "eurosat"])
+    parser.add_argument("--source_ckpt", type=str, default="")
+    parser.add_argument("--source_dataset", type=str, default="imagenet", choices=["cifar10", "eurosat", "imagenet"])
     parser.add_argument("--target_dataset", type=str, default="eurosat", choices=["cifar10", "eurosat"])
+    parser.add_argument("--imagenet_root", type=str, default="data/imagenet_official")
     parser.add_argument("--eurosat_root", type=str, default="data/eurosat/2750")
     parser.add_argument("--eurosat_metadata", type=str, default="data/metadata.csv")
     parser.add_argument("--cifar_root", type=str, default="data")
     parser.add_argument("--download_cifar", action="store_true")
-    parser.add_argument("--source_train_samples", type=int, default=18900)
-    parser.add_argument("--source_val_samples", type=int, default=4050)
-    parser.add_argument("--source_test_samples", type=int, default=4050)
+    parser.add_argument("--source_train_samples", type=int, default=0)
+    parser.add_argument("--source_val_samples", type=int, default=0)
+    parser.add_argument("--source_test_samples", type=int, default=50000)
     parser.add_argument("--target_train_samples", type=int, default=18900)
     parser.add_argument("--target_val_samples", type=int, default=4050)
     parser.add_argument("--target_test_samples", type=int, default=4050)
@@ -57,17 +59,18 @@ def main() -> None:
         raise ValueError("Forgetting starts from a trained source model; use linear_probe, partial_ft, or full_ft.")
 
     source_artifacts = _source_artifacts(args, base_cfg)
-    source_before = _evaluate_source(args, base_cfg, source_artifacts.best_ckpt)
+    source_ckpt = source_artifacts.best_ckpt if source_artifacts is not None else None
+    source_before = _evaluate_source(args, base_cfg, source_ckpt)
 
     rows: list[dict] = []
     out_dir = Path(args.output_dir)
     for strategy in strategies:
-        target_artifacts = _train_target(args, base_cfg, out_dir, strategy, source_artifacts.best_ckpt)
+        target_artifacts = _train_target(args, base_cfg, out_dir, strategy, source_ckpt)
         target_summary = read_summary(target_artifacts.summary_json)
         source_after = _evaluate_source(
             args,
             base_cfg,
-            source_artifacts.best_ckpt,
+            source_ckpt,
             backbone_ckpt=target_artifacts.best_ckpt,
         )
         rows.append(_result_row(args, strategy, source_before, source_after, target_summary))
@@ -80,8 +83,11 @@ def main() -> None:
     print(f"saved: {out_dir / 'forgetting_macro_f1.png'}")
 
 
-def _source_artifacts(args: argparse.Namespace, base_cfg: Config) -> ArtifactPaths:
-    source_ckpt = Path(args.source_ckpt)
+def _source_artifacts(args: argparse.Namespace, base_cfg: Config) -> ArtifactPaths | None:
+    if args.source_dataset == "imagenet":
+        return None
+
+    source_ckpt = Path(args.source_ckpt or f"outputs/domain_gap/{args.source_dataset}/full_ft/best.pt")
     if source_ckpt.exists():
         return ArtifactPaths(
             best_ckpt=source_ckpt,
@@ -102,7 +108,7 @@ def _source_artifacts(args: argparse.Namespace, base_cfg: Config) -> ArtifactPat
         return train_main(cfg, dummy=True)
     raise FileNotFoundError(
         f"Source checkpoint not found: {source_ckpt}. "
-        "Run the CIFAR-10 part of domain_gap first or pass --source_ckpt."
+        "Run the source-task training first or pass --source_ckpt explicitly."
     )
 
 
@@ -111,7 +117,7 @@ def _train_target(
     base_cfg: Config,
     out_dir: Path,
     strategy: str,
-    source_ckpt: Path,
+    source_ckpt: Path | None,
 ) -> ArtifactPaths:
     cfg = _dataset_run_config(
         args,
@@ -123,13 +129,14 @@ def _train_target(
         val_samples=args.target_val_samples,
         test_samples=args.target_test_samples,
     )
-    return train_main(cfg, dummy=args.dummy, init_ckpt=source_ckpt)
+    init_ckpt = None if args.source_dataset == "imagenet" else source_ckpt
+    return train_main(cfg, dummy=args.dummy, init_ckpt=init_ckpt)
 
 
 def _evaluate_source(
     args: argparse.Namespace,
     base_cfg: Config,
-    source_ckpt: Path,
+    source_ckpt: Path | None,
     backbone_ckpt: Path | None = None,
 ) -> dict[str, float]:
     cfg = _dataset_run_config(
@@ -147,9 +154,13 @@ def _evaluate_source(
     batch_size = int(cfg.raw["training"]["batch_size"])
     loader = build_dataloader(dataset_cfg, "test", batch_size, cfg.seed, args.dummy)
 
-    model = build_resnet18(dataset_cfg.num_classes, pretrained=False).to(device)
-    source_state = torch.load(source_ckpt, map_location="cpu")["model"]
-    model.load_state_dict(source_state, strict=True)
+    model = build_resnet18(
+        dataset_cfg.num_classes,
+        pretrained=args.source_dataset == "imagenet",
+    ).to(device)
+    if source_ckpt is not None:
+        source_state = torch.load(source_ckpt, map_location="cpu")["model"]
+        model.load_state_dict(source_state, strict=True)
 
     if backbone_ckpt is not None:
         target_state = torch.load(backbone_ckpt, map_location="cpu")["model"]
@@ -173,7 +184,7 @@ def _dataset_run_config(
     test_samples: int,
 ) -> Config:
     root, metadata_csv, download = _dataset_args(args, dataset_name)
-    return make_run_config(
+    cfg = make_run_config(
         base_cfg,
         output_dir=output_dir,
         dataset_name=dataset_name,
@@ -186,6 +197,10 @@ def _dataset_run_config(
         download=download,
         epochs=args.epochs,
     )
+    cfg.raw["dataset"]["num_classes"] = DATASET_NUM_CLASSES[dataset_name]
+    if dataset_name == "imagenet":
+        cfg.raw["dataset"]["download"] = False
+    return cfg
 
 
 def _dataset_args(args: argparse.Namespace, dataset_name: str) -> tuple[str, str, bool]:
@@ -193,6 +208,8 @@ def _dataset_args(args: argparse.Namespace, dataset_name: str) -> tuple[str, str
         return args.cifar_root, "", args.download_cifar
     if dataset_name == "eurosat":
         return args.eurosat_root, args.eurosat_metadata, False
+    if dataset_name == "imagenet":
+        return args.imagenet_root, "", False
     raise ValueError(f"Unsupported dataset: {dataset_name}")
 
 
@@ -208,7 +225,7 @@ def _result_row(
         "source_dataset": args.source_dataset,
         "target_dataset": args.target_dataset,
         "strategy": strategy,
-        "source_checkpoint": args.source_ckpt,
+        "source_checkpoint": args.source_ckpt or ("torchvision::ResNet18_Weights.IMAGENET1K_V1" if args.source_dataset == "imagenet" else ""),
         "source_test_samples": args.source_test_samples,
         "target_train_samples": args.target_train_samples,
         "target_val_samples": args.target_val_samples,

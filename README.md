@@ -1,4 +1,4 @@
-﻿# COMP6242 Transfer Learning Experiments
+# COMP6242 Transfer Learning Experiments
 
 Terminal-first code for the ResNet18 transfer-learning experiments in `report.md`.
 
@@ -48,6 +48,55 @@ python scripts/prepare_eurosat.py --images_root "data/eurosat/2750" --out_csv da
 ```
 
 CIFAR-10 is loaded directly through torchvision. It does not use this preparation script.
+
+## Prepare ImageNet Validation Set
+
+For catastrophic forgetting, this project now uses the official ImageNet-1K
+`ILSVRC2012` validation set as the previous-task evaluation set. This is the
+standard 50,000-image validation archive from `image-net.org`, not a third-party
+repack.
+
+Download, extract, and create a smaller derivative in one command:
+
+```bash
+python scripts/prepare_imagenet.py --root data/imagenet_official --compact_root data/imagenet_official_resized
+```
+
+This script:
+
+- downloads the official validation archive from `https://image-net.org`
+- downloads the official `ILSVRC2012` devkit
+- converts the validation set into ImageFolder layout at `data/imagenet_official/val`
+- writes `official_manifest.json` with the official source URLs
+- creates a smaller resized derivative at `data/imagenet_official_resized/val`
+
+Useful options:
+
+```bash
+python scripts/prepare_imagenet.py --download
+python scripts/prepare_imagenet.py --extract
+python scripts/prepare_imagenet.py --make_compact --compact_size 256 --jpeg_quality 90
+python scripts/prepare_imagenet.py --keep_archives
+```
+
+Expected folders after preparation:
+
+```text
+data/imagenet_official/
+  archives/
+  official_manifest.json
+  val/<wnid>/*.JPEG
+
+data/imagenet_official_resized/
+  compact_manifest.json
+  val/<wnid>/*.JPEG
+```
+
+Notes:
+
+- `data/` is already ignored by git, so teammates can generate these files locally.
+- The official validation tar is about 6.7 GB, which fits the "10+ GB" storage limit.
+- The resized derivative is smaller and is intended for storage-constrained teammates.
 
 
 ## Run One Model
@@ -180,51 +229,42 @@ used for the original run when aggregating a subset or custom output folder.
 
 ### Previous-Task Forgetting Analysis
 
-The forgetting experiment is designed to run locally without ImageNet. It uses
-the CIFAR-10 model from the domain-gap experiment as the previous-task model,
-then fine-tunes it on EuroSAT and measures how much CIFAR-10 performance is
-forgotten.
+The default forgetting experiment now uses the official ImageNet-1K pretrained
+ResNet-18 as the previous-task model, fine-tunes it on EuroSAT, and then
+evaluates the adapted backbone back on the official ImageNet validation set.
 
-First run the CIFAR-10 part of the domain-gap experiment, or run the full
-domain-gap experiment:
+First prepare the official ImageNet validation set:
 
 ```bash
-python scripts/run_domain_gap.py --config configs/base.yaml --download_cifar
+python scripts/prepare_imagenet.py --root data/imagenet_official --compact_root data/imagenet_official_resized
 ```
 
-By default, the forgetting script expects the previous-task checkpoint here:
-
-```text
-outputs/domain_gap/cifar10/full_ft/best.pt
-```
-
-Then run:
+Then run the forgetting experiment against the official validation set:
 
 ```bash
-python scripts/run_forgetting.py --config configs/base.yaml
+python scripts/run_forgetting.py --config configs/base.yaml --source_dataset imagenet --target_dataset eurosat --imagenet_root data/imagenet_official
 ```
 
-If the CIFAR-10 checkpoint is somewhere else, pass it explicitly:
+For quick checks on a subset of ImageNet validation:
 
 ```bash
-python scripts/run_forgetting.py --config configs/base.yaml --source_ckpt "PATH/TO/CIFAR10/best.pt"
+python scripts/run_forgetting.py --config configs/base.yaml --source_dataset imagenet --target_dataset eurosat --imagenet_root data/imagenet_official --source_test_samples 5000
 ```
 
 This script performs the following sequence:
 
 ```text
-evaluate CIFAR-10 checkpoint on CIFAR-10 -> CIFAR_before
-fine-tune the same checkpoint on EuroSAT
-restore the original CIFAR-10 classifier head
+evaluate pretrained ResNet-18 on official ImageNet validation -> ImageNet_before
+fine-tune the same pretrained initialization on EuroSAT
+restore the original 1000-way ImageNet classifier head
 load the EuroSAT fine-tuned backbone
-evaluate on CIFAR-10 again -> CIFAR_after
-compute forgetting = CIFAR_before - CIFAR_after
+evaluate on official ImageNet validation again -> ImageNet_after
+compute forgetting = ImageNet_before - ImageNet_after
 ```
 
-The classifier head restoration is important because CIFAR-10 and EuroSAT both
-have 10 classes, but their class meanings are different. The forgetting score
-therefore measures how much the EuroSAT-adapted backbone still supports the
-previous CIFAR-10 task.
+The original CIFAR-10-based fallback is still supported. If you want that older
+approximation, pass `--source_dataset cifar10` and provide or reuse a CIFAR-10
+checkpoint.
 
 The default target fine-tuning strategies are:
 
@@ -240,7 +280,7 @@ already-trained previous-task checkpoint.
 Use smaller sample limits for quick local checks:
 
 ```bash
-python scripts/run_forgetting.py --config configs/base.yaml --target_train_samples 3000 --target_val_samples 1000 --target_test_samples 1000
+python scripts/run_forgetting.py --config configs/base.yaml --source_dataset imagenet --target_dataset eurosat --imagenet_root data/imagenet_official --source_test_samples 2000 --target_train_samples 3000 --target_val_samples 1000 --target_test_samples 1000
 ```
 
 Outputs:

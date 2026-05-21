@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import argparse
 import sys
@@ -18,9 +18,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--config", type=str, required=True)
     parser.add_argument("--ckpt", type=str, required=True)
     parser.add_argument("--split", type=str, default="test")
-    parser.add_argument("--dataset", type=str, choices=["eurosat", "cifar10"], default="")
+    parser.add_argument("--dataset", type=str, choices=["eurosat", "cifar10", "imagenet"], default="")
     parser.add_argument("--data_root", type=str, default="")
     parser.add_argument("--metadata_csv", type=str, default="")
+    parser.add_argument("--num_classes", type=int, default=0)
     parser.add_argument("--strategy", type=str, choices=STRATEGIES, required=True)
     parser.add_argument("--dummy", action="store_true")
     return parser.parse_args()
@@ -44,6 +45,8 @@ def apply_overrides(cfg: Config, args: argparse.Namespace) -> Config:
         raw["dataset"]["root"] = args.data_root
     if args.metadata_csv:
         raw["dataset"]["metadata_csv"] = args.metadata_csv
+    if args.num_classes > 0:
+        raw["dataset"]["num_classes"] = args.num_classes
     raw["training"]["strategy"] = args.strategy
     return Config(raw=raw)
 

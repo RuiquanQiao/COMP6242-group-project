@@ -114,6 +114,25 @@ def _build_transforms(image_size: int, is_train: bool) -> transforms.Compose:
     return transforms.Compose(steps)
 
 
+def _build_imagenet_transforms(image_size: int, is_train: bool) -> transforms.Compose:
+    if is_train:
+        steps: list = [
+            transforms.RandomResizedCrop(image_size, antialias=True),
+            transforms.RandomHorizontalFlip(p=0.5),
+        ]
+    else:
+        resize_size = int(round(image_size / 224 * 256))
+        steps = [
+            transforms.Resize(resize_size, antialias=True),
+            transforms.CenterCrop(image_size),
+        ]
+    steps += [
+        transforms.ToTensor(),
+        transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
+    ]
+    return transforms.Compose(steps)
+
+
 def _build_eurosat(dataset_cfg: DatasetConfig, split: str, seed: int) -> Dataset:
     if dataset_cfg.metadata_csv is None:
         raise ValueError("EuroSAT requires dataset.metadata_csv.")
@@ -160,7 +179,7 @@ def _build_imagenet(dataset_cfg: DatasetConfig, split: str, seed: int) -> Datase
 
     dataset = ImageFolder(
         root=str(root),
-        transform=_build_transforms(dataset_cfg.image_size, is_train=False),
+        transform=_build_imagenet_transforms(dataset_cfg.image_size, is_train=split == "train"),
     )
     pairs = [(idx, int(label)) for idx, (_, label) in enumerate(dataset.samples)]
     selected = [idx for idx, _ in _balanced_sample(pairs, _split_limit(dataset_cfg, split), seed)]

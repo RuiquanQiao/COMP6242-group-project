@@ -89,21 +89,37 @@
 ## 5. Catastrophic Forgetting Analysis (三个主实验都要做)
 
 ### 5.1 顺序任务设计
-- 示例顺序:
-  - Task A: EuroSAT 先训练
-  - Task B: CIFAR-10 或 EuroSAT 子集后训练
-- 在每种策略下重复该顺序实验
+- 标准顺序:
+  - Task A: ImageNet-1K 预训练任务
+  - Task B: EuroSAT 微调任务
+- 具体做法:
+  - 以 torchvision 的 ImageNet pre-trained ResNet18 作为 Task A 模型
+  - 在官方 `ILSVRC2012` validation set 上测得 `A_before`
+  - 用同一预训练初始化在 EuroSAT 上做 linear probe / partial FT / full FT
+  - 将微调后的 backbone 接回原始 1000-way ImageNet 分类头
+  - 再回到官方 `ILSVRC2012` validation set 上测得 `A_after`
+- 这样得到的 forgetting 是“迁移到 EuroSAT 之后，对原始 ImageNet 识别能力损失了多少”，比用 CIFAR-10 近似更直接也更标准
 
 ### 5.2 指标定义
 - A_before: 训练 B 前在 A 上性能
 - A_after: 训练 B 后在 A 上性能
 - Forgetting = A_before - A_after
+- A 任务指标:
+  - ImageNet Top-1 accuracy
+  - ImageNet macro-F1
+- B 任务指标:
+  - EuroSAT test Top-1 accuracy
+  - EuroSAT test macro-F1
 - 同时报 B_task 性能，避免“只保留旧知识但学不会新任务”
 
 ### 5.3 对比重点
 - 哪种策略 forgetting 最严重?
 - 哪种策略在“学新任务”与“保留旧任务”之间最平衡?
-- forgetting 与 domain gap、数据量之间的关系
+- forgetting 与 fine-tuning 深度之间的关系
+- 预期现象:
+  - `linear_probe` 通常最能保留 ImageNet 能力，因为 backbone 基本不变
+  - `full_ft` 往往在 EuroSAT 上适应最强，但也最可能牺牲原有 ImageNet 表征
+  - `partial_ft` 可能提供较好的 trade-off
 
 ## 6. Discussion (解释现象与局限)
 - 回答核心问题:

@@ -8,6 +8,8 @@ venv/
 
 # Dataset and experiment artifacts
 data/
+data/imagenet_official/
+data/imagenet_official_resized/
 outputs/
 
 # IDE/editor files
