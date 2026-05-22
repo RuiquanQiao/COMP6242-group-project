@@ -299,10 +299,6 @@ forgetting_top1      source_before_top1 - source_after_top1
 target_test_top1     downstream dataset accuracy after fine-tuning
 ```
 
-The original CIFAR-10-based fallback is still supported. If you want that older
-approximation, pass `--source_dataset cifar10` and provide or reuse a CIFAR-10
-checkpoint.
-
 The default downstream fine-tuning strategies are:
 
 ```text
