@@ -7,7 +7,7 @@ Experiments covered:
 - 4.1 EuroSAT strategy ablation
 - 4.2 EuroSAT vs CIFAR-10 same-size domain comparison
 - 4.3 EuroSAT data-size comparison
-- previous-task forgetting analysis after CIFAR-10 to EuroSAT fine-tuning
+- previous-task forgetting analysis after downstream fine-tuning
 
 For detailed code explanation, see `interpretation.md`.
 
@@ -229,9 +229,27 @@ used for the original run when aggregating a subset or custom output folder.
 
 ### Previous-Task Forgetting Analysis
 
-The default forgetting experiment now uses the official ImageNet-1K pretrained
-ResNet-18 as the previous-task model, fine-tunes it on EuroSAT, and then
-evaluates the adapted backbone back on the official ImageNet validation set.
+The forgetting experiment uses the official ImageNet-1K pretrained ResNet-18
+as the previous-task model, fine-tunes it on one of this project's downstream
+datasets, and then evaluates the adapted backbone back on the official ImageNet
+validation set. This measures how much ImageNet performance is forgotten after
+fine-tuning.
+
+How this applies to the three experiments:
+
+```text
+4.1 main experiment / strategy ablation:
+  downstream dataset = EuroSAT
+  compare forgetting across linear_probe, partial_ft, and full_ft
+
+4.2 domain_gap:
+  downstream datasets = EuroSAT and CIFAR-10
+  run forgetting once for EuroSAT and once for CIFAR-10, then compare them
+
+4.3 data_size:
+  downstream dataset = EuroSAT
+  compare forgetting across different EuroSAT training sizes
+```
 
 First prepare the official ImageNet validation set:
 
@@ -239,34 +257,53 @@ First prepare the official ImageNet validation set:
 python scripts/prepare_imagenet.py --root data/imagenet_official --compact_root data/imagenet_official_resized
 ```
 
-Then run the forgetting experiment against the official validation set:
+Then run the forgetting experiment against the official validation set. For
+the main experiment and data_size experiment, use EuroSAT:
 
 ```bash
-python scripts/run_forgetting.py --config configs/base.yaml --source_dataset imagenet --target_dataset eurosat --imagenet_root data/imagenet_official
+python scripts/run_forgetting.py --config configs/base.yaml --source_dataset imagenet --target_dataset eurosat --imagenet_root data/imagenet_official --output_dir outputs/forgetting_imagenet_to_eurosat
 ```
 
-For quick checks on a subset of ImageNet validation:
+For the domain_gap experiment, run both EuroSAT and CIFAR-10, then compare the
+two forgetting result files:
 
 ```bash
-python scripts/run_forgetting.py --config configs/base.yaml --source_dataset imagenet --target_dataset eurosat --imagenet_root data/imagenet_official --source_test_samples 5000
+python scripts/run_forgetting.py --config configs/base.yaml --source_dataset imagenet --target_dataset eurosat --imagenet_root data/imagenet_official --output_dir outputs/forgetting_imagenet_to_eurosat
+python scripts/run_forgetting.py --config configs/base.yaml --source_dataset imagenet --target_dataset cifar10 --imagenet_root data/imagenet_official --download_cifar --output_dir outputs/forgetting_imagenet_to_cifar10
+```
+
+Compare:
+
+```text
+outputs/forgetting_imagenet_to_eurosat/forgetting_results.csv
+outputs/forgetting_imagenet_to_cifar10/forgetting_results.csv
 ```
 
 This script performs the following sequence:
 
 ```text
 evaluate pretrained ResNet-18 on official ImageNet validation -> ImageNet_before
-fine-tune the same pretrained initialization on EuroSAT
+fine-tune the same pretrained initialization on the downstream dataset
 restore the original 1000-way ImageNet classifier head
-load the EuroSAT fine-tuned backbone
+load the downstream fine-tuned backbone
 evaluate on official ImageNet validation again -> ImageNet_after
 compute forgetting = ImageNet_before - ImageNet_after
+```
+
+The key columns in `forgetting_results.csv` are:
+
+```text
+source_before_top1   ImageNet accuracy before downstream fine-tuning
+source_after_top1    ImageNet accuracy after downstream fine-tuning
+forgetting_top1      source_before_top1 - source_after_top1
+target_test_top1     downstream dataset accuracy after fine-tuning
 ```
 
 The original CIFAR-10-based fallback is still supported. If you want that older
 approximation, pass `--source_dataset cifar10` and provide or reuse a CIFAR-10
 checkpoint.
 
-The default target fine-tuning strategies are:
+The default downstream fine-tuning strategies are:
 
 ```text
 linear_probe
@@ -277,18 +314,15 @@ full_ft
 The `scratch` strategy is excluded because this experiment starts from an
 already-trained previous-task checkpoint.
 
-Use smaller sample limits for quick local checks:
-
-```bash
-python scripts/run_forgetting.py --config configs/base.yaml --source_dataset imagenet --target_dataset eurosat --imagenet_root data/imagenet_official --source_test_samples 2000 --target_train_samples 3000 --target_val_samples 1000 --target_test_samples 1000
-```
-
 Outputs:
 
 ```text
-outputs/forgetting/forgetting_results.csv
-outputs/forgetting/forgetting_top1.png
-outputs/forgetting/forgetting_macro_f1.png
+outputs/forgetting_imagenet_to_eurosat/forgetting_results.csv
+outputs/forgetting_imagenet_to_eurosat/forgetting_top1.png
+outputs/forgetting_imagenet_to_eurosat/forgetting_macro_f1.png
+outputs/forgetting_imagenet_to_cifar10/forgetting_results.csv
+outputs/forgetting_imagenet_to_cifar10/forgetting_top1.png
+outputs/forgetting_imagenet_to_cifar10/forgetting_macro_f1.png
 ```
 
 
@@ -325,7 +359,7 @@ complete but the top-level CSV or plots are stale. Keep `--strategies`,
 otherwise the script will look for its default output layout.
 
 The forgetting script is different: its final rows include an additional
-previous-task re-evaluation step after EuroSAT fine-tuning and are not currently
+ImageNet re-evaluation step after downstream fine-tuning and are not currently
 recoverable from per-run `summary.json` files alone.
 
 `--dummy` uses fake data for a quick code-path check:
