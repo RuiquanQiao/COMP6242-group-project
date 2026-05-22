@@ -34,7 +34,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--train_samples", type=int, default=18900)
     parser.add_argument("--val_samples", type=int, default=4050)
     parser.add_argument("--test_samples", type=int, default=4050)
-    parser.add_argument("--strategies", type=str, default=",".join(STRATEGIES))
+    parser.add_argument(
+        "--strategies",
+        type=str,
+        default="",
+        help="Comma-separated strategies. With --aggregate_only, empty means discover existing strategy folders.",
+    )
     parser.add_argument("--epochs", type=int, default=0)
     parser.add_argument(
         "--aggregate_only",
@@ -53,7 +58,6 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     base_cfg = load_config(args.config)
-    strategies = [s.strip() for s in args.strategies.split(",") if s.strip()]
     rows: list[dict] = []
     curves: list[dict] = []
     out_dir = Path(args.output_dir)
@@ -63,6 +67,7 @@ def main() -> None:
         ("cifar10", args.cifar_root, "", args.download_cifar),
     ]
     for dataset_name, root, metadata_csv, download in datasets:
+        strategies = _selected_strategies(args, out_dir / dataset_name)
         for strategy in strategies:
             run_dir = out_dir / dataset_name / strategy
             cfg = make_run_config(
@@ -95,6 +100,8 @@ def main() -> None:
 
             _append_outputs(rows, curves, dataset_name, strategy, artifacts)
 
+    if not rows:
+        raise FileNotFoundError(f"No completed dataset/strategy folders found in {out_dir}.")
     _write_outputs(out_dir, rows, curves)
     print(f"saved: {out_dir / 'results.csv'}")
 
@@ -110,6 +117,8 @@ def _append_outputs(
     curves.append(
         {
             "label": f"{dataset_name}/{strategy}",
+            "dataset": dataset_name,
+            "strategy": strategy,
             "metrics": read_metrics(artifacts.metrics_json),
         }
     )
@@ -119,8 +128,40 @@ def _write_outputs(out_dir: Path, rows: list[dict], curves: list[dict]) -> None:
     write_csv(out_dir / "results.csv", rows)
     save_bar_chart(out_dir / "test_top1_acc.png", rows, "dataset", "strategy", "test_top1_acc")
     save_bar_chart(out_dir / "test_macro_f1.png", rows, "dataset", "strategy", "test_macro_f1")
+
+    save_training_metric_curve(out_dir / "train_loss_curve.png", curves, "train_loss")
+    save_training_metric_curve(out_dir / "val_loss_curve.png", curves, "val_loss")
     save_training_metric_curve(out_dir / "val_top1_acc_curve.png", curves, "val_top1_acc")
     save_training_metric_curve(out_dir / "val_macro_f1_curve.png", curves, "val_macro_f1")
+
+    for dataset in _ordered_values(curves, "dataset"):
+        dataset_curves = [
+            {**curve, "label": curve["strategy"]}
+            for curve in curves
+            if curve["dataset"] == dataset
+        ]
+        save_training_metric_curve(out_dir / f"{dataset}_train_loss_curve.png", dataset_curves, "train_loss")
+        save_training_metric_curve(out_dir / f"{dataset}_val_loss_curve.png", dataset_curves, "val_loss")
+        save_training_metric_curve(out_dir / f"{dataset}_val_top1_acc_curve.png", dataset_curves, "val_top1_acc")
+        save_training_metric_curve(out_dir / f"{dataset}_val_macro_f1_curve.png", dataset_curves, "val_macro_f1")
+
+
+def _ordered_values(items: list[dict], key: str) -> list[str]:
+    return list(dict.fromkeys(str(item[key]) for item in items if key in item))
+
+
+def _selected_strategies(args: argparse.Namespace, dataset_dir: Path) -> list[str]:
+    if args.strategies:
+        return [s.strip() for s in args.strategies.split(",") if s.strip()]
+    if args.aggregate_only:
+        if not dataset_dir.exists():
+            return []
+        return [
+            path.name
+            for path in sorted(dataset_dir.iterdir())
+            if path.is_dir() and (path / "summary.json").exists() and (path / "metrics.json").exists()
+        ]
+    return STRATEGIES
 
 
 def _row(summary: dict) -> dict:

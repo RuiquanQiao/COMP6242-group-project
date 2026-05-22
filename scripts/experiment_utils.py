@@ -76,6 +76,8 @@ def write_csv(path: Path, rows: list[dict]) -> None:
 
 
 def save_bar_chart(path: Path, rows: list[dict], group_key: str, label_key: str, value_key: str) -> None:
+    if not rows:
+        return
     import matplotlib.pyplot as plt
 
     groups = list(dict.fromkeys(str(row[group_key]) for row in rows))
@@ -109,6 +111,8 @@ def save_bar_chart(path: Path, rows: list[dict], group_key: str, label_key: str,
 
 
 def save_line_chart(path: Path, rows: list[dict], x_key: str, label_key: str, value_key: str) -> None:
+    if not rows:
+        return
     import matplotlib.pyplot as plt
 
     labels = list(dict.fromkeys(str(row[label_key]) for row in rows))
@@ -134,6 +138,8 @@ def save_line_chart(path: Path, rows: list[dict], x_key: str, label_key: str, va
 
 
 def save_training_metric_curve(path: Path, curves: list[dict], metric_key: str) -> None:
+    if not curves:
+        return
     import matplotlib.pyplot as plt
 
     fig, ax = plt.subplots(figsize=(9, 5))

@@ -29,7 +29,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--metadata_csv", type=str, default="data/metadata.csv")
     parser.add_argument("--data_root", type=str, default="data/eurosat/2750")
     parser.add_argument("--output_dir", type=str, default="outputs/eurosat_ablation")
-    parser.add_argument("--strategies", type=str, default=",".join(STRATEGIES))
+    parser.add_argument(
+        "--strategies",
+        type=str,
+        default="",
+        help="Comma-separated strategies. With --aggregate_only, empty means discover existing strategy folders.",
+    )
     parser.add_argument("--epochs", type=int, default=0)
     parser.add_argument(
         "--aggregate_only",
@@ -48,10 +53,10 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     base_cfg = load_config(args.config)
-    strategies = [s.strip() for s in args.strategies.split(",") if s.strip()]
     rows: list[dict] = []
     curves: list[dict] = []
     out_dir = Path(args.output_dir)
+    strategies = _selected_strategies(args, out_dir)
 
     for strategy in strategies:
         run_dir = out_dir / strategy
@@ -79,12 +84,18 @@ def main() -> None:
 
         _append_outputs(rows, curves, strategy, artifacts)
 
+    if not rows:
+        raise FileNotFoundError(f"No completed strategy folders found in {out_dir}.")
     write_csv(out_dir / "results.csv", rows)
     save_bar_chart(out_dir / "test_top1_acc.png", rows, "dataset", "strategy", "test_top1_acc")
+    save_training_metric_curve(out_dir / "train_loss_curve.png", curves, "train_loss")
+    save_training_metric_curve(out_dir / "val_loss_curve.png", curves, "val_loss")
     save_training_metric_curve(out_dir / "val_top1_acc_curve.png", curves, "val_top1_acc")
     save_training_metric_curve(out_dir / "val_macro_f1_curve.png", curves, "val_macro_f1")
     print(f"saved: {out_dir / 'results.csv'}")
     print(f"saved: {out_dir / 'test_top1_acc.png'}")
+    print(f"saved: {out_dir / 'train_loss_curve.png'}")
+    print(f"saved: {out_dir / 'val_loss_curve.png'}")
     print(f"saved: {out_dir / 'val_top1_acc_curve.png'}")
     print(f"saved: {out_dir / 'val_macro_f1_curve.png'}")
 
@@ -112,6 +123,20 @@ def _row(summary: dict) -> dict:
         "trainable_params": summary["trainable_params"],
         "total_params": summary["total_params"],
     }
+
+
+def _selected_strategies(args: argparse.Namespace, out_dir: Path) -> list[str]:
+    if args.strategies:
+        return [s.strip() for s in args.strategies.split(",") if s.strip()]
+    if args.aggregate_only:
+        if not out_dir.exists():
+            return []
+        return [
+            path.name
+            for path in sorted(out_dir.iterdir())
+            if path.is_dir() and (path / "summary.json").exists() and (path / "metrics.json").exists()
+        ]
+    return STRATEGIES
 
 
 if __name__ == "__main__":

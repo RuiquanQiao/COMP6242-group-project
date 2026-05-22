@@ -127,15 +127,6 @@ summary.json   final test metrics, convergence epoch, and run summary
 python scripts/run_ablation.py --config configs/base.yaml
 ```
 
-Outputs:
-
-```text
-outputs/eurosat_ablation/results.csv
-outputs/eurosat_ablation/test_top1_acc.png
-outputs/eurosat_ablation/val_top1_acc_curve.png
-outputs/eurosat_ablation/val_macro_f1_curve.png
-```
-
 If the run was interrupted, reuse completed strategy folders and train only
 missing ones with:
 
@@ -181,25 +172,17 @@ the top-level CSV or plots are stale, regenerate only the aggregate outputs with
 python scripts/run_domain_gap.py --config configs/base.yaml --aggregate_only
 ```
 
-`--aggregate_only` uses the same strategy selection as the normal run. With
-default arguments, it expects EuroSAT and CIFAR-10 folders for `scratch`,
-`partial_ft`, and `full_ft`. If the original run used a strategy subset or a
-custom output directory, pass the same options again:
+With `--aggregate_only`, the script discovers existing completed strategy
+folders automatically, so newly added runs such as `linear_probe` are included
+without changing the command. If you want to aggregate only a subset or use a
+custom output directory, pass the corresponding options:
 
 ```bash
 python scripts/run_domain_gap.py --config configs/base.yaml --aggregate_only --strategies scratch,full_ft
 python scripts/run_domain_gap.py --config configs/base.yaml --aggregate_only --output_dir outputs/my_domain_gap
 ```
 
-This rewrites:
 
-```text
-outputs/domain_gap/results.csv
-outputs/domain_gap/test_top1_acc.png
-outputs/domain_gap/test_macro_f1.png
-outputs/domain_gap/val_top1_acc_curve.png
-outputs/domain_gap/val_macro_f1_curve.png
-```
 
 It does not retrain models or overwrite the per-run checkpoints and JSON files.
 
@@ -223,8 +206,9 @@ If every selected fraction/strategy folder already has `summary.json` and
 python scripts/run_data_fraction.py --config configs/base.yaml --aggregate_only
 ```
 
-Use the same `--fractions`, `--strategies`, and `--output_dir` values that were
-used for the original run when aggregating a subset or custom output folder.
+With `--aggregate_only`, the script discovers existing `frac_*` and strategy
+folders automatically. Pass `--fractions`, `--strategies`, or `--output_dir`
+only when aggregating a subset or custom output folder.
 
 
 ### Previous-Task Forgetting Analysis
@@ -259,33 +243,6 @@ python scripts/run_forgetting.py --config configs/base.yaml --imagenet_root data
 python scripts/run_forgetting.py --config configs/base.yaml --imagenet_root data/imagenet_official --output_dir outputs/forgetting_data_size --run_dirs outputs/data_fraction
 ```
 
-This script performs the following sequence:
-
-```text
-evaluate pretrained ResNet-18 on official ImageNet validation -> ImageNet_before
-read the completed run folders passed through --run_dirs
-restore the original 1000-way ImageNet classifier head
-load each downstream fine-tuned backbone
-evaluate on official ImageNet validation again -> ImageNet_after
-compute forgetting = ImageNet_before - ImageNet_after
-```
-
-The key columns in `forgetting_results.csv` are:
-
-```text
-source_before_top1   ImageNet accuracy before downstream fine-tuning
-source_after_top1    ImageNet accuracy after downstream fine-tuning
-forgetting_top1      source_before_top1 - source_after_top1
-downstream_test_top1 downstream dataset accuracy after fine-tuning
-```
-
-Outputs:
-
-```text
-<output_dir>/forgetting_results.csv
-<output_dir>/forgetting_top1.png
-<output_dir>/forgetting_macro_f1.png
-```
 
 
 ## Useful Arguments
@@ -311,14 +268,15 @@ Batch experiment scripts for 4.1, 4.2, and 4.3 also support:
 
 ```text
 --skip_existing     reuse run folders that already have summary.json and metrics.json
---aggregate_only    rebuild top-level CSV and plots from existing run folders
+--aggregate_only    discover completed run folders and rebuild top-level CSV/plots
 ```
 
 Use `--skip_existing` after an interrupted run when some child runs are complete
-and some are missing. Use `--aggregate_only` when all selected child runs are
-complete but the top-level CSV or plots are stale. Keep `--strategies`,
-`--fractions`, and `--output_dir` consistent with the run you want to recover;
-otherwise the script will look for its default output layout.
+and some are missing. Use `--aggregate_only` when completed child runs exist but
+the top-level CSV or plots are stale; by default it traverses the existing
+completed folders under the selected output directory. Pass `--strategies`,
+`--fractions`, or `--output_dir` only when you want a subset or a custom output
+layout.
 
 The forgetting script is different: its final rows include an additional
 ImageNet re-evaluation step after downstream fine-tuning and are not currently
@@ -334,8 +292,24 @@ python scripts/run_domain_gap.py --config configs/base.yaml --dummy --strategies
 
 Start with the top-level CSV in each experiment output folder.
 
-For training curves, use each experiment folder's `val_top1_acc_curve.png` and
-`val_macro_f1_curve.png`, or open each run's `metrics.json` for raw epoch-level
-values.
+For training curves, prefer the split plots when an experiment has multiple
+comparison axes:
+
+```text
+outputs/domain_gap/<dataset>_train_loss_curve.png
+outputs/domain_gap/<dataset>_val_loss_curve.png
+outputs/domain_gap/<dataset>_val_top1_acc_curve.png
+outputs/domain_gap/<dataset>_val_macro_f1_curve.png
+
+outputs/data_fraction/<strategy>_train_loss_curve.png
+outputs/data_fraction/<strategy>_val_loss_curve.png
+outputs/data_fraction/<strategy>_val_top1_acc_curve.png
+outputs/data_fraction/<strategy>_val_macro_f1_curve.png
+```
+
+The unsplit training-curve plots are only kept for simpler experiments where
+they remain readable, or as quick overview plots. For domain_gap and data_size,
+prefer the split plots in the main report. Open each run's `metrics.json` for
+raw epoch-level values.
 
 For final test metrics of a single run, open `summary.json`.
