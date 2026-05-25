@@ -92,11 +92,19 @@ This section varies the amount of EuroSAT training data in order to study whethe
 
 ### 5. Catastrophic Forgetting Analysis
 
-Chapter 5 returns each downstream-adapted model to the official ILSVRC2012 validation set and measures how much of the original ImageNet capability has been lost after fine-tuning. Rather than introducing a new task, this chapter serves as a direct post-test for the experiments in Chapter 4: Chapter 4 asks how well the model learns EuroSAT, while Chapter 5 asks how much ImageNet performance is forgotten in the process.
+Chapter 5 returns each downstream-adapted model to the official ILSVRC2012 validation set and measures how much of the original ImageNet capability has been lost after fine-tuning. Rather than introducing a new task, this chapter serves as a direct post-test for Chapter 4: Chapter 4 asks how well the model learns EuroSAT, while Chapter 5 asks how much ImageNet performance is forgotten in the process.
 
 #### 5.1 Forgetting After the Main EuroSAT Experiment
 
-This section evaluates the checkpoints from Section 4.1 on the official ImageNet validation set and compares forgetting across `linear_probe`, `partial_ft`, and `full_ft`. The objective is to identify which transfer strategy best balances strong EuroSAT adaptation against retention of source-task knowledge.
+We evaluate the `linear_probe`, `partial_ft`, and `full_ft` checkpoints from Section 4.1 on the official ILSVRC2012 validation set. For each strategy, forgetting is measured as the drop from the original ImageNet-pretrained ResNet-18 (`A_before`) to the EuroSAT-adapted model evaluated back on ImageNet (`A_after`). `scratch` is excluded because it does not start from ImageNet-pretrained weights.
+
+| Strategy | ImageNet Before Top-1 | ImageNet After Top-1 | Forgetting Top-1 | ImageNet Before Macro-F1 | ImageNet After Macro-F1 | Forgetting Macro-F1 | EuroSAT Test Top-1 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `linear_probe` | TBD | TBD | TBD | TBD | TBD | TBD | 88.54 |
+| `partial_ft` | TBD | TBD | TBD | TBD | TBD | TBD | 97.78 |
+| `full_ft` | TBD | TBD | TBD | TBD | TBD | TBD | 97.56 |
+
+The key question is whether the best EuroSAT strategy from Section 4.1 also gives the best balance between adaptation and retention. In general, `linear_probe` is expected to forget least, `full_ft` most, and `partial_ft` may provide the best compromise if it preserves substantially more ImageNet performance than `full_ft` while keeping its strong EuroSAT accuracy.
 
 #### 5.2 Forgetting After the Same-Size Cross-Domain Experiment
 

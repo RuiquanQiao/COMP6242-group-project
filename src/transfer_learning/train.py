@@ -142,6 +142,7 @@ def _train_one_epoch(
     raw: dict,
 ) -> float:
     model.train()
+    _set_frozen_batchnorm_eval(model)
     total_loss = 0.0
     total_samples = 0
     show_progress = sys.stdout.isatty() or os.environ.get("EUROSAT_FORCE_PROGRESS", "0") == "1"
@@ -157,6 +158,21 @@ def _train_one_epoch(
         total_loss += loss.item() * labels.size(0)
         total_samples += labels.size(0)
     return total_loss / max(total_samples, 1)
+
+
+def _set_frozen_batchnorm_eval(model: nn.Module) -> None:
+    """Keep frozen BatchNorm layers from drifting during fine-tuning.
+
+    For strategies such as linear probing, the backbone parameters are frozen,
+    but calling model.train() would still update BatchNorm running statistics.
+    That silently changes the pretrained representation and corrupts forgetting
+    comparisons, so frozen BatchNorm modules are forced back to eval mode.
+    """
+    for module in model.modules():
+        if isinstance(module, nn.modules.batchnorm._BatchNorm):
+            params = list(module.parameters(recurse=False))
+            if params and all(not param.requires_grad for param in params):
+                module.eval()
 
 
 def _set_seed(seed: int) -> None:
