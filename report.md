@@ -28,45 +28,29 @@ Catastrophic forgetting refers to performance loss on a previous task after trai
 
 #### 3.1 Backbone and Initialization
 
-All experiments use ResNet-18 as the backbone architecture [5]. This choice keeps the study computationally feasible while still providing a standard CNN baseline whose transfer behavior is well understood. Unless otherwise stated, transferred models are initialized with the official torchvision ImageNet-1K pretrained weights, while the scratch baseline uses random initialization. The final fully connected layer is replaced to match the target number of classes. For EuroSAT and CIFAR-10, this means a 10-way classifier; for the forgetting analysis, the original 1000-way ImageNet head is restored when evaluating the previous task.
-
-The report studies four training strategies that differ only in which parameters are allowed to update during downstream training. In `scratch`, the entire ResNet-18 is trained from random initialization. In `linear_probe`, the ImageNet-pretrained backbone is frozen and only the classifier is optimized. In `partial_ft`, the classifier and the final residual stage (`layer4`) are trainable while earlier layers remain frozen. In `full_ft`, all layers are fine-tuned from the ImageNet initialization. For the 10-class downstream tasks, these settings correspond to 11,181,642 trainable parameters for `scratch`, 5,130 for `linear_probe`, 8,398,858 for `partial_ft`, and 11,181,642 for `full_ft`. This design makes adaptation depth the primary experimental variable.
+All experiments use ResNet-18 [5]. Transfer runs start from the official torchvision ImageNet-1K weights, while `scratch` uses random initialization. The final layer is replaced with a 10-way classifier for EuroSAT and CIFAR-10, and the original 1000-way head is restored for ImageNet forgetting evaluation. We compare four strategies: `scratch`, `linear_probe`, `partial_ft`, and `full_ft`. For the 10-class downstream tasks, their trainable parameter counts are 11,181,642, 5,130, 8,398,858, and 11,181,642 respectively.
 
 #### 3.2 Datasets and Splits
 
-The main downstream benchmark is EuroSAT [4], using the RGB image collection derived from Sentinel-2 satellite imagery. The repository uses a metadata file that defines a fixed split of 27,000 total images into 18,900 training samples, 4,050 validation samples, and 4,050 test samples. The split is class balanced, yielding 2,100 training images, 450 validation images, and 450 test images per class across the 10 land-use categories. This fixed split is important because it ensures that the strategy comparison in Section 4.1 is not confounded by different train/validation/test partitions.
-
-Two additional dataset settings are used for the later analyses. First, CIFAR-10 [8] serves as a same-size natural-image comparison dataset for studying domain similarity under a matched sample budget. In this experiment, balanced subsampling reduces CIFAR-10 to the same split sizes used for EuroSAT: 18,900 training, 4,050 validation, and 4,050 test images. Second, the data-size analysis keeps the EuroSAT validation and test sets fixed while varying the number of EuroSAT training samples through balanced fractions of 10%, 30%, 60%, and 100% of the 18,900-image training pool. This makes it possible to examine transfer gain as a function of target data availability.
-
-For the catastrophic forgetting analysis, the previous task is the original ImageNet-1K classification problem [2, 6]. Rather than using a proxy previous task, the project evaluates the pretrained and fine-tuned backbones on the official ILSVRC2012 validation set prepared in ImageFolder format. This choice makes the forgetting score directly interpretable as lost performance on the source task that produced the pretrained weights.
+The main downstream dataset is EuroSAT [4], using a fixed class-balanced split of 27,000 RGB images into 18,900 train, 4,050 validation, and 4,050 test samples. The same split sizes are used for the CIFAR-10 same-size comparison [8]. For the data-size analysis, the EuroSAT validation and test splits stay fixed while the training set is reduced to 10%, 30%, 60%, and 100% of the full training pool. For forgetting, the previous task is the original ImageNet-1K problem [2, 6], evaluated on the official ILSVRC2012 validation set prepared in ImageFolder format.
 
 #### 3.3 Preprocessing and Data Loading
 
-All downstream images are resized to 224 x 224 to match the ResNet-18 input resolution. During EuroSAT and CIFAR-10 training, the pipeline applies resizing, random horizontal flipping, random rotation up to 15 degrees, tensor conversion, and normalization with ImageNet channel statistics. Validation and test data use deterministic resizing and the same normalization without augmentation. For ImageNet evaluation in the forgetting experiment, the project uses the standard validation preprocessing pattern of resize, center crop, tensor conversion, and ImageNet normalization.
-
-The code uses class-balanced sampling whenever a subset of a split is requested. This implementation detail matters for the domain-gap and data-fraction experiments because it reduces the chance that observed transfer gains are driven by accidental class imbalance rather than true differences in domain similarity or data scale.
+All inputs are resized to 224 x 224. EuroSAT and CIFAR-10 training use resize, random horizontal flip, random rotation, tensor conversion, and ImageNet normalization; validation and test use deterministic resize plus the same normalization. ImageNet forgetting evaluation follows the standard resize-center-crop pipeline. Whenever a subset of a split is requested, sampling is class balanced.
 
 #### 3.4 Training Protocol and Metrics
 
-Unless a script explicitly overrides the settings, all runs inherit a shared configuration from `configs/base.yaml`. The default setup uses seed 42, batch size 32, 8 training epochs, AdamW optimization, learning rate 3e-4, and weight decay 1e-4. No learning-rate scheduler is introduced, which keeps the optimization budget identical across strategies and makes the role of initialization and freezing policy easier to interpret. Model selection is based on validation top-1 accuracy: after each epoch, the current checkpoint is evaluated on the validation split, and the best-performing checkpoint is saved and later used for test evaluation.
-
-The report tracks four main performance quantities. The first two are test top-1 accuracy and test macro-F1, which measure final predictive quality on the target task. The third is validation convergence behavior, summarized through the per-epoch curves and, when relevant, the first epoch at which validation accuracy exceeds a predefined threshold. The fourth is training time, reported in seconds, which provides a simple proxy for computational cost. In the forgetting analysis, two additional metrics are recorded on ImageNet before and after EuroSAT fine-tuning: previous-task top-1 accuracy and previous-task macro-F1. Forgetting is then defined as the difference between pre-fine-tuning and post-fine-tuning ImageNet performance.
+Unless overridden, all runs use the shared `configs/base.yaml` settings: seed 42, batch size 32, 8 epochs, AdamW, learning rate 3e-4, and weight decay 1e-4. The best checkpoint is selected by validation top-1 accuracy. We report test top-1 accuracy, test macro-F1, training time, and convergence behavior. In Chapter 5, forgetting is defined as the drop in ImageNet top-1 accuracy or macro-F1 after downstream fine-tuning.
 
 #### 3.5 Experiment Structure
 
-The full study is organized around a single mainline task plus supporting analyses. Experiment 4.1 is the central EuroSAT strategy ablation over `scratch`, `linear_probe`, `partial_ft`, and `full_ft`, and it establishes the primary conclusion about how best to transfer ResNet-18 from ImageNet to EuroSAT. Experiments 4.2 and 4.3 are supporting analyses motivated by the course guideline to study when transfer helps: Experiment 4.2 tests the role of domain similarity by comparing EuroSAT and CIFAR-10 at the same sample size, while Experiment 4.3 tests the role of target data size by varying the EuroSAT training fraction. After these downstream experiments, Chapter 5 evaluates the completed checkpoints on the official ImageNet validation set, allowing the report to study the trade-off between adaptation to EuroSAT and retention of source-domain knowledge.
+The study has one main experiment and two supporting analyses. Section 4.1 compares four transfer strategies on EuroSAT. Section 4.2 studies when transfer helps by comparing EuroSAT and CIFAR-10 at the same sample size. Section 4.3 studies when transfer helps by varying the amount of EuroSAT training data. Chapter 5 then evaluates the resulting checkpoints on the official ImageNet validation set to measure catastrophic forgetting.
 
 ### 4. Experiments and Results
 
 #### 4.1 Main Experiment: EuroSAT Strategy Ablation
 
-The main experiment asks the most basic question in the project: under a fixed training budget on EuroSAT, does ImageNet pretraining improve downstream classification relative to training ResNet-18 from scratch? To answer this, we compare four strategies on the full EuroSAT split defined in Section 3: `scratch`, `linear_probe`, `partial_ft`, and `full_ft`. Every run uses the same optimizer, batch size, number of epochs, data split, and evaluation protocol. The only factor that changes is how much of the pretrained backbone is allowed to adapt.
-
-This experiment is the anchor for the rest of the report because each strategy corresponds to a distinct hypothesis about transfer. If `linear_probe` performs competitively, then the ImageNet representation is already well aligned with EuroSAT and only a new classifier is needed. If `partial_ft` closes most of the gap to `full_ft`, then adapting the highest-level semantic layers may be sufficient and full-network optimization may be unnecessary. If `full_ft` clearly outperforms both `linear_probe` and `partial_ft`, then the natural-image representation requires substantial domain-specific adjustment before it becomes optimal for satellite scenes. Finally, if all pretrained variants outperform `scratch`, then the report can conclude that positive transfer exists even under a meaningful domain shift.
-
-The implementation reflects these hypotheses directly. `linear_probe` updates only 5,130 classifier parameters, making it the cheapest transfer option and the cleanest test of feature reuse. `partial_ft` updates the classifier and `layer4`, totaling 8,398,858 trainable parameters, and therefore tests whether limited high-level adaptation is enough. `full_ft` updates all 11.2 million parameters, maximizing flexibility but also increasing the risk of overwriting source-task structure that may later matter for forgetting. Because `scratch` has the same number of trainable parameters as `full_ft` but starts without pretrained weights, the gap between these two settings isolates the contribution of initialization rather than model capacity.
-
-Table 1 reports the realized EuroSAT results from `outputs/eurosat_ablation/results.csv`. The outcome is clear: transfer learning is helpful, but the amount of adaptation matters substantially. The best downstream performance comes from `partial_ft`, which achieves 97.78% test top-1 accuracy and 97.71% test macro-F1. `full_ft` is a close second at 97.56% top-1 and 97.50% macro-F1. Both strategies outperform `scratch` by a large margin of more than four percentage points in top-1 accuracy. By contrast, `linear_probe` performs worst at 88.54% test top-1 accuracy, even below the scratch baseline.
+Section 4.1 asks the core question of the project: on EuroSAT, does ImageNet pretraining help ResNet-18, and which transfer strategy works best? We compare `scratch`, `linear_probe`, `partial_ft`, and `full_ft` under the same training budget.
 
 | Strategy | Best Val Top-1 | Test Top-1 | Test Macro-F1 | Train Time (s) | Trainable Params |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -75,21 +59,28 @@ Table 1 reports the realized EuroSAT results from `outputs/eurosat_ablation/resu
 | `partial_ft` | 97.68 | **97.78** | **97.71** | 641.2 | 8,398,858 |
 | `full_ft` | **97.80** | 97.56 | 97.50 | 1068.3 | 11,181,642 |
 
-The strategy ranking supports a nuanced view of transfer. First, ImageNet initialization is clearly beneficial when the network is allowed to adapt at least its highest layers: both `partial_ft` and `full_ft` strongly outperform `scratch`. This shows that the domain gap between ImageNet and EuroSAT is not so severe that pretraining becomes useless. Second, the poor result of `linear_probe` indicates that frozen ImageNet features alone are not well aligned with satellite scene semantics. In other words, transfer is useful here not as a fixed feature extractor, but as an initialization that still requires domain-specific representation adjustment.
+The results show that transfer is helpful, but only when the pretrained model is allowed to adapt. `partial_ft` achieves the best test performance at 97.78% top-1 accuracy and 97.71% macro-F1, with `full_ft` a close second. Both strategies clearly outperform `scratch`, while `linear_probe` is worst and even falls below the scratch baseline. This indicates that ImageNet features are useful as initialization, but not as a fully frozen feature extractor for EuroSAT.
 
-The comparison between `partial_ft` and `full_ft` is especially informative. `full_ft` attains the best validation accuracy (97.80%), but `partial_ft` achieves slightly better test performance while using fewer trainable parameters and requiring much less training time. This pattern suggests that adapting only the top residual stage plus the classifier may provide a better bias-variance trade-off than updating the entire network. A plausible explanation is that EuroSAT benefits from preserving more low- and mid-level ImageNet features while still allowing the highest-level semantic features to reorganize around remote sensing classes. Because the margin between `partial_ft` and `full_ft` is small, we do not interpret this as definitive evidence that partial fine-tuning is always superior; however, it strongly suggests that full-network adaptation is not necessary to obtain near-optimal performance on this task.
+`partial_ft` is also the best trade-off overall. It slightly outperforms `full_ft` on the test set while using fewer trainable parameters and less training time, suggesting that adapting the top stage is sufficient for most of the domain shift. The convergence logs tell the same story: `partial_ft` and `full_ft` pass the 90% validation threshold in epoch 1, whereas `scratch` reaches it in epoch 6 and `linear_probe` only in epoch 8.
 
-The convergence behavior further strengthens this conclusion. Using the summary logs, both `partial_ft` and `full_ft` exceed the 90% validation threshold in the very first epoch, whereas `scratch` does not reach the threshold until epoch 6 and `linear_probe` only does so at epoch 8. This means that transfer not only improves final accuracy but also accelerates optimization substantially. Figure 1 shows the final test accuracy comparison, while Figure 2 shows the validation top-1 trajectories over training. The curves make it visually clear that deeper fine-tuning strategies start from much stronger validation performance and stabilize at a much higher level than either `scratch` or `linear_probe`.
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <img src="outputs/eurosat_ablation/test_top1_acc.png" alt="EuroSAT test top-1 accuracy by training strategy" width="100%" />
+    </td>
+    <td width="50%" align="center">
+      <img src="outputs/eurosat_ablation/val_top1_acc_curve.png" alt="EuroSAT validation top-1 accuracy across epochs" width="100%" />
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><em>(a) Final EuroSAT test top-1 accuracy by strategy.</em></td>
+    <td align="center"><em>(b) Validation top-1 accuracy across training epochs.</em></td>
+  </tr>
+</table>
 
-![Figure 1. EuroSAT test top-1 accuracy by training strategy.](outputs/eurosat_ablation/test_top1_acc.png)
+*Figure 1. Side-by-side summary of Experiment 4.1. The left panel shows final EuroSAT test top-1 accuracy, while the right panel shows validation top-1 trajectories. Together they show that `partial_ft` and `full_ft` both outperform `scratch` and `linear_probe`, and that deeper fine-tuning converges faster.*
 
-*Figure 1. Final EuroSAT test top-1 accuracy for `scratch`, `linear_probe`, `partial_ft`, and `full_ft`. The main performance jump comes from allowing at least the top residual block to adapt.*
-
-![Figure 2. EuroSAT validation top-1 accuracy across epochs.](outputs/eurosat_ablation/val_top1_acc_curve.png)
-
-*Figure 2. Validation top-1 accuracy across training epochs. `partial_ft` and `full_ft` converge faster and to substantially better optima than the other two strategies.*
-
-Overall, Experiment 4.1 answers the project's first research question positively but with an important qualification. ImageNet transfer does help EuroSAT classification, yet the benefit depends on allowing nontrivial adaptation of the pretrained representation. The strongest result is not obtained by freezing the backbone, but by selectively or fully fine-tuning it. Among the tested strategies, `partial_ft` offers the best overall trade-off between accuracy, convergence speed, and computational cost, making it a strong candidate for the remaining experiments and for the later forgetting analysis.
+Overall, Experiment 4.1 shows that ImageNet transfer improves EuroSAT classification, but the best result comes from selective or full fine-tuning rather than from freezing the backbone. Among the tested strategies, `partial_ft` provides the best balance of accuracy, speed, and efficiency, so it is a strong reference point for the later experiments and forgetting analysis.
 
 #### 4.2 When Transfer Helps: Same-Size Cross-Domain Comparison
 
