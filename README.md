@@ -1,6 +1,7 @@
 # COMP6242 Transfer Learning Experiments
 
-Terminal-first code for the ResNet18 transfer-learning experiments in `report.md`.
+Terminal-first code for the ResNet18 transfer-learning experiments outlined in
+`report-outline.md` and written up in `report.md`.
 
 Experiments covered:
 
@@ -26,6 +27,11 @@ CUDA 12.4:
 ```bash
 pip install -r requirements-cu124.txt
 ```
+
+This CUDA file keeps PyPI as the main package index and adds the PyTorch CUDA
+wheel index as an extra source, so general dependencies such as
+`matplotlib` still install normally while `torch` and `torchvision` resolve to
+the CUDA 12.4 builds.
 
 Check PyTorch:
 
