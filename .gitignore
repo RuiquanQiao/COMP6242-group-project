@@ -6,11 +6,28 @@ __pycache__/
 .venv/
 venv/
 
-# Dataset and experiment artifacts
+# Dataset artifacts
 data/
 data/imagenet_official/
 data/imagenet_official_resized/
-outputs/
+
+# Experiment artifacts
+outputs/*
+!outputs/**/
+outputs/**/*.pt
+outputs/**/*.pth
+outputs/**/*.ckpt
+outputs/**/*.json
+outputs/**/*.csv
+outputs/**/*.npy
+outputs/**/*.npz
+outputs/**/*.pkl
+outputs/**/*.log
+!outputs/**/*.png
+!outputs/**/*.jpg
+!outputs/**/*.jpeg
+!outputs/**/*.gif
+!outputs/**/*.webp
 
 # IDE/editor files
 .vscode/
