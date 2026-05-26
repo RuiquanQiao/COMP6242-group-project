@@ -50,7 +50,7 @@ The study has one main experiment and two supporting analyses. Section 4.1 compa
 
 #### 4.1 Main Experiment: EuroSAT Strategy Ablation
 
-Section 4.1 asks the core question of the project: on EuroSAT, does ImageNet pretraining help ResNet-18, and which transfer strategy works best? We compare `scratch`, `linear_probe`, `partial_ft`, and `full_ft` under the same training budget.
+Section 4.1 asks the core question of the project: on EuroSAT, does ImageNet pretraining help ResNet-18, and which transfer strategy works best? We compare `scratch`, `linear_probe`, `partial_ft`, and `full_ft` under the same training budget. The table below reflects the current pre-fix run; the final report should refresh these numbers after regenerating checkpoints with frozen BatchNorm drift fixed.
 
 | Strategy | Best Val Top-1 | Test Top-1 | Test Macro-F1 | Train Time (s) | Trainable Params |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -59,7 +59,7 @@ Section 4.1 asks the core question of the project: on EuroSAT, does ImageNet pre
 | `partial_ft` | 97.68 | **97.78** | **97.71** | 641.2 | 8,398,858 |
 | `full_ft` | **97.80** | 97.56 | 97.50 | 1068.3 | 11,181,642 |
 
-The results show that transfer is helpful, but only when the pretrained model is allowed to adapt. `partial_ft` achieves the best test performance at 97.78% top-1 accuracy and 97.71% macro-F1, with `full_ft` a close second. Both strategies clearly outperform `scratch`, while `linear_probe` is worst and even falls below the scratch baseline. This indicates that ImageNet features are useful as initialization, but not as a fully frozen feature extractor for EuroSAT.
+In the current pre-fix run, transfer is helpful only when the pretrained model is allowed to adapt. `partial_ft` gives the best test performance, with `full_ft` close behind, while `linear_probe` is worst and even falls below the scratch baseline. These numbers should be treated as provisional until the BN-fix rerun is completed.
 
 `partial_ft` is also the best trade-off overall. It slightly outperforms `full_ft` on the test set while using fewer trainable parameters and less training time, suggesting that adapting the top stage is sufficient for most of the domain shift. The convergence logs tell the same story: `partial_ft` and `full_ft` pass the 90% validation threshold in epoch 1, whereas `scratch` reaches it in epoch 6 and `linear_probe` only in epoch 8.
 
@@ -100,9 +100,9 @@ We evaluate the `linear_probe`, `partial_ft`, and `full_ft` checkpoints from Sec
 
 | Strategy | ImageNet Before Top-1 | ImageNet After Top-1 | Forgetting Top-1 | ImageNet Before Macro-F1 | ImageNet After Macro-F1 | Forgetting Macro-F1 | EuroSAT Test Top-1 |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `linear_probe` | TBD | TBD | TBD | TBD | TBD | TBD | 88.54 |
-| `partial_ft` | TBD | TBD | TBD | TBD | TBD | TBD | 97.78 |
-| `full_ft` | TBD | TBD | TBD | TBD | TBD | TBD | 97.56 |
+| `linear_probe` | TBD | TBD | TBD | TBD | TBD | TBD | TBD |
+| `partial_ft` | TBD | TBD | TBD | TBD | TBD | TBD | TBD |
+| `full_ft` | TBD | TBD | TBD | TBD | TBD | TBD | TBD |
 
 The key question is whether the best EuroSAT strategy from Section 4.1 also gives the best balance between adaptation and retention. In general, `linear_probe` is expected to forget least, `full_ft` most, and `partial_ft` may provide the best compromise if it preserves substantially more ImageNet performance than `full_ft` while keeping its strong EuroSAT accuracy.
 

@@ -48,7 +48,7 @@
   - ResNet18
   - EuroSAT
   - CIFAR-10
-- 可选: 一个 forgetting 缓解方法文献(如 L2 regularization / rehearsal)
+- 可补充一个 forgetting 缓解方法文献，用来说明本项目没有实现缓解方法
 
 ## 3. Experimental Setup (实验设置)
 - 负责人: Ruiquan Qiao 主笔，其他成员核对
@@ -73,8 +73,8 @@
 - Full Fine-tuning: 全参数微调
 
 ### 3.4 统一训练配置
-- 相同 epoch、batch size、optimizer、学习率调度
-- 每组实验固定随机种子并重复运行(建议 3 次)
+- 相同 epoch、batch size、optimizer
+- 当前代码默认固定随机种子为 `42`
 - 评价指标:
   - Top-1 accuracy / macro-F1
   - 收敛速度(达到某阈值所需 epoch)
@@ -92,7 +92,7 @@
 ### 4.1 Main Experiment (0): EuroSAT 主实验
 - 负责人: Ruiquan Qiao
 - 模型: ResNet18
-- 数据: EuroSAT (建议先用 100% 或 60%)
+- 数据: EuroSAT
 - 策略: Scratch vs Linear Probe vs Partial FT vs Full FT
 - 目标:
   - 建立主结论: transfer 是否有效
@@ -116,7 +116,7 @@
 - 负责人: Guangde Shi
 - 模型: ResNet18
 - 数据: EuroSAT 10% / 30% / 60% / 100%
-- 策略: Scratch vs Full FT (可加 Linear Probe)
+- 默认策略: Scratch vs Linear Probe vs Full FT
 - 目标:
   - 分析数据量变化下 transfer 增益曲线
   - 回答“低资源是否更依赖 transfer”
@@ -156,7 +156,7 @@
 ### 5.1 Forgetting After 4.1 Main Experiment
 - 负责人: Ruiquan Qiao
 - 对应主实验:
-  - `Section 4.1` 的 `scratch / linear_probe / partial_ft / full_ft`
+  - `Section 4.1` 的 `linear_probe / partial_ft / full_ft`
 - 具体问题:
   - 在 EuroSAT 主实验中，哪种微调策略最容易损伤原始 ImageNet 表征?
   - `partial_ft` 在 EuroSAT 上效果最好时，是否也比 `full_ft` 保留了更多
@@ -221,7 +221,7 @@
 - 误差来源与局限:
   - 数据集差异、样本量、训练预算
   - 单一 backbone 的外推性限制
-- 可选缓解方向:
+- 可讨论缓解方向:
   - 正则化约束 / rehearsal / 冻结更多层
 
 ## 7. Conclusion (结论)
@@ -229,11 +229,11 @@
 - 用 3-4 条结论总结:
   - transfer 是否有效
   - when transfer helps 的条件
-  - forgetting 的规律与建议策略
+  - forgetting 的规律与可行策略
 
 ## 8. References
 - 负责人: Guangde Shi 整理
-- 预计 8-15 篇，覆盖:
+- 参考文献需覆盖:
   - transfer learning 基础
   - catastrophic forgetting
   - ResNet18 / EuroSAT / CIFAR-10 数据与模型来源
