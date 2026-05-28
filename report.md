@@ -100,11 +100,11 @@ We evaluate the `linear_probe`, `partial_ft`, and `full_ft` checkpoints from Sec
 
 | Strategy | ImageNet Before Top-1 | ImageNet After Top-1 | Forgetting Top-1 | ImageNet Before Macro-F1 | ImageNet After Macro-F1 | Forgetting Macro-F1 | EuroSAT Test Top-1 |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `linear_probe` | TBD | TBD | TBD | TBD | TBD | TBD | TBD |
-| `partial_ft` | TBD | TBD | TBD | TBD | TBD | TBD | TBD |
-| `full_ft` | TBD | TBD | TBD | TBD | TBD | TBD | TBD |
+| `linear_probe` | 69.76 | 32.03 | 37.73 | 69.30 | 33.87 | 35.43 | 88.54 |
+| `partial_ft` | 69.76 | 0.50 | 69.26 | 69.30 | 0.24 | 69.06 | 97.78 |
+| `full_ft` | 69.76 | 0.12 | 69.64 | 69.30 | 0.02 | 69.27 | 97.56 |
 
-The key question is whether the best EuroSAT strategy from Section 4.1 also gives the best balance between adaptation and retention. In general, `linear_probe` is expected to forget least, `full_ft` most, and `partial_ft` may provide the best compromise if it preserves substantially more ImageNet performance than `full_ft` while keeping its strong EuroSAT accuracy.
+The results show a clear trade-off between downstream adaptation and source-task retention. `linear_probe` forgets the least, but it is also the weakest EuroSAT strategy. By contrast, `partial_ft` and `full_ft` achieve the best EuroSAT accuracy while losing almost all original ImageNet performance, with `full_ft` showing the largest forgetting overall. In the current main experiment, `partial_ft` remains the best downstream choice, but not because it preserves the source task well; its advantage comes from stronger EuroSAT adaptation despite substantial forgetting.
 
 #### 5.2 Forgetting After the Same-Size Cross-Domain Experiment
 
