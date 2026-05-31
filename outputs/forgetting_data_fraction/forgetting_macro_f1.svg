@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="560" viewBox="0 0 980 560">
+<rect width="100%" height="100%" fill="#fff"/>
+<text x="490.0" y="34" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="700">ImageNet Forgetting after Data Fraction Experiment</text>
+<line x1="92" y1="472.0" x2="938" y2="472.0" stroke="#e8eaed"/>
+<text x="78" y="477.0" text-anchor="end" font-family="Arial, sans-serif" font-size="13" fill="#555">0</text>
+<line x1="92" y1="418.1" x2="938" y2="418.1" stroke="#e8eaed"/>
+<text x="78" y="423.1" text-anchor="end" font-family="Arial, sans-serif" font-size="13" fill="#555">10</text>
+<line x1="92" y1="364.3" x2="938" y2="364.3" stroke="#e8eaed"/>
+<text x="78" y="369.3" text-anchor="end" font-family="Arial, sans-serif" font-size="13" fill="#555">20</text>
+<line x1="92" y1="310.4" x2="938" y2="310.4" stroke="#e8eaed"/>
+<text x="78" y="315.4" text-anchor="end" font-family="Arial, sans-serif" font-size="13" fill="#555">30</text>
+<line x1="92" y1="256.5" x2="938" y2="256.5" stroke="#e8eaed"/>
+<text x="78" y="261.5" text-anchor="end" font-family="Arial, sans-serif" font-size="13" fill="#555">40</text>
+<line x1="92" y1="202.7" x2="938" y2="202.7" stroke="#e8eaed"/>
+<text x="78" y="207.7" text-anchor="end" font-family="Arial, sans-serif" font-size="13" fill="#555">50</text>
+<line x1="92" y1="148.8" x2="938" y2="148.8" stroke="#e8eaed"/>
+<text x="78" y="153.8" text-anchor="end" font-family="Arial, sans-serif" font-size="13" fill="#555">60</text>
+<line x1="92" y1="94.9" x2="938" y2="94.9" stroke="#e8eaed"/>
+<text x="78" y="99.9" text-anchor="end" font-family="Arial, sans-serif" font-size="13" fill="#555">70</text>
+<line x1="92" y1="68" x2="92" y2="472" stroke="#202124"/>
+<line x1="92" y1="472" x2="938" y2="472" stroke="#202124"/>
+<line x1="92.0" y1="472" x2="92.0" y2="479" stroke="#202124"/>
+<text x="92.0" y="502" text-anchor="middle" font-family="Arial, sans-serif" font-size="14">10%</text>
+<line x1="280.0" y1="472" x2="280.0" y2="479" stroke="#202124"/>
+<text x="280.0" y="502" text-anchor="middle" font-family="Arial, sans-serif" font-size="14">30%</text>
+<line x1="562.0" y1="472" x2="562.0" y2="479" stroke="#202124"/>
+<text x="562.0" y="502" text-anchor="middle" font-family="Arial, sans-serif" font-size="14">60%</text>
+<line x1="938.0" y1="472" x2="938.0" y2="479" stroke="#202124"/>
+<text x="938.0" y="502" text-anchor="middle" font-family="Arial, sans-serif" font-size="14">100%</text>
+<text x="490.0" y="532" text-anchor="middle" font-family="Arial, sans-serif" font-size="15">EuroSAT training data fraction</text>
+<text x="25" y="280.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" transform="rotate(-90 25 280.0)">Forgetting macro-F1 (pp)</text>
+<polyline points="92.0,98.8 280.0,98.7 562.0,98.8 938.0,98.8" fill="none" stroke="#5f6368" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="92.0" cy="98.8" r="4.8" fill="#5f6368" stroke="#fff" stroke-width="1.2"/>
+<text x="92.0" y="87.8" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#5f6368" font-weight="700">69.3</text>
+<circle cx="280.0" cy="98.7" r="4.8" fill="#5f6368" stroke="#fff" stroke-width="1.2"/>
+<text x="280.0" y="87.7" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#5f6368" font-weight="700">69.3</text>
+<circle cx="562.0" cy="98.8" r="4.8" fill="#5f6368" stroke="#fff" stroke-width="1.2"/>
+<text x="562.0" y="87.8" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#5f6368" font-weight="700">69.3</text>
+<circle cx="938.0" cy="98.8" r="4.8" fill="#5f6368" stroke="#fff" stroke-width="1.2"/>
+<text x="938.0" y="87.8" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#5f6368" font-weight="700">69.3</text>
+<line x1="730" y1="82" x2="760" y2="82" stroke="#5f6368" stroke-width="3"/>
+<text x="772" y="87" font-family="Arial, sans-serif" font-size="14">scratch</text>
+<polyline points="92.0,284.6 280.0,281.1 562.0,278.8 938.0,281.3" fill="none" stroke="#1565c0" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="92.0" cy="284.6" r="4.8" fill="#1565c0" stroke="#fff" stroke-width="1.2"/>
+<text x="92.0" y="273.6" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#1565c0" font-weight="700">34.8</text>
+<circle cx="280.0" cy="281.1" r="4.8" fill="#1565c0" stroke="#fff" stroke-width="1.2"/>
+<text x="280.0" y="270.1" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#1565c0" font-weight="700">35.4</text>
+<circle cx="562.0" cy="278.8" r="4.8" fill="#1565c0" stroke="#fff" stroke-width="1.2"/>
+<text x="562.0" y="267.8" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#1565c0" font-weight="700">35.9</text>
+<circle cx="938.0" cy="281.3" r="4.8" fill="#1565c0" stroke="#fff" stroke-width="1.2"/>
+<text x="938.0" y="270.3" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#1565c0" font-weight="700">35.4</text>
+<line x1="730" y1="107" x2="760" y2="107" stroke="#1565c0" stroke-width="3"/>
+<text x="772" y="112" font-family="Arial, sans-serif" font-size="14">linear_probe</text>
+<polyline points="92.0,103.4 280.0,99.3 562.0,99.2 938.0,99.0" fill="none" stroke="#c62828" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="92.0" cy="103.4" r="4.8" fill="#c62828" stroke="#fff" stroke-width="1.2"/>
+<text x="92.0" y="92.4" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#c62828" font-weight="700">68.4</text>
+<circle cx="280.0" cy="99.3" r="4.8" fill="#c62828" stroke="#fff" stroke-width="1.2"/>
+<text x="280.0" y="88.3" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#c62828" font-weight="700">69.2</text>
+<circle cx="562.0" cy="99.2" r="4.8" fill="#c62828" stroke="#fff" stroke-width="1.2"/>
+<text x="562.0" y="88.2" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#c62828" font-weight="700">69.2</text>
+<circle cx="938.0" cy="99.0" r="4.8" fill="#c62828" stroke="#fff" stroke-width="1.2"/>
+<text x="938.0" y="88.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#c62828" font-weight="700">69.2</text>
+<line x1="730" y1="132" x2="760" y2="132" stroke="#c62828" stroke-width="3"/>
+<text x="772" y="137" font-family="Arial, sans-serif" font-size="14">full_ft</text>
+</svg>
