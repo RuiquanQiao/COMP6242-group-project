@@ -97,9 +97,9 @@ This section compares EuroSAT and CIFAR-10 under the same sample budget in order
 | CIFAR-10 | `partial_ft` | **92.12** | **91.19** | **91.18** | +13.06 |
 | CIFAR-10 | `full_ft` | 90.10 | 90.07 | 90.03 | +11.95 |
 
-The results show that transfer is most useful when the pretrained representation is allowed to adapt. On EuroSAT, `partial_ft` improves test accuracy by 4.64 percentage points over scratch, while `full_ft` improves it by 4.44 points. `linear_probe` performs worse than training from scratch, indicating that frozen ImageNet features alone are not sufficient for the remote-sensing shift. This matches the intuition from Section 4.1: EuroSAT benefits from ImageNet initialization, but only after higher-level features are updated for satellite scenes.
+The same-size comparison preserves the main pattern from Section 4.1: transfer works best when the pretrained backbone is allowed to adapt. On EuroSAT, `partial_ft` and `full_ft` improve test accuracy over scratch by 4.64 and 4.44 percentage points respectively, while `linear_probe` falls below the scratch baseline. On CIFAR-10, the gains from `partial_ft` and `full_ft` are larger, at 13.06 and 11.95 points over scratch.
 
-CIFAR-10 shows a larger transfer gain. `partial_ft` improves test accuracy by 13.06 percentage points over scratch, and `full_ft` improves it by 11.95 points. Because CIFAR-10 is closer to ImageNet in visual statistics and object-centric content, the pretrained representation provides a stronger starting point. The contrast between EuroSAT and CIFAR-10 therefore supports the claim that transfer helps most when the target task is related enough to reuse source features, but still flexible enough fine-tuning is needed to adapt them.
+These results suggest that target-domain properties affect the size of the transfer benefit. CIFAR-10 receives a larger gain from ImageNet initialization than EuroSAT under the same data budget, while EuroSAT still benefits from selective or full fine-tuning. The broader implications of this domain difference are discussed in Chapter 6.
 
 <table>
   <tr>
@@ -116,7 +116,7 @@ CIFAR-10 shows a larger transfer gain. `partial_ft` improves test accuracy by 13
   </tr>
 </table>
 
-*Figure 2. Same-size cross-domain comparison. Transfer with `partial_ft` or `full_ft` improves both datasets, but the gain is larger on CIFAR-10 than on EuroSAT. `linear_probe` is weak in both settings, especially on EuroSAT.*
+*Figure 2. Same-size cross-domain comparison. `partial_ft` and `full_ft` improve both datasets, while the transfer gain is larger on CIFAR-10 than on EuroSAT.*
 
 #### 4.3 When Transfer Helps: Same-Domain Data-Size Comparison
 
@@ -151,9 +151,9 @@ This section studies whether forgetting differs between EuroSAT and CIFAR-10 whe
 | EuroSAT | `partial_ft` | 0.23 | 69.53 | 0.07 | 69.23 | **97.51** |
 | EuroSAT | `full_ft` | 0.13 | 69.63 | 0.03 | 69.27 | 97.31 |
 
-The forgetting results reveal a stronger trade-off than the downstream results alone suggest. `partial_ft` and `full_ft` give the best target-task accuracy on both datasets, but they reduce ImageNet top-1 accuracy from 69.76% to below 1%. In other words, successful downstream adaptation almost completely overwrites the source-task classifier-compatible representation, even when the downstream dataset is CIFAR-10 and visually closer to ImageNet.
+The forgetting results follow the same strategy-level pattern as Section 5.1. `partial_ft` and `full_ft` obtain the strongest downstream accuracy, but both reduce ImageNet top-1 accuracy from 69.76% to below 1% on both downstream datasets. `linear_probe` retains more ImageNet performance because the backbone remains frozen, but it is also the weakest pretrained strategy on the downstream tasks.
 
-`linear_probe` shows the opposite behavior. Because it freezes the backbone and only trains the final classifier, it preserves much more ImageNet performance than the fine-tuning strategies. However, this retention comes at a clear downstream cost: it is the weakest pretrained strategy on both datasets. The EuroSAT linear probe retains slightly more ImageNet top-1 than the CIFAR-10 linear probe, but this difference is smaller than the gap between linear probing and any strategy that updates the backbone.
+Across the two target datasets, the difference between strategies is larger than the difference between EuroSAT and CIFAR-10. This section therefore reports the observed forgetting pattern, while Chapter 6 connects it with the transfer-gain results from Section 4.2.
 
 <table>
   <tr>
@@ -170,9 +170,7 @@ The forgetting results reveal a stronger trade-off than the downstream results a
   </tr>
 </table>
 
-*Figure 3. Forgetting after same-size downstream adaptation. Fine-tuning gives the strongest downstream performance but causes severe ImageNet forgetting, while linear probing preserves more source-task ability at the cost of lower downstream accuracy.*
-
-Together with Section 4.2, these results show that a task being easier to transfer to does not necessarily mean it is safer for the original task. CIFAR-10 receives a larger downstream benefit from ImageNet pretraining than EuroSAT, yet `partial_ft` and `full_ft` still cause nearly complete ImageNet forgetting. The main driver of forgetting in this experiment is therefore fine-tuning depth, not only domain distance.
+*Figure 3. Forgetting after same-size downstream adaptation. Fine-tuning causes much larger ImageNet forgetting than linear probing on both EuroSAT and CIFAR-10.*
 
 #### 5.3 Forgetting After the Data-Size Experiment
 
