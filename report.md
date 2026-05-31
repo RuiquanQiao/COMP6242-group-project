@@ -125,16 +125,16 @@ These results suggest that target-domain properties affect the size of the trans
       <img src="outputs/domain_gap/test_top1_acc.png" alt="Same-size EuroSAT and CIFAR-10 test top-1 accuracy" width="100%" />
     </td>
     <td width="50%" align="center">
-      <img src="outputs/domain_gap/test_macro_f1.png" alt="Same-size EuroSAT and CIFAR-10 test macro-F1" width="100%" />
+      <img src="outputs/domain_gap/transfer_gain_top1.png" alt="Same-size EuroSAT and CIFAR-10 top-1 transfer gain" width="100%" />
     </td>
   </tr>
   <tr>
     <td align="center"><em>(a) Test top-1 accuracy by dataset and strategy.</em></td>
-    <td align="center"><em>(b) Test macro-F1 by dataset and strategy.</em></td>
+    <td align="center"><em>(b) Top-1 transfer gain over scratch.</em></td>
   </tr>
 </table>
 
-*Figure 2. Same-size cross-domain comparison. `partial_ft` and `full_ft` improve both datasets, while the transfer gain is larger on CIFAR-10 than on EuroSAT.*
+*Figure 2. Same-size cross-domain comparison. The left panel shows downstream test top-1 accuracy, while the right panel shows transfer gain over scratch. CIFAR-10 receives a larger gain from ImageNet transfer than EuroSAT.*
 
 #### 4.3 When Transfer Helps: Same-Domain Data-Size Comparison
 
