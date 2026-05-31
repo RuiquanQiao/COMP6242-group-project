@@ -16,7 +16,7 @@ AI tools were used to assist with code understanding, experiment-result summaris
 
 #### Source Code
 
-The source code and experiment artifacts are available at: `<GitHub repository URL>`.
+The source code and experiment artifacts are available at: `<https://github.com/RuiquanQiao/COMP6242-group-project>`.
 
 ### 1. Introduction
 
