@@ -147,9 +147,22 @@ This section varies the amount of EuroSAT training data in order to study whethe
 | 60% | 89.46 | 86.99 | **96.88** | +7.41 |
 | 100% | 89.39 | 87.93 | **97.15** | +7.75 |
 
-![EuroSAT test top-1 accuracy](outputs/data_fraction/test_top1_acc.png)
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <img src="outputs/data_fraction/test_top1_acc.png" alt="EuroSAT test top-1 accuracy by training fraction" width="100%" />
+    </td>
+    <td width="50%" align="center">
+      <img src="outputs/data_fraction/transfer_gain_top1.png" alt="Transfer gain over scratch by training fraction" width="100%" />
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><em>(a) Test top-1 accuracy by training fraction.</em></td>
+    <td align="center"><em>(b) Transfer gain over scratch.</em></td>
+  </tr>
+</table>
 
-![Transfer gain over scratch](outputs/data_fraction/transfer_gain_top1.png)
+*Figure 3. Same-domain data-size comparison. `full_ft` performs best at every training fraction, while its transfer gain is largest in the 10% low-data setting.*
 
 The results show that transfer is most valuable when labelled data is limited. With only 10% of the EuroSAT training set, `full_ft` improves over `scratch` by 25.56 percentage points. As the training fraction increases, the scratch model becomes stronger, and the gain from `full_ft` decreases to about 7-8 points. This supports the interpretation that transfer mainly improves sample efficiency.
 
@@ -220,9 +233,22 @@ This section evaluates how forgetting changes as the amount of EuroSAT downstrea
 | 100% | `linear_probe` | 32.13 | 37.63 | 87.93 |
 | 100% | `full_ft` | 0.20 | 69.56 | 97.15 |
 
-![ImageNet top-1 forgetting](outputs/forgetting_data_fraction/forgetting_top1_transfer_methods.png)
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <img src="outputs/forgetting_data_fraction/forgetting_top1_transfer_methods.png" alt="ImageNet top-1 forgetting by transfer method" width="100%" />
+    </td>
+    <td width="50%" align="center">
+      <img src="outputs/forgetting_data_fraction/transfer_forgetting_tradeoff.png" alt="Transfer gain and forgetting trade-off" width="100%" />
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><em>(a) ImageNet top-1 forgetting by transfer method.</em></td>
+    <td align="center"><em>(b) Transfer gain and forgetting trade-off.</em></td>
+  </tr>
+</table>
 
-![Transfer gain and forgetting trade-off](outputs/forgetting_data_fraction/transfer_forgetting_tradeoff.png)
+*Figure 6. Forgetting after the data-size experiment. `full_ft` gives the strongest EuroSAT adaptation, but it also causes much larger ImageNet forgetting than `linear_probe`.*
 
 The main result is that forgetting depends more on the training strategy than on the amount of EuroSAT data. `full_ft` forgets heavily at every data size: ImageNet top-1 drops from 69.76% to about 0.20%-1.24%, meaning that the adapted backbone is no longer compatible with the original ImageNet classifier.
 
