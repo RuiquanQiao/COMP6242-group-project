@@ -4,7 +4,7 @@
 
 #### AI Use Declaration
 
-AI tools were used to assist with code understanding, experiment-result summarisation, report drafting, and language polishing. All experimental design choices, code execution, result verification, and final report content were reviewed and approved by the group members.
+AI tools were used as supporting aids for code review, result checking, and language refinement. All experimental design, code execution, interpretation of results, and final report decisions were completed and verified by the group members.
 
 #### Group Contribution
 
