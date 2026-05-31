@@ -98,7 +98,7 @@ Partial fine-tuning is also the best trade-off overall. It slightly outperforms 
 
 *Figure 1. Side-by-side summary of Experiment 4.1. The left panel shows final EuroSAT test top-1 accuracy, while the right panel shows validation top-1 trajectories. Together they show that partial fine-tuning and full fine-tuning both outperform training from scratch and linear probing, and that deeper fine-tuning converges faster.*
 
-Overall, Experiment 4.1 shows that ImageNet transfer improves EuroSAT classification, but the best result comes from selective or full fine-tuning rather than from freezing the backbone. Among the tested strategies, partial fine-tuning provides the best balance of accuracy, speed, and efficiency, so it is a strong reference point for the later experiments and forgetting analysis.
+Overall, the EuroSAT ablation shows that transfer is beneficial only when the backbone is allowed to adapt. Linear probing is insufficient for this domain shift, while partial fine-tuning gives the strongest accuracy-efficiency trade-off.
 
 #### 4.2 When Transfer Helps: Same-Size Cross-Domain Comparison
 
@@ -117,7 +117,7 @@ This section compares EuroSAT and CIFAR-10 under the same sample budget in order
 
 The same-size comparison preserves the main pattern from Section 4.1: transfer works best when the pretrained backbone is allowed to adapt. On EuroSAT, partial fine-tuning and full fine-tuning improve test accuracy over training from scratch by 4.64 and 4.44 percentage points respectively, while linear probing falls below the training-from-scratch baseline. On CIFAR-10, the gains from partial fine-tuning and full fine-tuning are larger, at 13.06 and 11.95 points over training from scratch.
 
-These results suggest that target-domain properties affect the size of the transfer benefit. CIFAR-10 receives a larger gain from ImageNet initialization than EuroSAT under the same data budget, while EuroSAT still benefits from selective or full fine-tuning. The broader implications of this domain difference are discussed in Chapter 6.
+This comparison separates absolute accuracy from transfer benefit. EuroSAT reaches higher final accuracy, but CIFAR-10 receives the larger gain over training from scratch. The broader implications of this domain difference are discussed in Chapter 6.
 
 <table>
   <tr>
@@ -164,9 +164,9 @@ This section varies the amount of EuroSAT training data in order to study whethe
 
 *Figure 3. Same-domain data-size comparison. Full fine-tuning performs best at every training fraction, while its transfer gain is largest in the 10% low-data setting.*
 
-The results show that transfer is most valuable when labelled data is limited. With only 10% of the EuroSAT training set, full fine-tuning improves over training from scratch by 25.56 percentage points. As the training fraction increases, the model trained from scratch becomes stronger, and the gain from full fine-tuning decreases to about 7-8 points. This supports the interpretation that transfer mainly improves sample efficiency.
+The results show that transfer is most valuable when labelled data is limited. With only 10% of the EuroSAT training set, full fine-tuning improves over training from scratch by 25.56 percentage points. As the training fraction increases, the model trained from scratch becomes stronger, and the gain from full fine-tuning decreases to about 7-8 points. This shows that transfer mainly improves sample efficiency in this setting.
 
-Linear probing helps at 10% and 30% data, but it becomes worse than training from scratch at 60% and 100%. This suggests that frozen ImageNet features are useful when data is scarce, but they limit adaptation when more EuroSAT data is available. Overall, full fine-tuning is the strongest strategy in this data-size experiment.
+Linear probing helps at 10% and 30% data, but it becomes worse than training from scratch at 60% and 100%. The data-size trend shows that transfer is most valuable in the low-data regime; as more EuroSAT labels are available, training from scratch becomes stronger and the relative gain from full fine-tuning decreases.
 
 ### 5. Catastrophic Forgetting Analysis
 
@@ -182,7 +182,7 @@ We evaluate the linear probing, partial fine-tuning, and full fine-tuning checkp
 | Partial fine-tuning | 0.50 | 69.26 | 0.24 | 69.06 | **97.78** |
 | Full fine-tuning | 0.12 | 69.64 | 0.02 | 69.27 | 97.56 |
 
-The results show a clear trade-off between downstream adaptation and source-task retention. Linear probing forgets the least, but it is also the weakest EuroSAT strategy. By contrast, partial fine-tuning and full fine-tuning achieve the best EuroSAT accuracy while losing almost all original ImageNet performance, with full fine-tuning showing the largest forgetting overall. In the current main experiment, partial fine-tuning remains the best downstream choice, but not because it preserves the source task well; its advantage comes from stronger EuroSAT adaptation despite substantial forgetting.
+The main forgetting experiment reveals a clear adaptation-retention trade-off. Linear probing preserves more source-task ability, while partial fine-tuning and full fine-tuning achieve higher EuroSAT accuracy but almost eliminate ImageNet performance.
 
 #### 5.2 Forgetting After the Same-Size Cross-Domain Experiment
 
@@ -199,7 +199,7 @@ This section studies whether forgetting differs between EuroSAT and CIFAR-10 whe
 
 The forgetting results follow the same strategy-level pattern as Section 5.1. Partial fine-tuning and full fine-tuning obtain the strongest downstream accuracy, but both reduce ImageNet top-1 accuracy from 69.76% to below 1% on both downstream datasets. Linear probing retains more ImageNet performance because the backbone remains frozen, but it is also the weakest pretrained strategy on the downstream tasks.
 
-Across the two target datasets, the difference between strategies is larger than the difference between EuroSAT and CIFAR-10. This section therefore reports the observed forgetting pattern, while Chapter 6 connects it with the transfer-gain results from Section 4.2.
+The domain-gap forgetting results show that a downstream task being closer to ImageNet does not prevent forgetting after fine-tuning. CIFAR-10 receives larger transfer gains than EuroSAT, but fine-tuning on either dataset still severely damages ImageNet performance.
 
 <table>
   <tr>
@@ -252,31 +252,29 @@ This section evaluates how forgetting changes as the amount of EuroSAT downstrea
 
 The main result is that forgetting depends more on the training strategy than on the amount of EuroSAT data. Full fine-tuning forgets heavily at every data size: ImageNet top-1 drops from 69.76% to about 0.20%-1.24%, meaning that the adapted backbone is no longer compatible with the original ImageNet classifier.
 
-Linear probing preserves more ImageNet ability. Its ImageNet top-1 stays around 31%-32%, giving about 37-38 points of forgetting. This is much lower than full fine-tuning, although it still shows that preserving ImageNet performance is not equivalent to solving the downstream task well. Together, Sections 4.3 and 5.3 show a clear trade-off: full fine-tuning gives the best EuroSAT accuracy, but it almost completely loses ImageNet performance.
+Linear probing preserves more ImageNet ability. Its ImageNet top-1 stays around 31%-32%, giving about 37-38 points of forgetting. The data-size forgetting results show that forgetting is driven more by the fine-tuning strategy than by the amount of EuroSAT data: full fine-tuning forgets heavily at every data fraction, while linear probing preserves more ImageNet accuracy but gives lower EuroSAT performance.
 
 ### 6. Discussion
 
-Taken together, the experiments show that ImageNet pretraining is useful for the new EuroSAT task, but only when the pretrained representation is allowed to adapt. In the main EuroSAT experiment, partial fine-tuning and full fine-tuning both outperform training from scratch, while linear probing falls below the training-from-scratch baseline. This means that the ImageNet initialization is valuable, but frozen ImageNet features alone are not sufficiently aligned with EuroSAT scene categories. EuroSAT images are overhead land-cover patches, where class evidence often comes from texture, spatial layout, and surface patterns rather than the object-centric cues emphasized by ImageNet.
+The experimental findings suggest several explanations for when transfer helps and why catastrophic forgetting occurs.
 
-The strongest transfer setting is not simply the one with the most trainable parameters. Partial fine-tuning achieves the best EuroSAT test accuracy while using fewer trainable parameters and less training time than full fine-tuning. This suggests that adapting the final ResNet stage is enough to bridge much of the domain shift, while earlier layers still provide useful generic visual features. Full fine-tuning gives very similar downstream accuracy, but it updates the whole network and produces slightly larger ImageNet forgetting. For this task and training budget, partial fine-tuning therefore gives the best balance between adaptation, efficiency, and source-task retention.
+Linear probing performs poorly on EuroSAT because the fixed ImageNet representation is not directly aligned with remote-sensing scene categories. EuroSAT classes rely on overhead texture, land-cover patterns, and spatial layout, while ImageNet features are learned from object-centric natural images. This explains why freezing the entire backbone protects the source representation but does not give the best downstream performance.
 
-The supporting experiments clarify when transfer helps most. First, domain similarity affects the size of the downstream gain: CIFAR-10 receives a larger gain from ImageNet initialization than EuroSAT under the same sample budget, especially for partial fine-tuning and full fine-tuning. This is consistent with CIFAR-10 being closer to ImageNet in image type and object-centric content. Second, target data size affects the need for transfer: in the EuroSAT data-size experiment, full fine-tuning gives its largest gain at the 10% training fraction, and the gain shrinks as training from scratch becomes stronger with more labelled data. Transfer is therefore most useful when the target task is related enough to reuse source features or when target labels are limited.
+Partial fine-tuning likely works well because it updates higher-level features while preserving lower-level filters. This gives the model enough flexibility to adapt to the EuroSAT domain without changing the whole network as aggressively as full fine-tuning. Under the short training budget used here, the extra flexibility of full fine-tuning does not produce a clear EuroSAT advantage over partial fine-tuning.
 
-The same results also show what causes catastrophic forgetting in this setting. Forgetting is driven mainly by how much the backbone is updated, rather than by downstream accuracy alone. Linear probing preserves much more ImageNet performance because it freezes the backbone, but it gives weaker downstream results. Partial fine-tuning and full fine-tuning adapt well to EuroSAT or CIFAR-10, but they reduce ImageNet top-1 accuracy to near zero after fine-tuning. One likely explanation is that the downstream objective replaces the 1000-class ImageNet problem with a much smaller 10-class label space, so fine-tuning moves high-level features toward the new task without any constraint to preserve the old classifier-compatible representation.
+The CIFAR-10 comparison also shows why absolute accuracy and transfer gain need to be separated. CIFAR-10 has lower absolute accuracy than EuroSAT, but larger transfer gain. This is not contradictory: EuroSAT may be easier under the current split and preprocessing, so both training from scratch and fine-tuned models reach high accuracy. CIFAR-10 remains harder in absolute terms, but ImageNet pretraining gives a larger relative improvement because it shares more natural-image structure with ImageNet.
 
-This creates the central trade-off of the project. Freezing more parameters protects the source task but limits target-task adaptation. Updating more parameters improves the new task, especially when data are scarce, but causes severe forgetting of ImageNet. Domain similarity and sample size change the amount of transfer benefit, but they do not remove this trade-off. Even CIFAR-10, which is closer to ImageNet than EuroSAT, still causes severe ImageNet forgetting after partial fine-tuning or full fine-tuning.
+The data-size results reflect the same principle from another angle. When EuroSAT labels are limited, training from scratch cannot learn robust features as effectively, so pretrained features provide a large advantage. As the training set grows, the training-from-scratch baseline improves and the relative benefit of transfer becomes smaller.
 
-The main limitation is that these experiments use a single architecture, one random seed, and a short fixed training budget. We also measure forgetting directly through ImageNet re-evaluation, but we do not test mitigation methods such as regularization, rehearsal, or freezing additional layers. Future work could compare these methods to determine whether the strong downstream performance of fine-tuning can be retained while reducing ImageNet forgetting.
+Catastrophic forgetting arises because fine-tuning updates the backbone toward a new 10-class objective. Without any explicit constraint to preserve ImageNet performance, these updates make the feature extractor less compatible with the original 1000-class ImageNet classifier. Linear probing forgets less because it freezes the pretrained backbone and only learns the downstream classification head. Since the forgetting evaluation reloads the adapted backbone into the ImageNet classifier, a mostly unchanged backbone remains more compatible with the original ImageNet task. The cost is weaker downstream performance because the representation cannot adapt deeply to EuroSAT or CIFAR-10.
+
+The main limitation is that these experiments use a single architecture, one random seed, and a short fixed training budget. We also measure forgetting directly through ImageNet re-evaluation, but we do not test mitigation methods such as regularization, rehearsal, or freezing additional layers.
 
 ### 7. Conclusion
 
-This project studied how an ImageNet-pretrained ResNet-18 transfers to EuroSAT, how this compares with training from scratch, and how different adaptation strategies affect catastrophic forgetting. The results show that transfer learning is beneficial for EuroSAT only when the pretrained representation is allowed to adapt. Partial fine-tuning and full fine-tuning both outperform training from scratch, while linear probing performs worse than training from scratch, indicating that frozen ImageNet features alone are not sufficient for the remote-sensing domain shift.
+This project shows that ImageNet transfer can substantially improve EuroSAT classification, but only when the pretrained backbone is allowed to adapt. Partial fine-tuning gives the best overall balance of accuracy, efficiency, and source-task retention among the tested strategies.
 
-Across the experiments, transfer helps most when target labels are limited or when the target domain remains closer to ImageNet. In the EuroSAT data-size experiment, full fine-tuning gives the largest gain in the 10% training-data setting, showing the sample-efficiency value of pretraining. In the same-size domain comparison, CIFAR-10 receives a larger transfer gain than EuroSAT, consistent with its closer relationship to natural-image recognition.
-
-The forgetting experiments reveal the main cost of this adaptation. Strategies that update the backbone achieve the strongest downstream accuracy, but they also cause severe ImageNet forgetting. Linear probing preserves substantially more ImageNet performance, but it limits downstream adaptation. Among the tested strategies, partial fine-tuning provides the best practical balance: it reaches the strongest EuroSAT accuracy with less training time than full fine-tuning, while still illustrating the broader trade-off between learning a new task and retaining the source task.
-
-Overall, the study shows that transfer learning is not simply a choice between pretraining and training from scratch. Its benefit depends on domain similarity, target-data size, and how much of the model is fine-tuned. Future work should test forgetting-mitigation methods such as regularization, rehearsal, or more selective layer freezing to preserve ImageNet capability while maintaining strong EuroSAT performance.
+Transfer is most useful when labelled target data are limited or when the target domain is closer to ImageNet. However, stronger adaptation also causes severe catastrophic forgetting on the original ImageNet task. Future work should therefore focus on mitigation methods that preserve source-task performance while retaining the downstream gains of fine-tuning.
 
 ### 8. References
 
