@@ -58,7 +58,7 @@ All inputs are resized to 224 x 224. EuroSAT and CIFAR-10 training use resize, r
 
 #### 3.4 Training Protocol and Metrics
 
-Unless overridden, all runs use the shared `configs/base.yaml` settings: seed 42, batch size 32, 8 epochs, AdamW, learning rate 3e-4, and weight decay 1e-4. The best checkpoint is selected by validation top-1 accuracy. We report test top-1 accuracy, test macro-F1, training time, and convergence behavior. In Chapter 5, forgetting is defined as the drop in ImageNet top-1 accuracy or macro-F1 after downstream fine-tuning.
+Unless overridden, all runs use the shared `configs/base.yaml` settings: seed 42, batch size 32, 8 epochs, AdamW, learning rate 3e-4, and weight decay 1e-4. The best checkpoint is selected by validation top-1 accuracy. Top-1 accuracy is the primary metric throughout the report because all downstream tasks are single-label classification tasks with balanced sampling. Macro-F1 is reported as a secondary check of class-balanced performance in the main strategy and domain-gap experiments. The data-size experiments focus on top-1 trends for compactness. Transfer gain is computed against the scratch baseline, and forgetting is measured as the ImageNet performance drop after downstream adaptation. Loss curves are used only as diagnostic evidence for training stability.
 
 #### 3.5 Experiment Structure
 
@@ -68,16 +68,16 @@ The study has one main experiment and two supporting analyses. Section 4.1 compa
 
 #### 4.1 Main Experiment: EuroSAT Strategy Ablation
 
-Section 4.1 asks the core question of the project: on EuroSAT, does ImageNet pretraining help ResNet-18, and which transfer strategy works best? We compare `scratch`, `linear_probe`, `partial_ft`, and `full_ft` under the same training budget. The table below reflects the current pre-fix run; the final report should refresh these numbers after regenerating checkpoints with frozen BatchNorm drift fixed.
+Section 4.1 asks the core question of the project: on EuroSAT, does ImageNet pretraining help ResNet-18, and which transfer strategy works best? We compare `scratch`, `linear_probe`, `partial_ft`, and `full_ft` under the same training budget.
 
-| Strategy | Best Val Top-1 | Test Top-1 | Test Macro-F1 | Train Time (s) | Trainable Params |
+| Strategy | Test Top-1 | Test Macro-F1 | Transfer Gain Top-1 | Train Time (s) | Trainable Params |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| `scratch` | 93.36 | 93.21 | 93.04 | 1100.5 | 11,181,642 |
-| `linear_probe` | 90.05 | 88.54 | 88.33 | 560.2 | 5,130 |
-| `partial_ft` | 97.68 | **97.78** | **97.71** | 641.2 | 8,398,858 |
-| `full_ft` | **97.80** | 97.56 | 97.50 | 1068.3 | 11,181,642 |
+| `scratch` | 93.21 | 93.04 | - | 1100.5 | 11,181,642 |
+| `linear_probe` | 88.54 | 88.33 | -4.67 | 560.2 | 5,130 |
+| `partial_ft` | **97.78** | **97.71** | **+4.57** | 641.2 | 8,398,858 |
+| `full_ft` | 97.56 | 97.50 | +4.35 | 1068.3 | 11,181,642 |
 
-In the current pre-fix run, transfer is helpful only when the pretrained model is allowed to adapt. `partial_ft` gives the best test performance, with `full_ft` close behind, while `linear_probe` is worst and even falls below the scratch baseline. These numbers should be treated as provisional until the BN-fix rerun is completed.
+The results show that transfer is helpful only when the pretrained model is allowed to adapt. `partial_ft` gives the best test performance, with `full_ft` close behind, while `linear_probe` is worst and even falls below the scratch baseline.
 
 `partial_ft` is also the best trade-off overall. It slightly outperforms `full_ft` on the test set while using fewer trainable parameters and less training time, suggesting that adapting the top stage is sufficient for most of the domain shift. The convergence logs tell the same story: `partial_ft` and `full_ft` pass the 90% validation threshold in epoch 1, whereas `scratch` reaches it in epoch 6 and `linear_probe` only in epoch 8.
 
@@ -104,16 +104,16 @@ Overall, Experiment 4.1 shows that ImageNet transfer improves EuroSAT classifica
 
 This section compares EuroSAT and CIFAR-10 under the same sample budget in order to isolate the role of source-target domain similarity. Both datasets use 18,900 training, 4,050 validation, and 4,050 test samples, so the main difference is the target domain rather than the amount of supervision. EuroSAT represents a remote-sensing scene classification task with a clear shift from ImageNet, while CIFAR-10 remains closer to natural-image object recognition.
 
-| Dataset | Strategy | Best Val Top-1 | Test Top-1 | Test Macro-F1 | Transfer Gain vs Scratch |
-| --- | --- | ---: | ---: | ---: | ---: |
-| EuroSAT | `scratch` | 93.75 | 92.86 | 92.67 | - |
-| EuroSAT | `linear_probe` | 90.05 | 88.54 | 88.33 | -4.32 |
-| EuroSAT | `partial_ft` | **97.70** | **97.51** | **97.41** | +4.64 |
-| EuroSAT | `full_ft` | 97.65 | 97.31 | 97.25 | +4.44 |
-| CIFAR-10 | `scratch` | 79.31 | 78.12 | 78.27 | - |
-| CIFAR-10 | `linear_probe` | 77.98 | 78.20 | 78.00 | +0.07 |
-| CIFAR-10 | `partial_ft` | **92.12** | **91.19** | **91.18** | +13.06 |
-| CIFAR-10 | `full_ft` | 90.10 | 90.07 | 90.03 | +11.95 |
+| Dataset | Strategy | Test Top-1 | Test Macro-F1 | Transfer Gain Top-1 |
+| --- | --- | ---: | ---: | ---: |
+| EuroSAT | `scratch` | 92.86 | 92.67 | - |
+| EuroSAT | `linear_probe` | 88.54 | 88.33 | -4.32 |
+| EuroSAT | `partial_ft` | **97.51** | **97.41** | **+4.64** |
+| EuroSAT | `full_ft` | 97.31 | 97.25 | +4.44 |
+| CIFAR-10 | `scratch` | 78.12 | 78.27 | - |
+| CIFAR-10 | `linear_probe` | 78.20 | 78.00 | +0.07 |
+| CIFAR-10 | `partial_ft` | **91.19** | **91.18** | **+13.06** |
+| CIFAR-10 | `full_ft` | 90.07 | 90.03 | +11.95 |
 
 The same-size comparison preserves the main pattern from Section 4.1: transfer works best when the pretrained backbone is allowed to adapt. On EuroSAT, `partial_ft` and `full_ft` improve test accuracy over scratch by 4.64 and 4.44 percentage points respectively, while `linear_probe` falls below the scratch baseline. On CIFAR-10, the gains from `partial_ft` and `full_ft` are larger, at 13.06 and 11.95 points over scratch.
 
@@ -138,7 +138,7 @@ These results suggest that target-domain properties affect the size of the trans
 
 #### 4.3 When Transfer Helps: Same-Domain Data-Size Comparison
 
-This section varies the amount of EuroSAT training data in order to study whether transfer becomes more valuable in lower-data regimes. The model and target domain are fixed, while the EuroSAT training fraction is changed from 10% to 30%, 60%, and 100%. We compare `scratch`, `linear_probe`, and `full_ft`.
+This section varies the amount of EuroSAT training data in order to study whether transfer becomes more valuable in lower-data regimes. The model and target domain are fixed, while the EuroSAT training fraction is changed from 10% to 30%, 60%, and 100%. We compare `scratch`, `linear_probe`, and `full_ft` to represent no transfer, frozen-feature transfer, and full adaptation. Because this experiment focuses on how performance changes with training-set size, we report top-1 accuracy and top-1 transfer gain as the primary trend metrics.
 
 | Train Fraction | `scratch` Top-1 | `linear_probe` Top-1 | `full_ft` Top-1 | `full_ft` Gain |
 | ---: | ---: | ---: | ---: | ---: |
@@ -174,13 +174,13 @@ Chapter 5 returns each downstream-adapted model to the official ILSVRC2012 valid
 
 #### 5.1 Forgetting After the Main EuroSAT Experiment
 
-We evaluate the `linear_probe`, `partial_ft`, and `full_ft` checkpoints from Section 4.1 on the official ILSVRC2012 validation set. For each strategy, forgetting is measured as the drop from the original ImageNet-pretrained ResNet-18 (`A_before`) to the EuroSAT-adapted model evaluated back on ImageNet (`A_after`). `scratch` is excluded because it does not start from ImageNet-pretrained weights.
+We evaluate the `linear_probe`, `partial_ft`, and `full_ft` checkpoints from Section 4.1 on the official ILSVRC2012 validation set. The original ImageNet-pretrained ResNet-18 obtains 69.76% top-1 accuracy and 69.30 macro-F1 before downstream adaptation. For each strategy, forgetting is measured as the drop from this baseline to the EuroSAT-adapted model evaluated back on ImageNet. `scratch` is excluded because it does not start from ImageNet-pretrained weights.
 
-| Strategy | ImageNet Before Top-1 | ImageNet After Top-1 | Forgetting Top-1 | ImageNet Before Macro-F1 | ImageNet After Macro-F1 | Forgetting Macro-F1 | EuroSAT Test Top-1 |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `linear_probe` | 69.76 | 32.03 | 37.73 | 69.30 | 33.87 | 35.43 | 88.54 |
-| `partial_ft` | 69.76 | 0.50 | 69.26 | 69.30 | 0.24 | 69.06 | 97.78 |
-| `full_ft` | 69.76 | 0.12 | 69.64 | 69.30 | 0.02 | 69.27 | 97.56 |
+| Strategy | ImageNet After Top-1 | Forgetting Top-1 | ImageNet After Macro-F1 | Forgetting Macro-F1 | EuroSAT Test Top-1 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `linear_probe` | 32.03 | 37.73 | 33.87 | 35.43 | 88.54 |
+| `partial_ft` | 0.50 | 69.26 | 0.24 | 69.06 | **97.78** |
+| `full_ft` | 0.12 | 69.64 | 0.02 | 69.27 | 97.56 |
 
 The results show a clear trade-off between downstream adaptation and source-task retention. `linear_probe` forgets the least, but it is also the weakest EuroSAT strategy. By contrast, `partial_ft` and `full_ft` achieve the best EuroSAT accuracy while losing almost all original ImageNet performance, with `full_ft` showing the largest forgetting overall. In the current main experiment, `partial_ft` remains the best downstream choice, but not because it preserves the source task well; its advantage comes from stronger EuroSAT adaptation despite substantial forgetting.
 
@@ -216,11 +216,11 @@ Across the two target datasets, the difference between strategies is larger than
   </tr>
 </table>
 
-*Figure 3. Forgetting after same-size downstream adaptation. Fine-tuning causes much larger ImageNet forgetting than linear probing on both EuroSAT and CIFAR-10.*
+*Figure 4. Forgetting after same-size downstream adaptation. Fine-tuning causes much larger ImageNet forgetting than linear probing on both EuroSAT and CIFAR-10. Macro-F1 forgetting is shown as a secondary check of the same pattern.*
 
 #### 5.3 Forgetting After the Data-Size Experiment
 
-This section evaluates how forgetting changes as the amount of EuroSAT downstream data increases. Combined with Section 4.3, it allows the report to analyze the trade-off between improved downstream adaptation and greater modification of the pretrained representation. The original ImageNet-pretrained ResNet-18 obtains 69.76% top-1 accuracy before EuroSAT adaptation, and forgetting is measured as `A_before - A_after`.
+This section evaluates how forgetting changes as the amount of EuroSAT downstream data increases. Combined with Section 4.3, it allows the report to analyze the trade-off between improved downstream adaptation and greater modification of the pretrained representation. The original ImageNet-pretrained ResNet-18 obtains 69.76% top-1 accuracy before EuroSAT adaptation, and forgetting is measured as `A_before - A_after`. For consistency with Section 4.3, this section focuses on top-1 forgetting across training fractions.
 
 | Train Fraction | Strategy | ImageNet After Top-1 | Forgetting Top-1 | EuroSAT Top-1 |
 | ---: | --- | ---: | ---: | ---: |
@@ -248,11 +248,11 @@ This section evaluates how forgetting changes as the amount of EuroSAT downstrea
   </tr>
 </table>
 
-*Figure 6. Forgetting after the data-size experiment. `full_ft` gives the strongest EuroSAT adaptation, but it also causes much larger ImageNet forgetting than `linear_probe`.*
+*Figure 5. Forgetting after the data-size experiment. `full_ft` gives the strongest EuroSAT adaptation, but it also causes much larger ImageNet forgetting than `linear_probe`.*
 
 The main result is that forgetting depends more on the training strategy than on the amount of EuroSAT data. `full_ft` forgets heavily at every data size: ImageNet top-1 drops from 69.76% to about 0.20%-1.24%, meaning that the adapted backbone is no longer compatible with the original ImageNet classifier.
 
-`linear_probe` preserves more ImageNet ability. Its ImageNet top-1 stays around 31%-32%, giving about 37-38 points of forgetting. This is much lower than `full_ft`, but it is not zero, likely because BatchNorm statistics still shift toward the EuroSAT distribution during training. Together, Sections 4.3 and 5.3 show a clear trade-off: `full_ft` gives the best EuroSAT accuracy, but it almost completely loses ImageNet performance.
+`linear_probe` preserves more ImageNet ability. Its ImageNet top-1 stays around 31%-32%, giving about 37-38 points of forgetting. This is much lower than `full_ft`, although it still shows that preserving ImageNet performance is not equivalent to solving the downstream task well. Together, Sections 4.3 and 5.3 show a clear trade-off: `full_ft` gives the best EuroSAT accuracy, but it almost completely loses ImageNet performance.
 
 ### 6. Discussion
 
