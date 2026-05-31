@@ -1,5 +1,23 @@
 ## From ImageNet to EuroSAT: Transfer Learning, Forgetting, and When Transfer Helps
 
+### 0. Project Information
+
+#### AI Use Declaration
+
+AI tools were used to assist with code understanding, experiment-result summarisation, report drafting, and language polishing. All experimental design choices, code execution, result verification, and final report content were reviewed and approved by the group members.
+
+#### Group Contribution
+
+| Member | Main Responsibility |
+| --- | --- |
+| Ruiquan Qiao | Introduction, related work, experimental setup, main EuroSAT strategy ablation, and forgetting analysis for the main experiment |
+| Tiancheng Xia | Same-size EuroSAT vs CIFAR-10 domain-gap experiment, corresponding forgetting analysis, discussion, and conclusion |
+| Guangde Shi | EuroSAT data-size experiment, corresponding forgetting analysis, and references |
+
+#### Source Code
+
+The source code and experiment artifacts are available at: `<GitHub repository URL>`.
+
 ### 1. Introduction
 
 Transfer learning is a practical way to adapt deep models to domains where labeled data is limited. In computer vision, ImageNet pretraining is widely used because large-scale supervised training provides reusable visual features [1, 2]. However, transfer is not uniformly effective: usefulness depends on the distance between source and target tasks and on how much of the pretrained network is allowed to adapt [1].
