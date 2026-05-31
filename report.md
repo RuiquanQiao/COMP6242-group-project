@@ -138,7 +138,22 @@ These results suggest that target-domain properties affect the size of the trans
 
 #### 4.3 When Transfer Helps: Same-Domain Data-Size Comparison
 
-This section varies the amount of EuroSAT training data in order to study whether transfer becomes more valuable in lower-data regimes. The key quantity of interest is transfer gain relative to scratch as the target sample budget increases from 10% to 100% of the full EuroSAT training split.
+This section varies the amount of EuroSAT training data in order to study whether transfer becomes more valuable in lower-data regimes. The model and target domain are fixed, while the EuroSAT training fraction is changed from 10% to 30%, 60%, and 100%. We compare `scratch`, `linear_probe`, and `full_ft`.
+
+| Train Fraction | `scratch` Top-1 | `linear_probe` Top-1 | `full_ft` Top-1 | `full_ft` Gain |
+| ---: | ---: | ---: | ---: | ---: |
+| 10% | 68.02 | 76.20 | **93.58** | +25.56 |
+| 30% | 82.83 | 85.10 | **96.65** | +13.82 |
+| 60% | 89.46 | 86.99 | **96.88** | +7.41 |
+| 100% | 89.39 | 87.93 | **97.15** | +7.75 |
+
+![EuroSAT test top-1 accuracy](outputs/data_fraction/test_top1_acc.png)
+
+![Transfer gain over scratch](outputs/data_fraction/transfer_gain_top1.png)
+
+The results show that transfer is most valuable when labelled data is limited. With only 10% of the EuroSAT training set, `full_ft` improves over `scratch` by 25.56 percentage points. As the training fraction increases, the scratch model becomes stronger, and the gain from `full_ft` decreases to about 7-8 points. This supports the interpretation that transfer mainly improves sample efficiency.
+
+`linear_probe` helps at 10% and 30% data, but it becomes worse than `scratch` at 60% and 100%. This suggests that frozen ImageNet features are useful when data is scarce, but they limit adaptation when more EuroSAT data is available. Overall, `full_ft` is the strongest strategy in this data-size experiment.
 
 ### 5. Catastrophic Forgetting Analysis
 
@@ -192,7 +207,26 @@ Across the two target datasets, the difference between strategies is larger than
 
 #### 5.3 Forgetting After the Data-Size Experiment
 
-This section evaluates how forgetting changes as the amount of EuroSAT downstream data increases. Combined with Section 4.3, it allows the report to analyze the trade-off between improved downstream adaptation and greater modification of the pretrained representation.
+This section evaluates how forgetting changes as the amount of EuroSAT downstream data increases. Combined with Section 4.3, it allows the report to analyze the trade-off between improved downstream adaptation and greater modification of the pretrained representation. The original ImageNet-pretrained ResNet-18 obtains 69.76% top-1 accuracy before EuroSAT adaptation, and forgetting is measured as `A_before - A_after`.
+
+| Train Fraction | Strategy | ImageNet After Top-1 | Forgetting Top-1 | EuroSAT Top-1 |
+| ---: | --- | ---: | ---: | ---: |
+| 10% | `linear_probe` | 32.50 | 37.26 | 76.20 |
+| 10% | `full_ft` | 1.24 | 68.52 | 93.58 |
+| 30% | `linear_probe` | 32.11 | 37.65 | 85.10 |
+| 30% | `full_ft` | 0.25 | 69.51 | 96.65 |
+| 60% | `linear_probe` | 31.62 | 38.14 | 86.99 |
+| 60% | `full_ft` | 0.25 | 69.51 | 96.88 |
+| 100% | `linear_probe` | 32.13 | 37.63 | 87.93 |
+| 100% | `full_ft` | 0.20 | 69.56 | 97.15 |
+
+![ImageNet top-1 forgetting](outputs/forgetting_data_fraction/forgetting_top1_transfer_methods.png)
+
+![Transfer gain and forgetting trade-off](outputs/forgetting_data_fraction/transfer_forgetting_tradeoff.png)
+
+The main result is that forgetting depends more on the training strategy than on the amount of EuroSAT data. `full_ft` forgets heavily at every data size: ImageNet top-1 drops from 69.76% to about 0.20%-1.24%, meaning that the adapted backbone is no longer compatible with the original ImageNet classifier.
+
+`linear_probe` preserves more ImageNet ability. Its ImageNet top-1 stays around 31%-32%, giving about 37-38 points of forgetting. This is much lower than `full_ft`, but it is not zero, likely because BatchNorm statistics still shift toward the EuroSAT distribution during training. Together, Sections 4.3 and 5.3 show a clear trade-off: `full_ft` gives the best EuroSAT accuracy, but it almost completely loses ImageNet performance.
 
 ### 6. Discussion
 
