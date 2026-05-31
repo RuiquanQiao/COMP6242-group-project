@@ -9,10 +9,10 @@ AI tools were used to assist with code understanding, experiment-result summaris
 #### Group Contribution
 
 | Member | Main Responsibility |
-| --- | --- |
-| Ruiquan Qiao | Introduction, related work, experimental setup, main EuroSAT strategy ablation, and forgetting analysis for the main experiment |
-| Tiancheng Xia | Same-size EuroSAT vs CIFAR-10 domain-gap experiment, corresponding forgetting analysis, discussion, and conclusion |
-| Guangde Shi | EuroSAT data-size experiment, corresponding forgetting analysis, and references |
+| --- |---------------------|
+| Ruiquan Qiao | TBD                 |
+| Tiancheng Xia | TBD                 |
+| Guangde Shi | TBD                 |
 
 #### Source Code
 
