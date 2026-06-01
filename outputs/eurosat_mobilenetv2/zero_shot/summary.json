@@ -1,0 +1,11 @@
+{
+  "strategy": "zero_shot",
+  "epochs": 8,
+  "trainable_params": 0,
+  "total_params": 2236682,
+  "train_seconds": 553.3628409000003,
+  "best_val_top1": 0.1518208661417323,
+  "test_loss": 2.300545542258916,
+  "test_top1_acc": 0.15819116370884453,
+  "test_macro_f1": 0.11536833349662987
+}

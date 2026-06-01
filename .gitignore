@@ -17,12 +17,12 @@ outputs/*
 outputs/**/*.pt
 outputs/**/*.pth
 outputs/**/*.ckpt
-outputs/**/*.json
-outputs/**/*.csv
 outputs/**/*.npy
 outputs/**/*.npz
 outputs/**/*.pkl
 outputs/**/*.log
+!outputs/**/*.json
+!outputs/**/*.csv
 !outputs/**/*.png
 !outputs/**/*.jpg
 !outputs/**/*.jpeg
