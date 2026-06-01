@@ -176,6 +176,8 @@ Linear probing helps at 10% and 30% data, but it becomes worse than training fro
 
 Chapter 5 returns each downstream-adapted model to the official ILSVRC2012 validation set and measures how much of the original ImageNet capability has been lost after fine-tuning. Rather than introducing a new task, this chapter serves as a direct post-test for Chapter 4: Chapter 4 asks how well the model learns EuroSAT, while Chapter 5 asks how much ImageNet performance is forgotten in the process.
 
+In this chapter, a trade-off refers to the balance between downstream adaptation and source-task retention. A desirable model would achieve high downstream accuracy or transfer gain while keeping ImageNet forgetting low. In the scatter plots in Sections 5.1 and 5.2, the horizontal axis is ImageNet forgetting and the vertical axis is downstream test accuracy, so points closer to the upper-left region are preferable. Points on the right side indicate stronger forgetting, even if their downstream accuracy is high. In Section 5.3, the trade-off is shown across training fractions by plotting transfer gain and forgetting as separate trends.
+
 #### 5.1 Forgetting After the Main EuroSAT Experiment
 
 We evaluate the linear probing, partial fine-tuning, and full fine-tuning checkpoints from Section 4.1 on the official ILSVRC2012 validation set. The original ImageNet-pretrained ResNet-18 obtains 69.76% top-1 accuracy and 69.30 macro-F1 before downstream adaptation. For each strategy, forgetting is measured as the drop from this baseline to the EuroSAT-adapted model evaluated back on ImageNet. Training from scratch is excluded because it does not start from ImageNet-pretrained weights.
@@ -187,6 +189,23 @@ We evaluate the linear probing, partial fine-tuning, and full fine-tuning checkp
 | Full fine-tuning | 0.12 | 69.64 | 0.02 | 69.27 | 97.56 |
 
 The main forgetting experiment reveals a clear adaptation-retention trade-off. Linear probing preserves more source-task ability, while partial fine-tuning and full fine-tuning achieve higher EuroSAT accuracy but almost eliminate ImageNet performance.
+
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <img src="outputs/forgetting_main/forgetting_top1.png" alt="ImageNet top-1 forgetting after the main EuroSAT experiment" width="100%" />
+    </td>
+    <td width="50%" align="center">
+      <img src="outputs/forgetting_main/transfer_forgetting_tradeoff.png" alt="EuroSAT downstream accuracy and ImageNet forgetting trade-off" width="100%" />
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><em>(a) ImageNet top-1 forgetting.</em></td>
+    <td align="center"><em>(b) Downstream accuracy and forgetting trade-off.</em></td>
+  </tr>
+</table>
+
+*Figure 5. Forgetting after the main EuroSAT experiment. Fine-tuning improves EuroSAT performance but causes much larger ImageNet forgetting than linear probing.*
 
 #### 5.2 Forgetting After the Same-Size Cross-Domain Experiment
 
@@ -211,16 +230,16 @@ The domain-gap forgetting results show that a downstream task being closer to Im
       <img src="outputs/forgetting_domain_gap/forgetting_top1.png" alt="ImageNet top-1 forgetting after same-size domain-gap experiment" width="100%" />
     </td>
     <td width="50%" align="center">
-      <img src="outputs/forgetting_domain_gap/forgetting_macro_f1.png" alt="ImageNet macro-F1 forgetting after same-size domain-gap experiment" width="100%" />
+      <img src="outputs/forgetting_domain_gap/transfer_forgetting_tradeoff.png" alt="Downstream accuracy and ImageNet forgetting trade-off after same-size domain-gap experiment" width="100%" />
     </td>
   </tr>
   <tr>
     <td align="center"><em>(a) ImageNet top-1 forgetting.</em></td>
-    <td align="center"><em>(b) ImageNet macro-F1 forgetting.</em></td>
+    <td align="center"><em>(b) Downstream accuracy and forgetting trade-off.</em></td>
   </tr>
 </table>
 
-*Figure 5. Forgetting after same-size downstream adaptation. Fine-tuning causes much larger ImageNet forgetting than linear probing on both EuroSAT and CIFAR-10. Macro-F1 forgetting is shown as a secondary check of the same pattern.*
+*Figure 6. Forgetting after same-size downstream adaptation. Fine-tuning causes much larger ImageNet forgetting than linear probing on both EuroSAT and CIFAR-10, even when the target domain changes.*
 
 #### 5.3 Forgetting After the Data-Size Experiment
 
@@ -252,7 +271,7 @@ This section evaluates how forgetting changes as the amount of EuroSAT downstrea
   </tr>
 </table>
 
-*Figure 6. Forgetting after the data-size experiment. Full fine-tuning gives the strongest EuroSAT adaptation, but it also causes much larger ImageNet forgetting than linear probing.*
+*Figure 7. Forgetting after the data-size experiment. Full fine-tuning gives the strongest EuroSAT adaptation, but it also causes much larger ImageNet forgetting than linear probing.*
 
 The main result is that forgetting depends more on the training strategy than on the amount of EuroSAT data. Full fine-tuning forgets heavily at every data size: ImageNet top-1 drops from 69.76% to about 0.20%-1.24%, meaning that the adapted backbone is no longer compatible with the original ImageNet classifier.
 
@@ -271,6 +290,8 @@ The CIFAR-10 comparison also shows why absolute accuracy and transfer gain need 
 The data-size results reflect the same principle from another angle. Deep networks have many parameters, so training from scratch requires enough labelled examples to learn useful low-level and high-level features without overfitting. When EuroSAT labels are limited, pretrained ImageNet features act as a strong inductive bias: the model starts from filters that already encode useful visual regularities instead of learning all representations from random initialization. As the training set grows, the training-from-scratch baseline receives more evidence, learns stronger features, and narrows the gap. This explains why transfer mainly improves sample efficiency in this project.
 
 Catastrophic forgetting arises because fine-tuning optimizes the shared backbone for a new 10-class objective, not for the original 1000-class ImageNet objective. Backpropagation changes any unfrozen weights in the direction that reduces downstream cross-entropy loss, even if those changes remove information that was useful for ImageNet. This behavior is consistent with prior observations that optimization on a new task can reduce performance on a previous task [7]. Without an explicit constraint to preserve ImageNet performance, the adapted feature extractor becomes less compatible with the original ImageNet classifier. Linear probing forgets less because it freezes the backbone and only learns the downstream classification head. Since the forgetting evaluation reloads the adapted backbone into the ImageNet classifier, a mostly unchanged backbone remains more compatible with the original ImageNet task. The cost is weaker downstream performance because the representation cannot adapt deeply to EuroSAT or CIFAR-10.
+
+This explains the trade-off plots in Sections 5.1 and 5.2. Linear probing appears on the lower-forgetting side because the pretrained backbone is preserved, but it does not reach the highest downstream accuracy because only the classifier head can adapt. Partial fine-tuning and full fine-tuning move toward higher downstream accuracy, but they also move to the higher-forgetting side because many more backbone parameters are updated. The experiments therefore do not find a strategy in the ideal upper-left region of the trade-off plots, where downstream accuracy would be high and ImageNet forgetting would be low.
 
 The main limitation is that these experiments use a single architecture, one random seed, and a short fixed training budget. We also measure forgetting directly through ImageNet re-evaluation, but we do not test mitigation methods such as regularization, rehearsal, Learning without Forgetting, EWC, or freezing additional layers [9, 10].
 
