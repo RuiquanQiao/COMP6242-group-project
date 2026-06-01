@@ -4,6 +4,8 @@
 \usepackage{microtype}
 \usepackage{multirow}
 \usepackage{array}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,backgrounds}
 \usepackage[hidelinks]{hyperref}
 
 \def\confName{COMP6242}
@@ -40,7 +42,58 @@ Fine-tuning also raises the issue of catastrophic forgetting: performance on a p
 \section{Experimental Setup}
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{../figures/experimental_pipeline.pdf}
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  font=\small\sffamily,
+  >=Latex,
+  line width=0.9pt,
+  box/.style 2 args={
+    rounded corners=10pt,
+    draw=#1!70!black,
+    fill=#1!10,
+    text width=#2,
+    align=center,
+    inner sep=6pt,
+    minimum height=1.5cm,
+  },
+  arr/.style={->, draw=black!70, line width=1.0pt},
+  dashedarr/.style={->, draw=black!55, dashed, line width=1.0pt},
+  lane/.style={font=\scriptsize\sffamily\bfseries, text=black!55}
+]
+
+\node[lane] at (2.0,1.55) {INPUTS};
+\node[lane] at (8.4,1.55) {MAIN LINE};
+\node[lane] at (14.8,1.55) {ANALYSIS};
+
+\node[box={blue}{3.6cm}, minimum height=1.9cm] (inputs) at (2.0,0.05) {%
+\textbf{Inputs}\\[2pt]
+ImageNet initialization\\
+EuroSAT / CIFAR-10\\
+fixed or reduced training data};
+
+\node[box={green!60!black}{4.4cm}, minimum height=2.2cm] (core) at (8.4,0.05) {%
+\textbf{Transfer Learning on ResNet-18}\\[2pt]
+replace classifier head\\
+\texttt{scratch} / \texttt{linear\_probe}\\
+\texttt{partial\_ft} / \texttt{full\_ft}};
+
+\node[box={orange}{4.2cm}, minimum height=2.2cm] (studies) at (14.8,0.05) {%
+\textbf{Downstream Studies}\\[2pt]
+\textbf{Main}: EuroSAT ablation\\
+\textbf{Support}: domain gap\\
+\textbf{Support}: data size};
+
+\node[box={red}{4.8cm}, minimum height=1.8cm] (forget) at (14.8,-3.0) {%
+\textbf{Catastrophic Forgetting}\\[2pt]
+reload the adapted backbone into\\
+the ImageNet classifier\\
+measure source-task performance drop};
+
+\draw[arr] (inputs.east) -- (core.west);
+\draw[arr] (core.east) -- (studies.west);
+\draw[dashedarr] (studies.south) -- (forget.north);
+\end{tikzpicture}%
+}
 \caption{Experimental workflow used in Sections~4 and~5. The downstream experiments compare transfer strategies, target-domain distance, and training-set size. The downstream-trained checkpoints are then re-evaluated on ImageNet to measure catastrophic forgetting.}
 \label{fig:pipeline}
 \end{figure*}

@@ -1,0 +1,5 @@
+PWD e:/ANU/COMP6242-group-project/paper
+INPUT c:/texlive/2026/texmf.cnf
+INPUT c:/texlive/2026/texmf-dist/web2c/texmf.cnf
+INPUT c:/texlive/2026/texmf-var/web2c/pdftex/pdflatex.fmt
+INPUT e:/ANU/COMP6242-group-project/paper/report_paper.tex
