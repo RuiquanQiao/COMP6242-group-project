@@ -231,7 +231,7 @@ def fig_domain_top1(root: Path) -> plt.Figure:
     title(ax, "Same-size downstream accuracy")
     ax.set_ylim(72, 101)
     percent_axis(ax)
-    ax.legend(loc="lower left", ncol=1)
+    ax.legend(loc="upper right", bbox_to_anchor=(0.98, 0.98), ncol=1, borderaxespad=0.2)
     despine(ax)
     return fig
 
@@ -246,13 +246,40 @@ def fig_domain_gain(root: Path) -> plt.Figure:
     for offset, strategy in zip(np.linspace(-width, width, 3), NO_SCRATCH_ORDER):
         vals = [df[(df.Dataset == ds) & (df.Strategy == strategy)]["Gain"].iloc[0] for ds in datasets]
         ax.bar(x + offset, vals, width=width, label=strategy, color=color(strategy), alpha=STYLE["alpha"], edgecolor="white", linewidth=0.5)
+        ax.scatter(x + offset, vals, color=color(strategy), marker=marker(strategy), s=26, zorder=3, edgecolor="white", linewidth=0.35)
         for xi, val in zip(x + offset, vals):
-            if val > 11:
-                ax.annotate(f"+{val:.2f}", (xi, val), xytext=(0, 4), textcoords="offset points", ha="center", fontsize=8.5, weight="bold")
+            label = f"{val:+.2f}"
+            if abs(val) < 0.5:
+                # Tiny gains are statistically meaningful but visually vanish on
+                # the same scale as the 13-point CIFAR-10 gains. Use an offset
+                # label and a marker at the true bar tip rather than inflating it.
+                ax.annotate(
+                    label,
+                    (xi, val),
+                    xytext=(0, 12),
+                    textcoords="offset points",
+                    ha="center",
+                    va="bottom",
+                    fontsize=8.2,
+                    fontweight="bold",
+                    color=color(strategy),
+                    arrowprops=dict(arrowstyle="-", lw=0.7, color=color(strategy), shrinkA=1, shrinkB=2),
+                )
+            else:
+                ax.annotate(
+                    label,
+                    (xi, val),
+                    xytext=(0, 4 if val >= 0 else -8),
+                    textcoords="offset points",
+                    ha="center",
+                    va="bottom" if val >= 0 else "top",
+                    fontsize=8.0,
+                    fontweight="bold" if abs(val) > 10 else "normal",
+                )
     ax.set_xticks(x, datasets)
     ax.set_ylabel("Gain over scratch")
     title(ax, "Transfer gain by domain")
-    ax.set_ylim(-6, 15)
+    ax.set_ylim(-6, 15.5)
     percent_axis(ax)
     ax.legend(loc="upper left")
     despine(ax)
