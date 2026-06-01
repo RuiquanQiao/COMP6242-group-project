@@ -16,8 +16,8 @@ STYLE = {
     "palette": {
         "Scratch": "#737373",
         "Linear probe": "#2563eb",
-        "Partial FT": "#16a34a",
-        "Full FT": "#ef4444",
+        "Partial unfreeze": "#16a34a",
+        "Full fine-tune": "#ef4444",
         "Baseline": "#111111",
     },
     "grid": "#e6e8ef",
@@ -26,17 +26,17 @@ STYLE = {
     "line_width": 1.9,
     "alpha": 0.92,
     "marker_size": 58,
-    "linestyles": {"Scratch": "-", "Linear probe": "--", "Partial FT": "-.", "Full FT": ":"},
-    "markers": {"Scratch": "D", "Linear probe": "D", "Partial FT": "D", "Full FT": "D"},
+    "linestyles": {"Scratch": "-", "Linear probe": "--", "Partial unfreeze": "-.", "Full fine-tune": ":"},
+    "markers": {"Scratch": "D", "Linear probe": "D", "Partial unfreeze": "D", "Full fine-tune": "D"},
 }
 STRATEGY_LABELS = {
     "scratch": "Scratch",
     "linear_probe": "Linear probe",
-    "partial_ft": "Partial FT",
-    "full_ft": "Full FT",
+    "partial_ft": "Partial unfreeze",
+    "full_ft": "Full fine-tune",
 }
-STRATEGY_ORDER = ["Scratch", "Linear probe", "Partial FT", "Full FT"]
-NO_SCRATCH_ORDER = ["Linear probe", "Partial FT", "Full FT"]
+STRATEGY_ORDER = ["Scratch", "Linear probe", "Partial unfreeze", "Full fine-tune"]
+NO_SCRATCH_ORDER = ["Linear probe", "Partial unfreeze", "Full fine-tune"]
 
 
 def apply_style() -> None:
@@ -158,7 +158,7 @@ def data_fraction_results() -> pd.DataFrame:
             [60, 89.46, 86.99, 96.88, 7.41],
             [100, 89.39, 87.93, 97.15, 7.75],
         ],
-        columns=["TrainPct", "Scratch", "Linear probe", "Full FT", "Full FT Gain"],
+        columns=["TrainPct", "Scratch", "Linear probe", "Full fine-tune", "Full fine-tune gain"],
     )
 
 
@@ -166,13 +166,13 @@ def data_fraction_forgetting() -> pd.DataFrame:
     return pd.DataFrame(
         [
             [10, "Linear probe", 37.26],
-            [10, "Full FT", 68.52],
+            [10, "Full fine-tune", 68.52],
             [30, "Linear probe", 37.65],
-            [30, "Full FT", 69.51],
+            [30, "Full fine-tune", 69.51],
             [60, "Linear probe", 38.14],
-            [60, "Full FT", 69.51],
+            [60, "Full fine-tune", 69.51],
             [100, "Linear probe", 37.63],
-            [100, "Full FT", 69.56],
+            [100, "Full fine-tune", 69.56],
         ],
         columns=["TrainPct", "Strategy", "Forgetting"],
     )
@@ -184,7 +184,7 @@ def fig_eurosat_top1(root: Path) -> plt.Figure:
     y = np.arange(len(df))
     ax.hlines(y, df["Top1"].min() - 1.0, df["Top1"], color=STYLE["grid"], lw=2)
     for yi, (_, row) in zip(y, df.iterrows()):
-        ax.scatter(row["Top1"], yi, s=68 if row["Strategy"] == "Partial FT" else 54, color=color(row["Strategy"]), marker=marker(row["Strategy"]), zorder=3)
+        ax.scatter(row["Top1"], yi, s=68 if row["Strategy"] == "Partial unfreeze" else 54, color=color(row["Strategy"]), marker=marker(row["Strategy"]), zorder=3)
         ax.annotate(f"{row['Top1']:.2f}%", (row["Top1"], yi), xytext=(6, 0), textcoords="offset points", va="center", fontsize=8.5)
     ax.set_yticks(y, df["Strategy"])
     ax.invert_yaxis()
@@ -290,9 +290,9 @@ def fig_data_top1(_: Path) -> plt.Figure:
     df = data_fraction_results()
     fig, ax = plt.subplots(figsize=(4.9, 3.2), constrained_layout=True)
     x = df["TrainPct"].to_numpy()
-    for strategy in ["Scratch", "Linear probe", "Full FT"]:
+    for strategy in ["Scratch", "Linear probe", "Full fine-tune"]:
         ax.plot(x, df[strategy], label=strategy, color=color(strategy), linestyle=STYLE["linestyles"][strategy], marker=marker(strategy), lw=STYLE["line_width"])
-    ax.fill_between(x, df["Scratch"], df["Full FT"], color=color("Full FT"), alpha=0.12, label="Full FT gain")
+    ax.fill_between(x, df["Scratch"], df["Full fine-tune"], color=color("Full fine-tune"), alpha=0.12, label="Full fine-tune gain")
     ax.set_xticks(x, [f"{v}%" for v in x])
     ax.set_xlabel("Training data fraction")
     ax.set_ylabel("EuroSAT top-1 accuracy")
@@ -308,13 +308,13 @@ def fig_data_gain(_: Path) -> plt.Figure:
     df = data_fraction_results()
     fig, ax = plt.subplots(figsize=(4.7, 3.2), constrained_layout=True)
     y = np.arange(len(df))
-    ax.hlines(y, 0, df["Full FT Gain"], color=STYLE["grid"], lw=2)
-    ax.scatter(df["Full FT Gain"], y, color=color("Full FT"), s=58, marker=marker("Full FT"))
+    ax.hlines(y, 0, df["Full fine-tune gain"], color=STYLE["grid"], lw=2)
+    ax.scatter(df["Full fine-tune gain"], y, color=color("Full fine-tune"), s=58, marker=marker("Full fine-tune"))
     for yi, (_, row) in zip(y, df.iterrows()):
-        ax.annotate(f"+{row['Full FT Gain']:.2f}", (row["Full FT Gain"], yi), xytext=(6, 0), textcoords="offset points", va="center", fontsize=8.5, weight="bold" if row["TrainPct"] == 10 else "normal")
+        ax.annotate(f"+{row['Full fine-tune gain']:.2f}", (row["Full fine-tune gain"], yi), xytext=(6, 0), textcoords="offset points", va="center", fontsize=8.5, weight="bold" if row["TrainPct"] == 10 else "normal")
     ax.set_yticks(y, [f"{v}%" for v in df["TrainPct"]])
     ax.invert_yaxis()
-    ax.set_xlabel("Full FT gain over scratch")
+    ax.set_xlabel("Full fine-tune gain over scratch")
     ax.set_ylabel("Training data fraction")
     title(ax, "Transfer gain by data size")
     ax.set_xlim(0, 29)
@@ -397,7 +397,7 @@ def fig_forgetting_domain_tradeoff(root: Path) -> plt.Figure:
 def fig_forgetting_data_methods(_: Path) -> plt.Figure:
     df = data_fraction_forgetting()
     fig, ax = plt.subplots(figsize=(4.9, 3.2), constrained_layout=True)
-    for strategy in ["Linear probe", "Full FT"]:
+    for strategy in ["Linear probe", "Full fine-tune"]:
         sub = df[df.Strategy == strategy]
         ax.plot(sub["TrainPct"], sub["Forgetting"], label=strategy, color=color(strategy), linestyle=STYLE["linestyles"][strategy], marker=marker(strategy), lw=STYLE["line_width"])
     ax.set_xticks([10, 30, 60, 100], ["10%", "30%", "60%", "100%"])
@@ -412,12 +412,12 @@ def fig_forgetting_data_methods(_: Path) -> plt.Figure:
 
 
 def fig_forgetting_data_tradeoff(_: Path) -> plt.Figure:
-    gains = data_fraction_results()[["TrainPct", "Full FT Gain"]]
+    gains = data_fraction_results()[["TrainPct", "Full fine-tune gain"]]
     forgetting = data_fraction_forgetting()
-    full = forgetting[forgetting.Strategy == "Full FT"].merge(gains, on="TrainPct")
+    full = forgetting[forgetting.Strategy == "Full fine-tune"].merge(gains, on="TrainPct")
     fig, ax = plt.subplots(figsize=(4.9, 3.2), constrained_layout=True)
-    ax.plot(full["TrainPct"], full["Full FT Gain"], label="Full FT gain", color=color("Partial FT"), linestyle="-", marker=marker("Partial FT"), lw=STYLE["line_width"])
-    ax.plot(full["TrainPct"], full["Forgetting"], label="Full FT forgetting", color=color("Full FT"), linestyle=STYLE["linestyles"]["Full FT"], marker=marker("Full FT"), lw=STYLE["line_width"])
+    ax.plot(full["TrainPct"], full["Full fine-tune gain"], label="Full fine-tune gain", color=color("Partial unfreeze"), linestyle="-", marker=marker("Partial unfreeze"), lw=STYLE["line_width"])
+    ax.plot(full["TrainPct"], full["Forgetting"], label="Full fine-tune forgetting", color=color("Full fine-tune"), linestyle=STYLE["linestyles"]["Full fine-tune"], marker=marker("Full fine-tune"), lw=STYLE["line_width"])
     ax.set_xticks([10, 30, 60, 100], ["10%", "30%", "60%", "100%"])
     ax.set_xlabel("Training data fraction")
     ax.set_ylabel("Percentage points")
