@@ -20,7 +20,7 @@ from experiment_utils import (
 )
 from transfer_learning.config import load_config
 
-STRATEGIES = ["scratch", "partial_ft", "full_ft"]
+STRATEGIES = ["scratch", "linear_probe", "partial_ft", "full_ft"]
 
 
 def parse_args() -> argparse.Namespace:

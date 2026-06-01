@@ -1,4 +1,4 @@
-﻿## From ImageNet to EuroSAT: Transfer Learning, Forgetting, and When Transfer Helps
+﻿﻿## From ImageNet to EuroSAT: Transfer Learning, Forgetting, and When Transfer Helps
 
 ### 0. Project Information
 
@@ -20,47 +20,51 @@ The source code and experiment artifacts are available at: `<https://github.com/
 
 ### 1. Introduction
 
-Transfer learning is a practical way to adapt deep models to domains where labeled data is limited. In computer vision, ImageNet pretraining is widely used because large-scale supervised training provides reusable visual features [1, 2]. However, transfer is not uniformly effective: usefulness depends on the distance between source and target tasks and on how much of the pretrained network is allowed to adapt [1].
+ImageNet pretraining is often treated as a reliable starting point for vision tasks, but this assumption becomes less obvious when the target images are satellite scenes rather than object-centric photographs. EuroSAT images are viewed from above and are defined by land-cover patterns, texture, and spatial layout, so the features learned from ImageNet may not transfer automatically.
 
-This question is important for remote sensing, where satellite scenes differ substantially from natural images in viewpoint, texture, and semantics [3]. Our main task is therefore straightforward: adapt an ImageNet-pretrained ResNet-18 [5, 6] to EuroSAT [4] and determine which transfer strategy works best. We compare four strategies: training from scratch, linear probing, partial fine-tuning, and full fine-tuning.
+This project studies that problem by adapting an ImageNet-pretrained ResNet-18 [5, 6] to EuroSAT [4] and comparing it with training from scratch. We test linear probing, partial fine-tuning, and full fine-tuning to understand how much of the pretrained model should be frozen or updated.
 
-Around this mainline task, the report addresses two supporting questions required by the project guideline. First, when does transfer help most? We study this through a same-size cross-domain comparison with CIFAR-10 [8] and a same-domain data-size study on EuroSAT. Second, how much original ImageNet ability is lost after downstream adaptation? We answer this with a catastrophic forgetting analysis on the official ILSVRC2012 validation set [2, 7].
-
-The report therefore makes three contributions: a controlled EuroSAT transfer study, an analysis of when transfer helps, and a direct measurement of forgetting on the original ImageNet task.
+Beyond the main EuroSAT experiment, we ask when transfer helps and what it costs. We compare EuroSAT with CIFAR-10 under the same sample budget [8], vary the amount of EuroSAT training data, and evaluate ImageNet performance after downstream adaptation to measure catastrophic forgetting on the original source task [2, 7].
 
 ### 2. Related Work
 
-#### 2.1 Transfer Learning and Fine-Tuning in Deep Vision
+ImageNet-pretrained models are widely used as starting points for transfer learning because large-scale supervised training produces reusable visual features [2, 6]. However, transfer quality depends on task distance, and earlier layers tend to be more general than later layers [1]. This motivates our comparison of linear probing, partial fine-tuning, and full fine-tuning.
 
-Modern vision transfer learning usually starts from ImageNet-pretrained models and adapts them through feature extraction or fine-tuning. Yosinski et al. show that lower layers transfer more generally than higher layers and that transfer quality depends on task distance [1]. This directly motivates our comparison of linear probing, partial fine-tuning, and full fine-tuning. ImageNet itself remains the standard source task because of its scale and influence on visual representation learning [2, 6].
+Remote sensing scene classification is a useful stress test for transfer because its classes are defined by overhead land-cover patterns rather than object-centric appearance [3]. EuroSAT provides a standard benchmark for this setting with 27,000 Sentinel-2 image patches across 10 classes [4].
 
-#### 2.2 Remote Sensing Scene Classification Under Domain Shift
-
-Remote sensing scene classification differs from natural-image recognition because classes are defined by large-scale spatial patterns rather than object-centric appearance [3]. EuroSAT is a standard benchmark in this setting, containing 27,000 labeled Sentinel-2 image patches from 10 classes [4]. This makes it a suitable test bed for asking whether ImageNet representations remain useful under a clear domain shift.
-
-#### 2.3 Catastrophic Forgetting and Sequential Adaptation
-
-Catastrophic forgetting refers to performance loss on a previous task after training on a new one [7]. Methods such as EWC [9] and Learning without Forgetting [10] aim to reduce this effect, but our goal is simpler: measure how much forgetting ordinary downstream fine-tuning already causes. By evaluating on the official ImageNet validation set before and after adaptation, we tie forgetting directly to the actual source task rather than to a proxy benchmark.
+Fine-tuning also raises the issue of catastrophic forgetting: performance on a previous task can drop after training on a new task [7]. Although methods such as EWC and Learning without Forgetting address this problem [9, 10], our focus is to measure how much ordinary downstream fine-tuning changes the original ImageNet capability.
 
 ### 3. Experimental Setup
 
+<p align="center">
+  <img src="figures/experimental_pipeline.svg" alt="Experimental pipeline for transfer learning and forgetting evaluation" width="100%" />
+</p>
+
+*Figure 1. Experimental workflow used in Chapters 4 and 5. The downstream experiments compare transfer strategies, target-domain distance, and training-set size. The downstream-trained checkpoints are then re-evaluated on ImageNet to measure catastrophic forgetting.*
+
 #### 3.1 Backbone and Initialization
 
-All experiments use ResNet-18 [5]. Transfer runs start from the official torchvision ImageNet-1K weights, while training from scratch uses random initialization. The final layer is replaced with a 10-way classifier for EuroSAT and CIFAR-10, and the original 1000-way head is restored for ImageNet forgetting evaluation. We compare four strategies: training from scratch, linear probing, partial fine-tuning, and full fine-tuning. For the 10-class downstream tasks, their trainable parameter counts are 11,181,642, 5,130, 8,398,858, and 11,181,642 respectively.
+All experiments use ResNet-18 [5]. Transfer runs start from the official torchvision ImageNet-1K weights, while training from scratch uses random initialization. ResNet-18 first extracts local visual patterns through convolutional layers, then builds increasingly task-specific representations through deeper residual blocks. In this structure, earlier layers tend to capture general low-level features such as edges, corners, and textures, while later layers combine them into higher-level semantic patterns. The final fully connected layer maps the learned representation to class logits, so it must be replaced when the number of target classes changes.
 
-#### 3.2 Datasets and Splits
+For EuroSAT and CIFAR-10, the original 1000-way ImageNet classifier is replaced with a 10-way classifier. For ImageNet forgetting evaluation, the model is rebuilt with the original 1000-way head and the downstream-adapted backbone is loaded back into it. This allows us to test whether the feature extractor remains compatible with the original ImageNet task after downstream training.
 
-The main downstream dataset is EuroSAT [4], using a fixed class-balanced split of 27,000 RGB images into 18,900 train, 4,050 validation, and 4,050 test samples. The same split sizes are used for the CIFAR-10 same-size comparison [8]. For the data-size analysis, the EuroSAT validation and test splits stay fixed while the training set is reduced to 10%, 30%, 60%, and 100% of the full training pool. For forgetting, the previous task is the original ImageNet-1K problem [2, 6], evaluated on the official ILSVRC2012 validation set prepared in ImageFolder format.
+We compare four strategies that update different parts of the network. Training from scratch updates the entire randomly initialized model and serves as the no-transfer baseline. Linear probing freezes the pretrained backbone and trains only the new classifier, testing whether ImageNet features are already separable for the target task. Partial fine-tuning trains the classifier and the last residual stage, `layer4`, allowing higher-level features to adapt while keeping earlier visual filters fixed. Full fine-tuning updates the entire pretrained network, giving the model maximum flexibility but also the greatest risk of overwriting source-task representations. For the 10-class downstream tasks, their trainable parameter counts are 11,181,642, 5,130, 8,398,858, and 11,181,642 respectively.
 
-#### 3.3 Preprocessing and Data Loading
+#### 3.2 Data Preparation
 
-All inputs are resized to 224 x 224. EuroSAT and CIFAR-10 training use resize, random horizontal flip, random rotation, tensor conversion, and ImageNet normalization; validation and test use deterministic resize plus the same normalization. ImageNet forgetting evaluation follows the standard resize-center-crop pipeline. Whenever a subset of a split is requested, sampling is class balanced.
+The main downstream dataset is EuroSAT [4], using a fixed class-balanced split of 27,000 RGB images into 18,900 train, 4,050 validation, and 4,050 test samples. The same split sizes are used for the CIFAR-10 same-size comparison [8], so the domain-gap experiment compares target domains under the same amount of supervision. For the data-size analysis, the EuroSAT validation and test splits stay fixed while the training set is reduced to 10%, 30%, 60%, and 100% of the full training pool. This design changes only the amount of training evidence, while keeping evaluation conditions unchanged. For forgetting, the previous task is the original ImageNet-1K problem [2, 6], evaluated on the official ILSVRC2012 validation set prepared in ImageFolder format.
 
-#### 3.4 Training Protocol and Metrics
+All inputs are resized to 224 x 224 because ResNet-18 pretrained on ImageNet expects image tensors at this scale. EuroSAT and CIFAR-10 training use random horizontal flip and random rotation as data augmentation. These transformations expose the model to small appearance variations and reduce overfitting, especially when the training set is limited. Validation and test data use deterministic preprocessing so that evaluation measures the learned model rather than random augmentation effects.
 
-Unless overridden, all runs use the shared `configs/base.yaml` settings: seed 42, batch size 32, 8 epochs, AdamW, learning rate 3e-4, and weight decay 1e-4. The best checkpoint is selected by validation top-1 accuracy. Top-1 accuracy is the primary metric throughout the report because all downstream tasks are single-label classification tasks with balanced sampling. Macro-F1 is reported as a secondary check of class-balanced performance in the main strategy and domain-gap experiments. The data-size experiments focus on top-1 trends for compactness. Transfer gain is computed against the training-from-scratch baseline, and forgetting is measured as the ImageNet performance drop after downstream adaptation. Loss curves are used only as diagnostic evidence for training stability.
+All datasets are converted to tensors and normalized with ImageNet mean and standard deviation. This is important for transfer learning because the pretrained ResNet-18 weights were learned under ImageNet-style input normalization; using the same scale keeps the input distribution compatible with the pretrained filters. ImageNet forgetting evaluation follows the standard resize-center-crop pipeline. Whenever a subset of a split is requested, sampling is class balanced so that accuracy and Macro-F1 are not dominated by class-frequency differences.
 
-#### 3.5 Experiment Structure
+#### 3.3 Training Protocol and Metrics
+
+Unless overridden, all runs use the shared `configs/base.yaml` settings: seed 42, batch size 32, 8 epochs, AdamW, learning rate 3e-4, and weight decay 1e-4. Each training run follows the standard supervised learning pipeline: images are passed through the network to produce class logits, cross-entropy loss compares these logits with the ground-truth labels, backpropagation computes gradients for the trainable parameters, and AdamW updates those parameters while applying weight decay regularization. The difference between strategies is therefore not the learning objective, but which parameters are allowed to receive gradient updates.
+
+Validation is used to monitor generalization during training. The best checkpoint is selected by validation top-1 accuracy rather than final-epoch accuracy, because the validation set gives an estimate of performance on unseen data and reduces dependence on a single last epoch. Top-1 accuracy is the primary metric throughout the report because all downstream tasks are single-label classification tasks with balanced sampling. Macro-F1 is reported as a secondary check of class-balanced performance in the main strategy and domain-gap experiments. The data-size experiments focus on top-1 trends for compactness. Transfer gain is computed against the training-from-scratch baseline, and forgetting is measured as the ImageNet performance drop after downstream adaptation. Loss curves are used only as diagnostic evidence for training stability.
+
+#### 3.4 Experiment Structure
 
 The study has one main experiment and two supporting analyses. Section 4.1 compares four transfer strategies on EuroSAT. Section 4.2 studies when transfer helps by comparing EuroSAT and CIFAR-10 at the same sample size. Section 4.3 studies when transfer helps by varying the amount of EuroSAT training data. Chapter 5 then evaluates the resulting checkpoints on the official ImageNet validation set to measure catastrophic forgetting.
 
@@ -96,7 +100,7 @@ Partial fine-tuning is also the best trade-off overall. It slightly outperforms 
   </tr>
 </table>
 
-*Figure 1. Side-by-side summary of Experiment 4.1. The left panel shows final EuroSAT test top-1 accuracy, while the right panel shows validation top-1 trajectories. Together they show that partial fine-tuning and full fine-tuning both outperform training from scratch and linear probing, and that deeper fine-tuning converges faster.*
+*Figure 2. Side-by-side summary of Experiment 4.1. The left panel shows final EuroSAT test top-1 accuracy, while the right panel shows validation top-1 trajectories. Together they show that partial fine-tuning and full fine-tuning both outperform training from scratch and linear probing, and that deeper fine-tuning converges faster.*
 
 Overall, the EuroSAT ablation shows that transfer is beneficial only when the backbone is allowed to adapt. Linear probing is insufficient for this domain shift, while partial fine-tuning gives the strongest accuracy-efficiency trade-off.
 
@@ -134,7 +138,7 @@ This comparison separates absolute accuracy from transfer benefit. EuroSAT reach
   </tr>
 </table>
 
-*Figure 2. Same-size cross-domain comparison. The left panel shows downstream test top-1 accuracy, while the right panel shows transfer gain over training from scratch. CIFAR-10 receives a larger gain from ImageNet transfer than EuroSAT.*
+*Figure 3. Same-size cross-domain comparison. The left panel shows downstream test top-1 accuracy, while the right panel shows transfer gain over training from scratch. CIFAR-10 receives a larger gain from ImageNet transfer than EuroSAT.*
 
 #### 4.3 When Transfer Helps: Same-Domain Data-Size Comparison
 
@@ -162,7 +166,7 @@ This section varies the amount of EuroSAT training data in order to study whethe
   </tr>
 </table>
 
-*Figure 3. Same-domain data-size comparison. Full fine-tuning performs best at every training fraction, while its transfer gain is largest in the 10% low-data setting.*
+*Figure 4. Same-domain data-size comparison. Full fine-tuning performs best at every training fraction, while its transfer gain is largest in the 10% low-data setting.*
 
 The results show that transfer is most valuable when labelled data is limited. With only 10% of the EuroSAT training set, full fine-tuning improves over training from scratch by 25.56 percentage points. As the training fraction increases, the model trained from scratch becomes stronger, and the gain from full fine-tuning decreases to about 7-8 points. This shows that transfer mainly improves sample efficiency in this setting.
 
@@ -216,7 +220,7 @@ The domain-gap forgetting results show that a downstream task being closer to Im
   </tr>
 </table>
 
-*Figure 4. Forgetting after same-size downstream adaptation. Fine-tuning causes much larger ImageNet forgetting than linear probing on both EuroSAT and CIFAR-10. Macro-F1 forgetting is shown as a secondary check of the same pattern.*
+*Figure 5. Forgetting after same-size downstream adaptation. Fine-tuning causes much larger ImageNet forgetting than linear probing on both EuroSAT and CIFAR-10. Macro-F1 forgetting is shown as a secondary check of the same pattern.*
 
 #### 5.3 Forgetting After the Data-Size Experiment
 
@@ -248,7 +252,7 @@ This section evaluates how forgetting changes as the amount of EuroSAT downstrea
   </tr>
 </table>
 
-*Figure 5. Forgetting after the data-size experiment. Full fine-tuning gives the strongest EuroSAT adaptation, but it also causes much larger ImageNet forgetting than linear probing.*
+*Figure 6. Forgetting after the data-size experiment. Full fine-tuning gives the strongest EuroSAT adaptation, but it also causes much larger ImageNet forgetting than linear probing.*
 
 The main result is that forgetting depends more on the training strategy than on the amount of EuroSAT data. Full fine-tuning forgets heavily at every data size: ImageNet top-1 drops from 69.76% to about 0.20%-1.24%, meaning that the adapted backbone is no longer compatible with the original ImageNet classifier.
 
@@ -258,17 +262,17 @@ Linear probing preserves more ImageNet ability. Its ImageNet top-1 stays around 
 
 The experimental findings suggest several explanations for when transfer helps and why catastrophic forgetting occurs.
 
-Linear probing performs poorly on EuroSAT because the fixed ImageNet representation is not directly aligned with remote-sensing scene categories. EuroSAT classes rely on overhead texture, land-cover patterns, and spatial layout, while ImageNet features are learned from object-centric natural images. This explains why freezing the entire backbone protects the source representation but does not give the best downstream performance.
+Linear probing performs poorly on EuroSAT because the fixed ImageNet representation is not directly aligned with remote-sensing scene categories. A linear classifier can only draw new decision boundaries on top of the existing feature space; it cannot reshape the feature extractor itself. If EuroSAT classes are not already well separated by ImageNet features, the classifier head has limited capacity to correct the mismatch. This is plausible because EuroSAT relies on overhead texture, land-cover patterns, and spatial layout, whereas ImageNet pretraining is dominated by object-centric natural images [3, 4]. Linear probing therefore protects the pretrained representation, but it also exposes the limitation of frozen features under domain shift.
 
-Partial fine-tuning likely works well because it updates higher-level features while preserving lower-level filters. This gives the model enough flexibility to adapt to the EuroSAT domain without changing the whole network as aggressively as full fine-tuning. Under the short training budget used here, the extra flexibility of full fine-tuning does not produce a clear EuroSAT advantage over partial fine-tuning.
+Partial fine-tuning works well because it matches the hierarchical structure of convolutional networks. Earlier convolutional layers usually encode reusable visual primitives such as edges, corners, color contrast, and local texture, while deeper residual blocks encode more task-specific combinations of those features [1]. Updating `layer4` and the classifier lets the model move the high-level representation toward EuroSAT without disturbing all low-level filters. This gives enough flexibility to adapt to the target task, while avoiding some unnecessary parameter updates in the earlier backbone. Under the short training budget used here, the extra flexibility of full fine-tuning does not produce a clear EuroSAT advantage over partial fine-tuning.
 
-The CIFAR-10 comparison also shows why absolute accuracy and transfer gain need to be separated. CIFAR-10 has lower absolute accuracy than EuroSAT, but larger transfer gain. This is not contradictory: EuroSAT may be easier under the current split and preprocessing, so both training from scratch and fine-tuned models reach high accuracy. CIFAR-10 remains harder in absolute terms, but ImageNet pretraining gives a larger relative improvement because it shares more natural-image structure with ImageNet.
+The CIFAR-10 comparison also shows why absolute accuracy and transfer gain need to be separated. CIFAR-10 has lower absolute accuracy than EuroSAT, but larger transfer gain. This is not contradictory. EuroSAT may be easier under the current split and preprocessing, so both training from scratch and fine-tuned models reach high accuracy. CIFAR-10 remains harder in absolute terms, partly because resizing small 32 x 32 images to 224 x 224 cannot create new visual detail. However, CIFAR-10 still shares more natural-image structure with ImageNet than EuroSAT does, so the pretrained filters provide a stronger optimization starting point and a larger improvement over training from scratch.
 
-The data-size results reflect the same principle from another angle. When EuroSAT labels are limited, training from scratch cannot learn robust features as effectively, so pretrained features provide a large advantage. As the training set grows, the training-from-scratch baseline improves and the relative benefit of transfer becomes smaller.
+The data-size results reflect the same principle from another angle. Deep networks have many parameters, so training from scratch requires enough labelled examples to learn useful low-level and high-level features without overfitting. When EuroSAT labels are limited, pretrained ImageNet features act as a strong inductive bias: the model starts from filters that already encode useful visual regularities instead of learning all representations from random initialization. As the training set grows, the training-from-scratch baseline receives more evidence, learns stronger features, and narrows the gap. This explains why transfer mainly improves sample efficiency in this project.
 
-Catastrophic forgetting arises because fine-tuning updates the backbone toward a new 10-class objective. Without any explicit constraint to preserve ImageNet performance, these updates make the feature extractor less compatible with the original 1000-class ImageNet classifier. Linear probing forgets less because it freezes the pretrained backbone and only learns the downstream classification head. Since the forgetting evaluation reloads the adapted backbone into the ImageNet classifier, a mostly unchanged backbone remains more compatible with the original ImageNet task. The cost is weaker downstream performance because the representation cannot adapt deeply to EuroSAT or CIFAR-10.
+Catastrophic forgetting arises because fine-tuning optimizes the shared backbone for a new 10-class objective, not for the original 1000-class ImageNet objective. Backpropagation changes any unfrozen weights in the direction that reduces downstream cross-entropy loss, even if those changes remove information that was useful for ImageNet. This behavior is consistent with prior observations that optimization on a new task can reduce performance on a previous task [7]. Without an explicit constraint to preserve ImageNet performance, the adapted feature extractor becomes less compatible with the original ImageNet classifier. Linear probing forgets less because it freezes the backbone and only learns the downstream classification head. Since the forgetting evaluation reloads the adapted backbone into the ImageNet classifier, a mostly unchanged backbone remains more compatible with the original ImageNet task. The cost is weaker downstream performance because the representation cannot adapt deeply to EuroSAT or CIFAR-10.
 
-The main limitation is that these experiments use a single architecture, one random seed, and a short fixed training budget. We also measure forgetting directly through ImageNet re-evaluation, but we do not test mitigation methods such as regularization, rehearsal, or freezing additional layers.
+The main limitation is that these experiments use a single architecture, one random seed, and a short fixed training budget. We also measure forgetting directly through ImageNet re-evaluation, but we do not test mitigation methods such as regularization, rehearsal, Learning without Forgetting, EWC, or freezing additional layers [9, 10].
 
 ### 7. Conclusion
 
@@ -290,14 +294,10 @@ Transfer is most useful when labelled target data are limited or when the target
 
 [6] J. Deng, W. Dong, R. Socher, L.-J. Li, K. Li, and L. Fei-Fei, "ImageNet: A Large-Scale Hierarchical Image Database," in *Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition*, 2009, pp. 248-255. doi: 10.1109/CVPR.2009.5206848.
 
-[7] I. J. Goodfellow, M. Mirza, X. Da, A. Courville, and Y. Bengio, "An Empirical Investigation of Catastrophic Forgetting in Gradient-Based Neural Networks," arXiv:1312.6211, 2013.
+[7] I. J. Goodfellow, M. Mirza, D. Xiao, A. Courville, and Y. Bengio, "An Empirical Investigation of Catastrophic Forgetting in Gradient-Based Neural Networks," arXiv:1312.6211, 2013.
 
 [8] A. Krizhevsky, "Learning Multiple Layers of Features from Tiny Images," Technical Report, University of Toronto, 2009.
 
 [9] J. Kirkpatrick, R. Pascanu, N. Rabinowitz, J. Veness, G. Desjardins, A. A. Rusu, K. Milan, J. Quan, T. Ramalho, A. Grabska-Barwinska, D. Hassabis, C. Clopath, D. Kumaran, and R. Hadsell, "Overcoming Catastrophic Forgetting in Neural Networks," *Proceedings of the National Academy of Sciences*, vol. 114, no. 13, pp. 3521-3526, 2017. doi: 10.1073/pnas.1611835114.
 
 [10] Z. Li and D. Hoiem, "Learning Without Forgetting," in *European Conference on Computer Vision*, 2016, pp. 614-629. doi: 10.1007/978-3-319-46493-0_37.
-
-
-
-
