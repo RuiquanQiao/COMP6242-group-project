@@ -1,0 +1,11 @@
+{
+  "strategy": "partial_unfreeze",
+  "epochs": 8,
+  "trainable_params": 898890,
+  "total_params": 2236682,
+  "train_seconds": 577.0395356999998,
+  "best_val_top1": 0.9663440510043948,
+  "test_loss": 0.09495967691104243,
+  "test_top1_acc": 0.9670275590551181,
+  "test_macro_f1": 0.9662020003287004
+}

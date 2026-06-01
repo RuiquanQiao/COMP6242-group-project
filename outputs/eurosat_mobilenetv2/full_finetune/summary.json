@@ -1,0 +1,11 @@
+{
+  "strategy": "full_finetune",
+  "epochs": 8,
+  "trainable_params": 2236682,
+  "total_params": 2236682,
+  "train_seconds": 959.3147750999997,
+  "best_val_top1": 0.9810531496062992,
+  "test_loss": 0.05531293285062342,
+  "test_top1_acc": 0.9820920825004578,
+  "test_macro_f1": 0.981710330202579
+}

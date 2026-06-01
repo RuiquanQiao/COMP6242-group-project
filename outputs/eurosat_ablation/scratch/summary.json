@@ -1,0 +1,15 @@
+{
+  "dataset": "eurosat",
+  "model": "resnet18",
+  "strategy": "scratch",
+  "epochs": 8,
+  "trainable_params": 11181642,
+  "total_params": 11181642,
+  "train_seconds": 1100.4640915000018,
+  "best_val_top1": 0.9335802469135802,
+  "convergence_threshold": 0.9,
+  "convergence_epoch": 6,
+  "test_loss": 0.19131300799456644,
+  "test_top1_acc": 0.9320987654320988,
+  "test_macro_f1": 0.9304197222636572
+}

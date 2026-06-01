@@ -1,0 +1,11 @@
+{
+  "strategy": "from_scratch",
+  "epochs": 8,
+  "trainable_params": 2236682,
+  "total_params": 2236682,
+  "train_seconds": 959.6917448000004,
+  "best_val_top1": 0.9262357832878594,
+  "test_loss": 0.22332820742515716,
+  "test_top1_acc": 0.9216152668937924,
+  "test_macro_f1": 0.9186302587231907
+}

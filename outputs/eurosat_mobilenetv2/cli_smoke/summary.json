@@ -1,0 +1,11 @@
+{
+  "strategy": "linear_probe",
+  "epochs": 1,
+  "trainable_params": 12810,
+  "total_params": 2236682,
+  "train_seconds": 10.069191200003843,
+  "best_val_top1": 0.0625,
+  "test_loss": 2.292367100715637,
+  "test_top1_acc": 0.125,
+  "test_macro_f1": 0.037955346650998825
+}
