@@ -1,0 +1,15 @@
+{
+  "dataset": "cifar10",
+  "model": "resnet18",
+  "strategy": "scratch",
+  "epochs": 8,
+  "trainable_params": 11181642,
+  "total_params": 11181642,
+  "train_seconds": 1425.4053920999868,
+  "best_val_top1": 0.7930864197530865,
+  "convergence_threshold": 0.9,
+  "convergence_epoch": null,
+  "test_loss": 0.6453780108763848,
+  "test_top1_acc": 0.7812345679012346,
+  "test_macro_f1": 0.7827391638412922
+}

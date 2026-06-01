@@ -1,0 +1,15 @@
+{
+  "dataset": "cifar10",
+  "model": "resnet18",
+  "strategy": "linear_probe",
+  "epochs": 8,
+  "trainable_params": 5130,
+  "total_params": 11181642,
+  "train_seconds": 477.5313496999988,
+  "best_val_top1": 0.779753086419753,
+  "convergence_threshold": 0.9,
+  "convergence_epoch": null,
+  "test_loss": 0.6496320261999413,
+  "test_top1_acc": 0.7819753086419753,
+  "test_macro_f1": 0.7799857058561591
+}
