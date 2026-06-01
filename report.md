@@ -1,4 +1,4 @@
-﻿﻿## From ImageNet to EuroSAT: Transfer Learning, Forgetting, and When Transfer Helps
+﻿## From ImageNet to EuroSAT: Transfer Learning, Forgetting, and When Transfer Helps
 
 ### 0. Project Information
 
