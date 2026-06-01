@@ -40,9 +40,9 @@ Remote sensing scene classification is a useful stress test for transfer because
 Fine-tuning also raises the issue of catastrophic forgetting: performance on a previous task can drop after training on a new task \cite{goodfellow2013}. Although methods such as EWC and Learning without Forgetting address this problem \cite{kirkpatrick2017,li2016}, our focus is to measure how much ordinary downstream fine-tuning changes the original ImageNet capability.
 
 \section{Experimental Setup}
-\begin{figure*}[t]
+\begin{figure}[t]
 \centering
-\resizebox{\textwidth}{!}{%
+\resizebox{\columnwidth}{!}{%
 \begin{tikzpicture}[
   font=\small\sffamily,
   >=Latex,
@@ -58,45 +58,62 @@ Fine-tuning also raises the issue of catastrophic forgetting: performance on a p
   },
   arr/.style={->, draw=black!70, line width=1.0pt},
   dashedarr/.style={->, draw=black!55, dashed, line width=1.0pt},
-  lane/.style={font=\scriptsize\sffamily\bfseries, text=black!55}
+  lane/.style={font=\scriptsize\sffamily\bfseries, text=black!55},
+  group/.style={draw=black!45, dashed, rounded corners=10pt, inner sep=10pt}
 ]
 
-\node[lane] at (2.0,1.55) {INPUTS};
-\node[lane] at (8.4,1.55) {MAIN LINE};
-\node[lane] at (14.8,1.55) {ANALYSIS};
+\node[lane] at (0.0,1.2) {MAIN LINE};
 
-\node[box={blue}{3.6cm}, minimum height=1.9cm] (inputs) at (2.0,0.05) {%
-\textbf{Inputs}\\[2pt]
-ImageNet initialization\\
-EuroSAT / CIFAR-10\\
-fixed or reduced training data};
+\node[box={blue}{4.2cm}, minimum height=1.5cm] (source) at (0.0,0.0) {%
+\textbf{ImageNet ResNet-18}\\
+pretrained initialization};
 
-\node[box={green!60!black}{4.4cm}, minimum height=2.2cm] (core) at (8.4,0.05) {%
-\textbf{Transfer Learning on ResNet-18}\\[2pt]
-replace classifier head\\
-\texttt{scratch} / \texttt{linear\_probe}\\
-\texttt{partial\_ft} / \texttt{full\_ft}};
+\node[box={green!60!black}{4.2cm}, minimum height=1.5cm] (transfer) at (0.0,-2.3) {%
+\textbf{Transfer to EuroSAT}};
 
-\node[box={orange}{4.2cm}, minimum height=2.2cm] (studies) at (14.8,0.05) {%
-\textbf{Downstream Studies}\\[2pt]
-\textbf{Main}: EuroSAT ablation\\
-\textbf{Support}: domain gap\\
-\textbf{Support}: data size};
+\node[box={violet}{2.0cm}, minimum height=1.0cm] (scratch) at (-4.8,-5.6) {\texttt{scratch}};
+\node[box={violet}{2.4cm}, minimum height=1.0cm] (linearprobe) at (-1.6,-5.6) {\texttt{linear\_probe}};
+\node[box={violet}{2.2cm}, minimum height=1.0cm] (partialft) at (1.8,-5.6) {\texttt{partial\_ft}};
+\node[box={violet}{2.0cm}, minimum height=1.0cm] (fullft) at (4.8,-5.6) {\texttt{full\_ft}};
+\node[group, fit=(scratch) (linearprobe) (partialft) (fullft)] (strategygroup) {};
+\node[font=\small\sffamily\bfseries, anchor=south west] at (strategygroup.north west) {4 Strategies};
 
-\node[box={red}{4.8cm}, minimum height=1.8cm] (forget) at (14.8,-3.0) {%
-\textbf{Catastrophic Forgetting}\\[2pt]
-reload the adapted backbone into\\
-the ImageNet classifier\\
-measure source-task performance drop};
+\node[box={orange}{3.1cm}, minimum height=1.15cm] (mainexp) at (0.0,-9.6) {%
+\textbf{4.1 Main Experiment}\\
+EuroSAT ablation};
 
-\draw[arr] (inputs.east) -- (core.west);
-\draw[arr] (core.east) -- (studies.west);
-\draw[dashedarr] (studies.south) -- (forget.north);
+\node[box={orange}{3.1cm}, minimum height=1.15cm] (domain) at (-4.0,-9.6) {%
+\textbf{4.2 When Transfer Helps}\\
+same-size domain gap};
+
+\node[box={orange}{3.1cm}, minimum height=1.15cm] (fraction) at (4.0,-9.6) {%
+\textbf{4.3 When Transfer Helps}\\
+same-domain data size};
+\node[group, fit=(mainexp) (domain) (fraction)] (studygroup) {};
+\node[font=\small\sffamily\bfseries, anchor=south west] at (studygroup.north west) {When Transfer Helps};
+
+\node[box={red}{2.7cm}, minimum height=1.1cm] (forgetmain) at (0.0,-13.0) {%
+\textbf{5.1 Forgetting}\\
+after main experiment};
+
+\node[box={red}{2.7cm}, minimum height=1.1cm] (forgetdomain) at (-4.0,-13.0) {%
+\textbf{5.2 Forgetting}\\
+after domain gap};
+
+\node[box={red}{2.7cm}, minimum height=1.1cm] (forgetfraction) at (4.0,-13.0) {%
+\textbf{5.3 Forgetting}\\
+after data size};
+\node[group, fit=(forgetmain) (forgetdomain) (forgetfraction)] (forgetgroup) {};
+\node[font=\small\sffamily\bfseries, anchor=south west] at (forgetgroup.north west) {Catastrophic Forgetting};
+\draw[arr] (source.south) -- (transfer.north);
+\draw[arr] (transfer.south) -- (strategygroup.north);
+\draw[arr] (strategygroup.south) -- (studygroup.north);
+\draw[dashedarr] (studygroup.south) -- (forgetgroup.north);
 \end{tikzpicture}%
 }
 \caption{Experimental workflow used in Sections~4 and~5. The downstream experiments compare transfer strategies, target-domain distance, and training-set size. The downstream-trained checkpoints are then re-evaluated on ImageNet to measure catastrophic forgetting.}
 \label{fig:pipeline}
-\end{figure*}
+\end{figure}
 
 \subsection{Backbone and Initialization}
 All experiments use ResNet-18 \cite{he2016}. Transfer runs start from the official torchvision ImageNet-1K weights, while training from scratch uses random initialization. ResNet-18 first extracts local visual patterns through convolutional layers, then builds increasingly task-specific representations through deeper residual blocks. In this structure, earlier layers tend to capture general low-level features such as edges, corners, and textures, while later layers combine them into higher-level semantic patterns. The final fully connected layer maps the learned representation to class logits, so it must be replaced when the number of target classes changes.
