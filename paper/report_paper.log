@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.2) (preloaded format=pdflatex 2026.3.31)  2 JUN 2026 15:22
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.2) (preloaded format=pdflatex 2026.3.31)  2 JUN 2026 16:47
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -783,7 +783,7 @@ Package cleveref Info: always capitalise cross-reference names on input line 78
 )
 ==> First Aid for cleveref.sty applied!
 LaTeX Font Info:    Trying to load font information for OT1+ptm on input line 6
-5.
+6.
 (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\ot1ptm.fd
 File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
 )
@@ -794,24 +794,24 @@ File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
 ) (report_paper.aux)
 \openout1 = `report_paper.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 65.
-LaTeX Font Info:    ... okay on input line 65.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 65.
-LaTeX Font Info:    ... okay on input line 65.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 65.
-LaTeX Font Info:    ... okay on input line 65.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 65.
-LaTeX Font Info:    ... okay on input line 65.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 65.
-LaTeX Font Info:    ... okay on input line 65.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 65.
-LaTeX Font Info:    ... okay on input line 65.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 65.
-LaTeX Font Info:    ... okay on input line 65.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 65.
-LaTeX Font Info:    ... okay on input line 65.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 65.
-LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 66.
+LaTeX Font Info:    ... okay on input line 66.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 66.
+LaTeX Font Info:    ... okay on input line 66.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 66.
+LaTeX Font Info:    ... okay on input line 66.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 66.
+LaTeX Font Info:    ... okay on input line 66.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 66.
+LaTeX Font Info:    ... okay on input line 66.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 66.
+LaTeX Font Info:    ... okay on input line 66.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 66.
+LaTeX Font Info:    ... okay on input line 66.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 66.
+LaTeX Font Info:    ... okay on input line 66.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 66.
+LaTeX Font Info:    ... okay on input line 66.
 
 (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.m
 kii
@@ -851,13 +851,13 @@ Package caption Info: float package is loaded.
 Package caption Info: hyperref package is loaded.
 Package caption Info: End \AtBeginDocument code.
  ABD: EveryShipout initializing macros
-LaTeX Info: Redefining \microtypecontext on input line 65.
-Package microtype Info: Applying patch `item' on input line 65.
-Package microtype Info: Applying patch `toc' on input line 65.
-Package microtype Info: Applying patch `eqnum' on input line 65.
-Package microtype Info: Applying patch `footnote' on input line 65.
-Package microtype Info: Applying patch `verbatim' on input line 65.
-LaTeX Info: Redefining \microtypesetup on input line 65.
+LaTeX Info: Redefining \microtypecontext on input line 66.
+Package microtype Info: Applying patch `item' on input line 66.
+Package microtype Info: Applying patch `toc' on input line 66.
+Package microtype Info: Applying patch `eqnum' on input line 66.
+Package microtype Info: Applying patch `footnote' on input line 66.
+Package microtype Info: Applying patch `verbatim' on input line 66.
+LaTeX Info: Redefining \microtypesetup on input line 66.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using default protrusion set `alltext'.
@@ -872,7 +872,7 @@ Package microtype Info: No adjustment of character kerning.
 (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/latex/microtype\mt-ptm.cfg
 File: mt-ptm.cfg 2006/04/20 v1.7 microtype config. file: Times (RS)
 )
-Package hyperref Info: Link coloring OFF on input line 65.
+Package hyperref Info: Link coloring OFF on input line 66.
 
 (report_paper.out) (report_paper.out)
 \@outlinefile=\write4
@@ -883,7 +883,7 @@ Package hyperref Info: Link coloring OFF on input line 65.
 File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman 
 (RS)
 )
-LaTeX Font Info:    Trying to load font information for U+msa on input line 89.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 90.
 
 
 (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
@@ -892,7 +892,7 @@ File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/latex/microtype\mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 89.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 90.
 
 
 (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
@@ -901,8 +901,8 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/latex/microtype\mt-msb.cfg
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 )
-LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 8
-9.
+LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 9
+0.
 
 (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
@@ -913,7 +913,7 @@ enovo/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/base/8r.enc}
 
 ]
 LaTeX Font Info:    Trying to load font information for OT1+phv on input line 2
-00.
+01.
 
 (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\ot1phv.fd
 File: ot1phv.fd 2020/03/25 scalable font definitions for OT1/phv.
@@ -924,107 +924,109 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             See the microtype manual for details.
 
 [2]
-<../outputs/eurosat_ablation/test_top1_acc.png, id=123, 348.1005pt x 232.2276pt
->
-File: ../outputs/eurosat_ablation/test_top1_acc.png Graphic file (type png)
-<use ../outputs/eurosat_ablation/test_top1_acc.png>
-Package pdftex.def Info: ../outputs/eurosat_ablation/test_top1_acc.png  used on
- input line 247.
-(pdftex.def)             Requested size: 203.93704pt x 136.0528pt.
-<../outputs/eurosat_ablation/val_top1_acc_curve.png, id=125, 362.3136pt x 239.4
-546pt>
-File: ../outputs/eurosat_ablation/val_top1_acc_curve.png Graphic file (type png
-)
-<use ../outputs/eurosat_ablation/val_top1_acc_curve.png>
-Package pdftex.def Info: ../outputs/eurosat_ablation/val_top1_acc_curve.png  us
-ed on input line 249.
-(pdftex.def)             Requested size: 203.93704pt x 134.78056pt.
- [3 <../outputs/eurosat_ablation/test_top1_acc.png> <../outputs/eurosat_ablatio
-n/val_top1_acc_curve.png>]
-<../outputs/domain_gap/test_top1_acc.png, id=136, 362.3136pt x 239.4546pt>
-File: ../outputs/domain_gap/test_top1_acc.png Graphic file (type png)
-<use ../outputs/domain_gap/test_top1_acc.png>
-Package pdftex.def Info: ../outputs/domain_gap/test_top1_acc.png  used on input
- line 288.
-(pdftex.def)             Requested size: 184.96574pt x 122.24445pt.
-<../outputs/domain_gap/transfer_gain_top1.png, id=137, 362.3136pt x 239.4546pt>
-
-File: ../outputs/domain_gap/transfer_gain_top1.png Graphic file (type png)
-<use ../outputs/domain_gap/transfer_gain_top1.png>
-Package pdftex.def Info: ../outputs/domain_gap/transfer_gain_top1.png  used on 
-input line 290.
-(pdftex.def)             Requested size: 184.96574pt x 122.24445pt.
-<../outputs/data_fraction/test_top1_acc.png, id=138, 362.3136pt x 239.4546pt>
-File: ../outputs/data_fraction/test_top1_acc.png Graphic file (type png)
-<use ../outputs/data_fraction/test_top1_acc.png>
-Package pdftex.def Info: ../outputs/data_fraction/test_top1_acc.png  used on in
-put line 329.
-(pdftex.def)             Requested size: 184.96574pt x 122.24445pt.
-<../outputs/data_fraction/transfer_gain_top1.png, id=139, 347.8596pt x 239.4546
-pt>
-File: ../outputs/data_fraction/transfer_gain_top1.png Graphic file (type png)
-<use ../outputs/data_fraction/transfer_gain_top1.png>
-Package pdftex.def Info: ../outputs/data_fraction/transfer_gain_top1.png  used 
-on input line 331.
-(pdftex.def)             Requested size: 184.96574pt x 127.32686pt.
- [4 <../outputs/domain_gap/test_top1_acc.png> <../outputs/domain_gap/transfer_g
-ain_top1.png> <../outputs/data_fraction/test_top1_acc.png> <../outputs/data_fra
-ction/transfer_gain_top1.png>]
-<../outputs/forgetting_main/forgetting_top1.png, id=152, 348.1005pt x 239.4546p
-t>
-File: ../outputs/forgetting_main/forgetting_top1.png Graphic file (type png)
-<use ../outputs/forgetting_main/forgetting_top1.png>
-Package pdftex.def Info: ../outputs/forgetting_main/forgetting_top1.png  used o
-n input line 371.
-(pdftex.def)             Requested size: 213.4209pt x 146.8088pt.
-<../outputs/forgetting_main/transfer_forgetting_tradeoff.png, id=153, 362.5545p
-t x 239.4546pt>
-File: ../outputs/forgetting_main/transfer_forgetting_tradeoff.png Graphic file 
-(type png)
-<use ../outputs/forgetting_main/transfer_forgetting_tradeoff.png>
-Package pdftex.def Info: ../outputs/forgetting_main/transfer_forgetting_tradeof
-f.png  used on input line 373.
-(pdftex.def)             Requested size: 213.4209pt x 140.9591pt.
- [5 <../outputs/forgetting_main/forgetting_top1.png> <../outputs/forgetting_mai
-n/transfer_forgetting_tradeoff.png>]
-<../outputs/forgetting_domain_gap/forgetting_top1.png, id=162, 362.3136pt x 239
-.4546pt>
-File: ../outputs/forgetting_domain_gap/forgetting_top1.png Graphic file (type p
-ng)
-<use ../outputs/forgetting_domain_gap/forgetting_top1.png>
-Package pdftex.def Info: ../outputs/forgetting_domain_gap/forgetting_top1.png  
-used on input line 407.
-(pdftex.def)             Requested size: 213.4209pt x 141.05045pt.
-<../outputs/forgetting_domain_gap/transfer_forgetting_tradeoff.png, id=163, 362
-.7954pt x 239.4546pt>
-File: ../outputs/forgetting_domain_gap/transfer_forgetting_tradeoff.png Graphic
- file (type png)
-<use ../outputs/forgetting_domain_gap/transfer_forgetting_tradeoff.png>
-Package pdftex.def Info: ../outputs/forgetting_domain_gap/transfer_forgetting_t
-radeoff.png  used on input line 409.
-(pdftex.def)             Requested size: 213.4209pt x 140.86775pt.
-<../outputs/forgetting_data_fraction/forgetting_top1_transfer_methods.png, id=1
-64, 362.3136pt x 239.4546pt>
-File: ../outputs/forgetting_data_fraction/forgetting_top1_transfer_methods.png 
-Graphic file (type png)
-<use ../outputs/forgetting_data_fraction/forgetting_top1_transfer_methods.png>
-Package pdftex.def Info: ../outputs/forgetting_data_fraction/forgetting_top1_tr
-ansfer_methods.png  used on input line 445.
-(pdftex.def)             Requested size: 213.4209pt x 141.05045pt.
-<../outputs/forgetting_data_fraction/transfer_forgetting_tradeoff.png, id=165, 
+<../outputs/new_style_picture/eurosat_ablation/test_top1_acc.png, id=123, 348.1
+005pt x 232.2276pt>
+File: ../outputs/new_style_picture/eurosat_ablation/test_top1_acc.png Graphic f
+ile (type png)
+<use ../outputs/new_style_picture/eurosat_ablation/test_top1_acc.png>
+Package pdftex.def Info: ../outputs/new_style_picture/eurosat_ablation/test_top
+1_acc.png  used on input line 248.
+(pdftex.def)             Requested size: 201.39375pt x 134.35545pt.
+<../outputs/new_style_picture/eurosat_ablation/val_top1_acc_curve.png, id=125, 
 362.3136pt x 239.4546pt>
-File: ../outputs/forgetting_data_fraction/transfer_forgetting_tradeoff.png Grap
+File: ../outputs/new_style_picture/eurosat_ablation/val_top1_acc_curve.png Grap
 hic file (type png)
-<use ../outputs/forgetting_data_fraction/transfer_forgetting_tradeoff.png>
-Package pdftex.def Info: ../outputs/forgetting_data_fraction/transfer_forgettin
-g_tradeoff.png  used on input line 447.
-(pdftex.def)             Requested size: 213.4209pt x 141.05045pt.
- [6 <../outputs/forgetting_domain_gap/forgetting_top1.png> <../outputs/forgetti
-ng_domain_gap/transfer_forgetting_tradeoff.png> <../outputs/forgetting_data_fra
-ction/forgetting_top1_transfer_methods.png> <../outputs/forgetting_data_fractio
-n/transfer_forgetting_tradeoff.png>] [7] [8
-
-] (report_paper.aux)
+<use ../outputs/new_style_picture/eurosat_ablation/val_top1_acc_curve.png>
+Package pdftex.def Info: ../outputs/new_style_picture/eurosat_ablation/val_top1
+_acc_curve.png  used on input line 250.
+(pdftex.def)             Requested size: 201.39375pt x 133.09982pt.
+ [3 <../outputs/new_style_picture/eurosat_ablation/test_top1_acc.png> <../outpu
+ts/new_style_picture/eurosat_ablation/val_top1_acc_curve.png>]
+<../outputs/new_style_picture/domain_gap/test_top1_acc.png, id=136, 362.3136pt 
+x 239.4546pt>
+File: ../outputs/new_style_picture/domain_gap/test_top1_acc.png Graphic file (t
+ype png)
+<use ../outputs/new_style_picture/domain_gap/test_top1_acc.png>
+Package pdftex.def Info: ../outputs/new_style_picture/domain_gap/test_top1_acc.
+png  used on input line 289.
+(pdftex.def)             Requested size: 187.009pt x 123.5927pt.
+<../outputs/new_style_picture/domain_gap/transfer_gain_top1.png, id=137, 362.31
+36pt x 239.4546pt>
+File: ../outputs/new_style_picture/domain_gap/transfer_gain_top1.png Graphic fi
+le (type png)
+<use ../outputs/new_style_picture/domain_gap/transfer_gain_top1.png>
+Package pdftex.def Info: ../outputs/new_style_picture/domain_gap/transfer_gain_
+top1.png  used on input line 291.
+(pdftex.def)             Requested size: 187.009pt x 123.5927pt.
+<../outputs/new_style_picture/data_fraction/test_top1_acc.png, id=138, 362.3136
+pt x 239.4546pt>
+File: ../outputs/new_style_picture/data_fraction/test_top1_acc.png Graphic file
+ (type png)
+<use ../outputs/new_style_picture/data_fraction/test_top1_acc.png>
+Package pdftex.def Info: ../outputs/new_style_picture/data_fraction/test_top1_a
+cc.png  used on input line 328.
+(pdftex.def)             Requested size: 187.009pt x 123.5927pt.
+<../outputs/new_style_picture/data_fraction/transfer_gain_top1.png, id=139, 347
+.8596pt x 239.4546pt>
+File: ../outputs/new_style_picture/data_fraction/transfer_gain_top1.png Graphic
+ file (type png)
+<use ../outputs/new_style_picture/data_fraction/transfer_gain_top1.png>
+Package pdftex.def Info: ../outputs/new_style_picture/data_fraction/transfer_ga
+in_top1.png  used on input line 330.
+(pdftex.def)             Requested size: 187.009pt x 128.73357pt.
+ [4 <../outputs/new_style_picture/domain_gap/test_top1_acc.png> <../outputs/new
+_style_picture/domain_gap/transfer_gain_top1.png> <../outputs/new_style_picture
+/data_fraction/test_top1_acc.png> <../outputs/new_style_picture/data_fraction/t
+ransfer_gain_top1.png>]
+<../outputs/new_style_picture/forgetting_main/forgetting_top1.png, id=152, 348.
+1005pt x 239.4546pt>
+File: ../outputs/new_style_picture/forgetting_main/forgetting_top1.png Graphic 
+file (type png)
+<use ../outputs/new_style_picture/forgetting_main/forgetting_top1.png>
+Package pdftex.def Info: ../outputs/new_style_picture/forgetting_main/forgettin
+g_top1.png  used on input line 370.
+(pdftex.def)             Requested size: 220.57463pt x 151.73044pt.
+<../outputs/new_style_picture/forgetting_domain_gap/forgetting_top1.png, id=153
+, 362.3136pt x 239.4546pt>
+File: ../outputs/new_style_picture/forgetting_domain_gap/forgetting_top1.png Gr
+aphic file (type png)
+<use ../outputs/new_style_picture/forgetting_domain_gap/forgetting_top1.png>
+Package pdftex.def Info: ../outputs/new_style_picture/forgetting_domain_gap/for
+getting_top1.png  used on input line 404.
+(pdftex.def)             Requested size: 196.60127pt x 129.932pt.
+<../outputs/new_style_picture/forgetting_domain_gap/transfer_forgetting_tradeof
+f.png, id=154, 362.5545pt x 239.4546pt>
+File: ../outputs/new_style_picture/forgetting_domain_gap/transfer_forgetting_tr
+adeoff.png Graphic file (type png)
+<use ../outputs/new_style_picture/forgetting_domain_gap/transfer_forgetting_tra
+deoff.png>
+Package pdftex.def Info: ../outputs/new_style_picture/forgetting_domain_gap/tra
+nsfer_forgetting_tradeoff.png  used on input line 406.
+(pdftex.def)             Requested size: 196.60127pt x 129.84796pt.
+ [5 <../outputs/new_style_picture/forgetting_main/forgetting_top1.png>]
+<../outputs/new_style_picture/forgetting_data_fraction/forgetting_top1_transfer
+_methods.png, id=163, 362.3136pt x 239.4546pt>
+File: ../outputs/new_style_picture/forgetting_data_fraction/forgetting_top1_tra
+nsfer_methods.png Graphic file (type png)
+<use ../outputs/new_style_picture/forgetting_data_fraction/forgetting_top1_tran
+sfer_methods.png>
+Package pdftex.def Info: ../outputs/new_style_picture/forgetting_data_fraction/
+forgetting_top1_transfer_methods.png  used on input line 442.
+(pdftex.def)             Requested size: 196.60127pt x 129.932pt.
+<../outputs/new_style_picture/forgetting_data_fraction/transfer_forgetting_trad
+eoff.png, id=164, 362.3136pt x 239.4546pt>
+File: ../outputs/new_style_picture/forgetting_data_fraction/transfer_forgetting
+_tradeoff.png Graphic file (type png)
+<use ../outputs/new_style_picture/forgetting_data_fraction/transfer_forgetting_
+tradeoff.png>
+Package pdftex.def Info: ../outputs/new_style_picture/forgetting_data_fraction/
+transfer_forgetting_tradeoff.png  used on input line 444.
+(pdftex.def)             Requested size: 196.60127pt x 129.932pt.
+ [6 <../outputs/new_style_picture/forgetting_domain_gap/forgetting_top1.png> <.
+./outputs/new_style_picture/forgetting_domain_gap/transfer_forgetting_tradeoff.
+png> <../outputs/new_style_picture/forgetting_data_fraction/forgetting_top1_tra
+nsfer_methods.png> <../outputs/new_style_picture/forgetting_data_fraction/trans
+fer_forgetting_tradeoff.png>] [7] (report_paper.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
@@ -1033,11 +1035,11 @@ Package rerunfilecheck Info: File `report_paper.out' has not changed.
 (rerunfilecheck)             Checksum: 466DA640D7277FCE7F884B7120757302;3487.
  ) 
 Here is how much of TeX's memory you used:
- 27924 strings out of 467867
- 528737 string characters out of 5417850
- 981707 words of memory out of 5000000
+ 27948 strings out of 467867
+ 530028 string characters out of 5417850
+ 981709 words of memory out of 5000000
  56006 multiletter control sequences out of 15000+600000
- 675930 words of font info for 301 fonts, out of 8000000 for 9000
+ 677510 words of font info for 317 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  84i,10n,98p,1181b,960s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/lenovo/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm
@@ -1052,9 +1054,9 @@ al/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvb8a.pfb><C:/Users/lenovo/AppData
 Data/Local/Programs/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/Users/lenovo/Ap
 pData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb><C:/Users/lenovo/A
 ppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmri8a.pfb>
-Output written on report_paper.pdf (8 pages, 1102180 bytes).
+Output written on report_paper.pdf (7 pages, 1029511 bytes).
 PDF statistics:
- 255 PDF objects out of 1000 (max. 8388607)
- 50 named destinations out of 1000 (max. 500000)
- 67793 words of extra memory for PDF output out of 74296 (max. 10000000)
+ 253 PDF objects out of 1000 (max. 8388607)
+ 51 named destinations out of 1000 (max. 500000)
+ 71884 words of extra memory for PDF output out of 74296 (max. 10000000)
 

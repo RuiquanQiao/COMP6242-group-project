@@ -28,19 +28,19 @@
 
 \makeatletter
 \def\cvprsection{\@startsection {section}{1}{\z@}
-   {-10pt}{7pt} {\large\bf}}
+   {-10pt}{7pt} {\large\bfseries}}
 \def\cvprssect#1{\cvprsection*{#1}}
 \def\cvprsect#1{\cvprsection{\texorpdfstring{\hskip -1em.~}{}#1}}
 \def\section{\@ifstar\cvprssect\cvprsect}
 
 \def\cvprsubsection{\@startsection {subsection}{2}{\z@}
-   {-8pt}{5pt} {\elvbf}}
+   {-8pt}{5pt} {\normalsize\bfseries}}
 \def\cvprssubsect#1{\cvprsubsection*{#1}}
 \def\cvprsubsect#1{\cvprsubsection{\texorpdfstring{\hskip -1em.~}{}#1}}
 \def\subsection{\@ifstar\cvprssubsect\cvprsubsect}
 
 \def\cvprsubsubsection{\@startsection {subsubsection}{3}{\z@}
-   {-6pt}{3pt} {\tenbf}}
+   {-6pt}{3pt} {\normalsize\bfseries}}
 \def\cvprssubsubsect#1{\cvprsubsubsection*{#1}}
 \def\cvprsubsubsect#1{\cvprsubsubsection{\texorpdfstring{\hskip -1em.~}{}#1}}
 \def\subsubsection{\@ifstar\cvprssubsubsect\cvprsubsubsect}
