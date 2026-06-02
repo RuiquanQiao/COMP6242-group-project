@@ -357,7 +357,7 @@ Linear probing helps at 10\% and 30\% data, but it becomes worse than training f
 \section{Catastrophic Forgetting Analysis}
 Section~5 returns each downstream-adapted model to the official ILSVRC2012 validation set and measures how much of the original ImageNet capability has been lost after fine-tuning. Rather than introducing a new task, this section serves as a direct post-test for Section~4: Section~4 asks how well the model learns the downstream task, while Section~5 asks how much ImageNet performance is forgotten in the process.
 
-In this section, a trade-off refers to the balance between downstream adaptation and source-task retention. A desirable model would achieve high downstream accuracy or transfer gain while keeping ImageNet forgetting low. In the scatter plots in Sections~5.1 and~5.2, the horizontal axis is ImageNet forgetting and the vertical axis is downstream test accuracy, so points closer to the upper-left region are preferable. Points on the right side indicate stronger forgetting, even if their downstream accuracy is high. In Section~5.3, the trade-off is shown across training fractions by plotting transfer gain and forgetting as separate trends.
+In this section, a trade-off refers to the balance between downstream adaptation and source-task retention. A desirable model would achieve high downstream accuracy or transfer gain while keeping ImageNet forgetting low. In the scatter plot in Section~5.2, the horizontal axis is ImageNet forgetting and the vertical axis is downstream test accuracy, so points closer to the upper-left region are preferable. Points on the right side indicate stronger forgetting, even if their downstream accuracy is high. In Section~5.3, the trade-off is shown across training fractions by plotting transfer gain and forgetting as separate trends.
 
 \subsection{Forgetting After the Main EuroSAT Experiment}
 We evaluate the linear probing, partial unfreezing, and full fine-tuning checkpoints from Section~4.1 on the official ILSVRC2012 validation set. The original ImageNet-pretrained ResNet-18 obtains 69.76\% top-1 accuracy and 69.30 macro-F1 before downstream adaptation. For each strategy, forgetting is measured as the drop from this baseline to the EuroSAT-adapted model evaluated back on ImageNet. Training from scratch is excluded because it does not start from ImageNet-pretrained weights.
@@ -380,19 +380,12 @@ Full fine-tune & 0.12 & 69.64 & 0.02 & 69.27 & 97.56 \\
 \vspace{0.15em}
 \end{table}
 
-\begin{figure*}[t]
+\begin{figure}[!htbp]
 \centering
-\begin{minipage}{0.455\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{../outputs/new_style_picture/forgetting_main/forgetting_top1.png}
-\end{minipage}\hfill
-\begin{minipage}{0.455\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{../outputs/new_style_picture/forgetting_main/transfer_forgetting_tradeoff.png}
-\end{minipage}
-\caption{Forgetting after the main EuroSAT experiment. Left: ImageNet top-1 forgetting. Right: downstream accuracy and forgetting trade-off.}
+\includegraphics[width=0.92\columnwidth]{../outputs/new_style_picture/forgetting_main/forgetting_top1.png}
+\caption{Forgetting after the main EuroSAT experiment. ImageNet top-1 forgetting by transfer strategy.}
 \label{fig:forget-main}
-\end{figure*}
+\end{figure}
 
 The main forgetting experiment reveals a clear adaptation-retention trade-off. It is worth noting that the magnitude of forgetting is extremely large. After partial unfreezing and full fine-tuning, ImageNet top-1 accuracy falls to below 1\%, suggesting that the adapted backbone becomes almost completely incompatible with the original ImageNet classifier. This result indicates that substantial downstream adaptation can dramatically alter the learned representation, even when downstream performance improves. Future work could investigate the mechanisms behind this extreme forgetting and evaluate mitigation methods designed to preserve source-task knowledge.
 
