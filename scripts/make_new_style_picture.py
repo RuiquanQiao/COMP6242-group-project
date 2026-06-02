@@ -344,9 +344,36 @@ def fig_forgetting_main(root: Path) -> plt.Figure:
 def fig_forgetting_main_tradeoff(root: Path) -> plt.Figure:
     df = main_forgetting(root)
     fig, ax = plt.subplots(figsize=(4.9, 3.2), constrained_layout=True)
+
+    label_offsets = {
+        "Linear probe": (6, 4, "left", "bottom"),
+        "Partial unfreeze": (-8, 18, "right", "bottom"),
+        "Full fine-tune": (8, -18, "left", "top"),
+    }
+
     for _, row in df.iterrows():
-        ax.scatter(row["Forgetting"], row["EuroSATTop1"], color=color(row["Strategy"]), marker=marker(row["Strategy"]), s=62)
-        ax.annotate(row["Strategy"], (row["Forgetting"], row["EuroSATTop1"]), xytext=(5, 4), textcoords="offset points", fontsize=8.2)
+        ax.scatter(
+            row["Forgetting"],
+            row["EuroSATTop1"],
+            color=color(row["Strategy"]),
+            marker=marker(row["Strategy"]),
+            s=62,
+            zorder=3,
+        )
+
+        dx, dy, ha, va = label_offsets[row["Strategy"]]
+        ax.annotate(
+            row["Strategy"],
+            xy=(row["Forgetting"], row["EuroSATTop1"]),
+            xytext=(dx, dy),
+            textcoords="offset points",
+            fontsize=8.0,
+            ha=ha,
+            va=va,
+            bbox=dict(boxstyle="round,pad=0.12", fc="white", ec="none", alpha=0.85),
+            arrowprops=dict(arrowstyle="-", lw=0.55, color=STYLE["muted"]),
+        )
+
     ax.annotate("preferred\nregion", (38, 98.8), ha="left", va="top", fontsize=8.4, color=STYLE["muted"])
     ax.set_xlabel("ImageNet top-1 forgetting")
     ax.set_ylabel("EuroSAT top-1 accuracy")
@@ -380,10 +407,40 @@ def fig_forgetting_domain(root: Path) -> plt.Figure:
 def fig_forgetting_domain_tradeoff(root: Path) -> plt.Figure:
     df = domain_forgetting(root)
     fig, ax = plt.subplots(figsize=(4.9, 3.2), constrained_layout=True)
+
+    label_offsets = {
+        ("EuroSAT", "Linear probe"): (6, 4, "left", "bottom"),
+        ("CIFAR-10", "Linear probe"): (6, 4, "left", "bottom"),
+        ("EuroSAT", "Partial unfreeze"): (-8, 18, "right", "bottom"),
+        ("EuroSAT", "Full fine-tune"): (8, -18, "left", "top"),
+        ("CIFAR-10", "Partial unfreeze"): (-8, 16, "right", "bottom"),
+        ("CIFAR-10", "Full fine-tune"): (8, -16, "left", "top"),
+    }
+
     for _, row in df.iterrows():
         label = f"{row['Dataset']} {row['Strategy']}"
-        ax.scatter(row["Forgetting"], row["DownstreamTop1"], color=color(row["Strategy"]), marker=marker(row["Strategy"]), s=58)
-        ax.annotate(label, (row["Forgetting"], row["DownstreamTop1"]), xytext=(4, 3), textcoords="offset points", fontsize=7.6)
+        ax.scatter(
+            row["Forgetting"],
+            row["DownstreamTop1"],
+            color=color(row["Strategy"]),
+            marker=marker(row["Strategy"]),
+            s=58,
+            zorder=3,
+        )
+
+        dx, dy, ha, va = label_offsets[(row["Dataset"], row["Strategy"])]
+        ax.annotate(
+            label,
+            xy=(row["Forgetting"], row["DownstreamTop1"]),
+            xytext=(dx, dy),
+            textcoords="offset points",
+            fontsize=7.1,
+            ha=ha,
+            va=va,
+            bbox=dict(boxstyle="round,pad=0.10", fc="white", ec="none", alpha=0.85),
+            arrowprops=dict(arrowstyle="-", lw=0.5, color=STYLE["muted"]),
+        )
+
     ax.set_xlabel("ImageNet top-1 forgetting")
     ax.set_ylabel("Downstream top-1 accuracy")
     title(ax, "Domain trade-off")

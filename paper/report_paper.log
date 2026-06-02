@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.2) (preloaded format=pdflatex 2026.3.31)  2 JUN 2026 06:16
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.2) (preloaded format=pdflatex 2026.3.31)  2 JUN 2026 12:17
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -602,6 +602,16 @@ File: pgfmodulematrix.code.tex 2025-08-29 v3.1.11a (3.1.11a)
 kz/libraries\tikzlibrarytopaths.code.tex
 File: tikzlibrarytopaths.code.tex 2025-08-29 v3.1.11a (3.1.11a)
 )))
+(C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/latex/placeins\placeins.sty
+Package: placeins 2005/04/18  v 2.2
+) (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/latex/float\float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count341
+\float@exts=\toks47
+\float@box=\box70
+\@float@everytoks=\toks48
+\@floatcapt=\box71
+)
 (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/generic/pgf/libraries\pgflib
 raryarrows.meta.code.tex
 File: pgflibraryarrows.meta.code.tex 2025-08-29 v3.1.11a (3.1.11a)
@@ -621,8 +631,8 @@ File: tikzlibraryfit.code.tex 2025-08-29 v3.1.11a (3.1.11a)
 (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/generic/pgf/frontendlayer/ti
 kz/libraries\tikzlibrarybackgrounds.code.tex
 File: tikzlibrarybackgrounds.code.tex 2025-08-29 v3.1.11a (3.1.11a)
-\pgf@layerbox@background=\box70
-\pgf@layerboxsaved@background=\box71
+\pgf@layerbox@background=\box72
+\pgf@layerboxsaved@background=\box73
 )
 (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hyperref.sty
 Package: hyperref 2026-01-29 v7.01p Hypertext links for LaTeX
@@ -675,7 +685,7 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 y
 Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
 ))
-\c@section@level=\count341
+\c@section@level=\count342
 )
 (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/generic/stringenc\stringenc.
 sty
@@ -683,8 +693,8 @@ Package: stringenc 2019/11/29 v1.12 Convert strings between diff. encodings (HO
 )
 )
 \@linkdim=\dimen296
-\Hy@linkcounter=\count342
-\Hy@pagecounter=\count343
+\Hy@linkcounter=\count343
+\Hy@pagecounter=\count344
 
 (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\pd1enc.def
 File: pd1enc.def 2026-01-29 v7.01p Hyperref: PDFDocEncoding definition (HO)
@@ -694,7 +704,7 @@ Now handling font encoding PD1 ...
 (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/generic/intcalc\intcalc.sty
 Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
 )
-\Hy@SavedSpaceFactor=\count344
+\Hy@SavedSpaceFactor=\count345
 (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\puenc.def
 File: puenc.def 2026-01-29 v7.01p Hyperref: PDF Unicode definition (HO)
 Now handling font encoding PU ...
@@ -707,7 +717,7 @@ Package hyperref Info: Plain pages OFF on input line 4216.
 Package hyperref Info: Backreferencing OFF on input line 4221.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
 Package hyperref Info: Bookmarks ON on input line 4468.
-\c@Hy@tempcnt=\count345
+\c@Hy@tempcnt=\count346
 LaTeX Info: Redefining \url on input line 4807.
 \XeTeXLinkMargin=\dimen297
 
@@ -719,7 +729,7 @@ c.sty
 Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
 )
 ))
-\Fld@menulength=\count346
+\Fld@menulength=\count347
 \Field@Width=\dimen298
 \Fld@charsize=\dimen299
 Package hyperref Info: Hyper figures OFF on input line 6084.
@@ -729,16 +739,16 @@ Package hyperref Info: backreferencing OFF on input line 6099.
 Package hyperref Info: Link coloring OFF on input line 6104.
 Package hyperref Info: Link coloring with OCG OFF on input line 6109.
 Package hyperref Info: PDF/A mode OFF on input line 6114.
-\Hy@abspage=\count347
-\c@Item=\count348
-\c@Hfootnote=\count349
+\Hy@abspage=\count348
+\c@Item=\count349
+\c@Hfootnote=\count350
 )
 Package hyperref Info: Driver (autodetected): hpdftex.
 
 (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hpdftex.def
 File: hpdftex.def 2026-01-29 v7.01p Hyperref driver for pdfTeX
-\Fld@listcount=\count350
-\c@bookmark@seq@number=\count351
+\Fld@listcount=\count351
+\c@bookmark@seq@number=\count352
 
 (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/latex/rerunfilecheck\rerunfi
 lecheck.sty
@@ -772,51 +782,51 @@ Package cleveref Info: always capitalise cross-reference names on input line 78
 52.
 )
 ==> First Aid for cleveref.sty applied!
-LaTeX Font Info:    Trying to load font information for OT1+ptm on input line 2
-1.
+LaTeX Font Info:    Trying to load font information for OT1+ptm on input line 6
+5.
 (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\ot1ptm.fd
 File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
 )
 (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pd
 ftex.def
 File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count352
+\l__color_backend_stack_int=\count353
 ) (report_paper.aux)
 \openout1 = `report_paper.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 21.
-LaTeX Font Info:    ... okay on input line 21.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 21.
-LaTeX Font Info:    ... okay on input line 21.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 21.
-LaTeX Font Info:    ... okay on input line 21.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 21.
-LaTeX Font Info:    ... okay on input line 21.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 21.
-LaTeX Font Info:    ... okay on input line 21.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 21.
-LaTeX Font Info:    ... okay on input line 21.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 21.
-LaTeX Font Info:    ... okay on input line 21.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 21.
-LaTeX Font Info:    ... okay on input line 21.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 21.
-LaTeX Font Info:    ... okay on input line 21.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 65.
+LaTeX Font Info:    ... okay on input line 65.
 
 (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.m
 kii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count353
+\scratchcounter=\count354
 \scratchdimen=\dimen300
-\scratchbox=\box72
-\nofMPsegments=\count354
-\nofMParguments=\count355
-\everyMPshowfont=\toks47
-\MPscratchCnt=\count356
+\scratchbox=\box74
+\nofMPsegments=\count355
+\nofMParguments=\count356
+\everyMPshowfont=\toks49
+\MPscratchCnt=\count357
 \MPscratchDim=\dimen301
-\MPnumerator=\count357
-\makeMPintoPDFobject=\count358
-\everyMPtoPDFconversion=\toks48
+\MPnumerator=\count358
+\makeMPintoPDFobject=\count359
+\everyMPtoPDFconversion=\toks50
 )
 (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-
 base.sty
@@ -837,16 +847,17 @@ cfg
 File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 ))
 Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: float package is loaded.
 Package caption Info: hyperref package is loaded.
 Package caption Info: End \AtBeginDocument code.
  ABD: EveryShipout initializing macros
-LaTeX Info: Redefining \microtypecontext on input line 21.
-Package microtype Info: Applying patch `item' on input line 21.
-Package microtype Info: Applying patch `toc' on input line 21.
-Package microtype Info: Applying patch `eqnum' on input line 21.
-Package microtype Info: Applying patch `footnote' on input line 21.
-Package microtype Info: Applying patch `verbatim' on input line 21.
-LaTeX Info: Redefining \microtypesetup on input line 21.
+LaTeX Info: Redefining \microtypecontext on input line 65.
+Package microtype Info: Applying patch `item' on input line 65.
+Package microtype Info: Applying patch `toc' on input line 65.
+Package microtype Info: Applying patch `eqnum' on input line 65.
+Package microtype Info: Applying patch `footnote' on input line 65.
+Package microtype Info: Applying patch `verbatim' on input line 65.
+LaTeX Info: Redefining \microtypesetup on input line 65.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using default protrusion set `alltext'.
@@ -861,7 +872,7 @@ Package microtype Info: No adjustment of character kerning.
 (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/latex/microtype\mt-ptm.cfg
 File: mt-ptm.cfg 2006/04/20 v1.7 microtype config. file: Times (RS)
 )
-Package hyperref Info: Link coloring OFF on input line 21.
+Package hyperref Info: Link coloring OFF on input line 65.
 
 (report_paper.out) (report_paper.out)
 \@outlinefile=\write4
@@ -872,7 +883,7 @@ Package hyperref Info: Link coloring OFF on input line 21.
 File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman 
 (RS)
 )
-LaTeX Font Info:    Trying to load font information for U+msa on input line 23.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 89.
 
 
 (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
@@ -881,7 +892,7 @@ File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/latex/microtype\mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 23.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 89.
 
 
 (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
@@ -890,16 +901,19 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/latex/microtype\mt-msb.cfg
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 )
-LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 2
-5.
+LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 8
+9.
 
 (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
-LaTeX Font Info:    Font shape `OT1/pcr/m/it' in size <10> not available
-(Font)              Font shape `OT1/pcr/m/sl' tried instead on input line 25.
-LaTeX Font Info:    Trying to load font information for OT1+phv on input line 1
-18.
+[1{C:/Users/lenovo/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Users/l
+enovo/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/base/8r.enc}
+
+
+]
+LaTeX Font Info:    Trying to load font information for OT1+phv on input line 2
+00.
 
 (C:\Users\lenovo\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\ot1phv.fd
 File: ot1phv.fd 2020/03/25 scalable font definitions for OT1/phv.
@@ -909,112 +923,108 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
 
-[1{C:/Users/lenovo/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Users/l
-enovo/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/base/8r.enc}
-
-
-] [2]
-<../outputs/eurosat_ablation/test_top1_acc.png, id=126, 348.1005pt x 232.2276pt
+[2]
+<../outputs/eurosat_ablation/test_top1_acc.png, id=123, 348.1005pt x 232.2276pt
 >
 File: ../outputs/eurosat_ablation/test_top1_acc.png Graphic file (type png)
 <use ../outputs/eurosat_ablation/test_top1_acc.png>
 Package pdftex.def Info: ../outputs/eurosat_ablation/test_top1_acc.png  used on
- input line 176.
-(pdftex.def)             Requested size: 238.48886pt x 159.10329pt.
-<../outputs/eurosat_ablation/val_top1_acc_curve.png, id=128, 362.3136pt x 239.4
+ input line 245.
+(pdftex.def)             Requested size: 203.93704pt x 136.0528pt.
+<../outputs/eurosat_ablation/val_top1_acc_curve.png, id=125, 362.3136pt x 239.4
 546pt>
 File: ../outputs/eurosat_ablation/val_top1_acc_curve.png Graphic file (type png
 )
 <use ../outputs/eurosat_ablation/val_top1_acc_curve.png>
 Package pdftex.def Info: ../outputs/eurosat_ablation/val_top1_acc_curve.png  us
-ed on input line 180.
-(pdftex.def)             Requested size: 238.48886pt x 157.61668pt.
-<../outputs/domain_gap/test_top1_acc.png, id=129, 362.3136pt x 239.4546pt>
+ed on input line 247.
+(pdftex.def)             Requested size: 203.93704pt x 134.78056pt.
+ [3 <../outputs/eurosat_ablation/test_top1_acc.png> <../outputs/eurosat_ablatio
+n/val_top1_acc_curve.png>]
+<../outputs/domain_gap/test_top1_acc.png, id=136, 362.3136pt x 239.4546pt>
 File: ../outputs/domain_gap/test_top1_acc.png Graphic file (type png)
 <use ../outputs/domain_gap/test_top1_acc.png>
 Package pdftex.def Info: ../outputs/domain_gap/test_top1_acc.png  used on input
- line 220.
-(pdftex.def)             Requested size: 238.48886pt x 157.61668pt.
-<../outputs/domain_gap/transfer_gain_top1.png, id=130, 362.3136pt x 239.4546pt>
+ line 286.
+(pdftex.def)             Requested size: 194.4532pt x 128.51433pt.
+<../outputs/domain_gap/transfer_gain_top1.png, id=137, 362.3136pt x 239.4546pt>
 
 File: ../outputs/domain_gap/transfer_gain_top1.png Graphic file (type png)
 <use ../outputs/domain_gap/transfer_gain_top1.png>
 Package pdftex.def Info: ../outputs/domain_gap/transfer_gain_top1.png  used on 
-input line 224.
-(pdftex.def)             Requested size: 238.48886pt x 157.61668pt.
- [3]
-<../outputs/data_fraction/test_top1_acc.png, id=137, 362.3136pt x 239.4546pt>
+input line 288.
+(pdftex.def)             Requested size: 194.4532pt x 128.51433pt.
+<../outputs/data_fraction/test_top1_acc.png, id=138, 362.3136pt x 239.4546pt>
 File: ../outputs/data_fraction/test_top1_acc.png Graphic file (type png)
 <use ../outputs/data_fraction/test_top1_acc.png>
 Package pdftex.def Info: ../outputs/data_fraction/test_top1_acc.png  used on in
-put line 259.
-(pdftex.def)             Requested size: 238.48886pt x 157.61668pt.
-<../outputs/data_fraction/transfer_gain_top1.png, id=138, 347.8596pt x 239.4546
+put line 318.
+(pdftex.def)             Requested size: 213.4209pt x 141.05045pt.
+<../outputs/data_fraction/transfer_gain_top1.png, id=139, 347.8596pt x 239.4546
 pt>
 File: ../outputs/data_fraction/transfer_gain_top1.png Graphic file (type png)
 <use ../outputs/data_fraction/transfer_gain_top1.png>
 Package pdftex.def Info: ../outputs/data_fraction/transfer_gain_top1.png  used 
-on input line 263.
-(pdftex.def)             Requested size: 238.48886pt x 164.17155pt.
-
-[4 <../outputs/eurosat_ablation/test_top1_acc.png> <../outputs/eurosat_ablation
-/val_top1_acc_curve.png> <../outputs/domain_gap/test_top1_acc.png> <../outputs/
-domain_gap/transfer_gain_top1.png>]
-<../outputs/forgetting_main/forgetting_top1.png, id=150, 348.1005pt x 239.4546p
+on input line 320.
+(pdftex.def)             Requested size: 213.4209pt x 146.91476pt.
+ [4 <../outputs/domain_gap/test_top1_acc.png> <../outputs/domain_gap/transfer_g
+ain_top1.png> <../outputs/data_fraction/test_top1_acc.png> <../outputs/data_fra
+ction/transfer_gain_top1.png>]
+<../outputs/forgetting_main/forgetting_top1.png, id=152, 348.1005pt x 239.4546p
 t>
 File: ../outputs/forgetting_main/forgetting_top1.png Graphic file (type png)
 <use ../outputs/forgetting_main/forgetting_top1.png>
 Package pdftex.def Info: ../outputs/forgetting_main/forgetting_top1.png  used o
-n input line 300.
-(pdftex.def)             Requested size: 238.48886pt x 164.05464pt.
-<../outputs/forgetting_main/transfer_forgetting_tradeoff.png, id=151, 362.5545p
+n input line 363.
+(pdftex.def)             Requested size: 194.4532pt x 133.76115pt.
+<../outputs/forgetting_main/transfer_forgetting_tradeoff.png, id=153, 362.5545p
 t x 239.4546pt>
 File: ../outputs/forgetting_main/transfer_forgetting_tradeoff.png Graphic file 
 (type png)
 <use ../outputs/forgetting_main/transfer_forgetting_tradeoff.png>
 Package pdftex.def Info: ../outputs/forgetting_main/transfer_forgetting_tradeof
-f.png  used on input line 304.
-(pdftex.def)             Requested size: 238.48886pt x 157.51437pt.
-<../outputs/forgetting_domain_gap/forgetting_top1.png, id=152, 362.3136pt x 239
+f.png  used on input line 365.
+(pdftex.def)             Requested size: 194.4532pt x 128.4303pt.
+ [5 <../outputs/forgetting_main/forgetting_top1.png> <../outputs/forgetting_mai
+n/transfer_forgetting_tradeoff.png>]
+<../outputs/forgetting_domain_gap/forgetting_top1.png, id=163, 362.3136pt x 239
 .4546pt>
 File: ../outputs/forgetting_domain_gap/forgetting_top1.png Graphic file (type p
 ng)
 <use ../outputs/forgetting_domain_gap/forgetting_top1.png>
 Package pdftex.def Info: ../outputs/forgetting_domain_gap/forgetting_top1.png  
-used on input line 341.
-(pdftex.def)             Requested size: 238.48886pt x 157.61668pt.
-<../outputs/forgetting_domain_gap/transfer_forgetting_tradeoff.png, id=153, 362
+used on input line 402.
+(pdftex.def)             Requested size: 194.4532pt x 128.51433pt.
+<../outputs/forgetting_domain_gap/transfer_forgetting_tradeoff.png, id=164, 362
 .7954pt x 239.4546pt>
 File: ../outputs/forgetting_domain_gap/transfer_forgetting_tradeoff.png Graphic
  file (type png)
 <use ../outputs/forgetting_domain_gap/transfer_forgetting_tradeoff.png>
 Package pdftex.def Info: ../outputs/forgetting_domain_gap/transfer_forgetting_t
-radeoff.png  used on input line 345.
-(pdftex.def)             Requested size: 238.48886pt x 157.41206pt.
- [5 <../outputs/data_fraction/test_top1_acc.png> <../outputs/data_fraction/tran
-sfer_gain_top1.png>]
+radeoff.png  used on input line 404.
+(pdftex.def)             Requested size: 194.4532pt x 128.34627pt.
 <../outputs/forgetting_data_fraction/forgetting_top1_transfer_methods.png, id=1
-63, 362.3136pt x 239.4546pt>
+65, 362.3136pt x 239.4546pt>
 File: ../outputs/forgetting_data_fraction/forgetting_top1_transfer_methods.png 
 Graphic file (type png)
 <use ../outputs/forgetting_data_fraction/forgetting_top1_transfer_methods.png>
 Package pdftex.def Info: ../outputs/forgetting_data_fraction/forgetting_top1_tr
-ansfer_methods.png  used on input line 383.
-(pdftex.def)             Requested size: 238.48886pt x 157.61668pt.
-<../outputs/forgetting_data_fraction/transfer_forgetting_tradeoff.png, id=164, 
+ansfer_methods.png  used on input line 441.
+(pdftex.def)             Requested size: 194.4532pt x 128.51433pt.
+<../outputs/forgetting_data_fraction/transfer_forgetting_tradeoff.png, id=166, 
 362.3136pt x 239.4546pt>
 File: ../outputs/forgetting_data_fraction/transfer_forgetting_tradeoff.png Grap
 hic file (type png)
 <use ../outputs/forgetting_data_fraction/transfer_forgetting_tradeoff.png>
 Package pdftex.def Info: ../outputs/forgetting_data_fraction/transfer_forgettin
-g_tradeoff.png  used on input line 387.
-(pdftex.def)             Requested size: 238.48886pt x 157.61668pt.
- [6 <../outputs/forgetting_main/forgetting_top1.png> <../outputs/forgetting_mai
-n/transfer_forgetting_tradeoff.png> <../outputs/forgetting_domain_gap/forgettin
-g_top1.png> <../outputs/forgetting_domain_gap/transfer_forgetting_tradeoff.png>
-] [7 <../outputs/forgetting_data_fraction/forgetting_top1_transfer_methods.png>
- <../outputs/forgetting_data_fraction/transfer_forgetting_tradeoff.png>] [8] (r
-eport_paper.aux)
+g_tradeoff.png  used on input line 443.
+(pdftex.def)             Requested size: 194.4532pt x 128.51433pt.
+ [6 <../outputs/forgetting_domain_gap/forgetting_top1.png> <../outputs/forgetti
+ng_domain_gap/transfer_forgetting_tradeoff.png> <../outputs/forgetting_data_fra
+ction/forgetting_top1_transfer_methods.png> <../outputs/forgetting_data_fractio
+n/transfer_forgetting_tradeoff.png>] [7] [8
+
+] (report_paper.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
@@ -1023,28 +1033,28 @@ Package rerunfilecheck Info: File `report_paper.out' has not changed.
 (rerunfilecheck)             Checksum: 466DA640D7277FCE7F884B7120757302;3487.
  ) 
 Here is how much of TeX's memory you used:
- 27822 strings out of 467867
- 526947 string characters out of 5417850
- 983172 words of memory out of 5000000
- 55928 multiletter control sequences out of 15000+600000
- 673757 words of font info for 290 fonts, out of 8000000 for 9000
+ 27926 strings out of 467867
+ 528757 string characters out of 5417850
+ 980707 words of memory out of 5000000
+ 56005 multiletter control sequences out of 15000+600000
+ 676131 words of font info for 303 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,10n,98p,1181b,959s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,10n,98p,1181b,960s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/lenovo/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm
 /cmmi10.pfb><C:/Users/lenovo/AppData/Local/Programs/MiKTeX/fonts/type1/public/a
 msfonts/cm/cmr10.pfb><C:/Users/lenovo/AppData/Local/Programs/MiKTeX/fonts/type1
 /public/amsfonts/cm/cmr7.pfb><C:/Users/lenovo/AppData/Local/Programs/MiKTeX/fon
 ts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/lenovo/AppData/Local/Programs/
 MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Users/lenovo/AppData/Local/
-Programs/MiKTeX/fonts/type1/urw/courier/ucrro8a.pfb><C:/Users/lenovo/AppData/Lo
-cal/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvb8a.pfb><C:/Users/lenovo/AppDat
-a/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvr8a.pfb><C:/Users/lenovo/Ap
-pData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/Users/lenovo/A
-ppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb><C:/Users/lenovo/
-AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmri8a.pfb>
-Output written on report_paper.pdf (8 pages, 1099204 bytes).
+Programs/MiKTeX/fonts/type1/urw/courier/ucrr8a.pfb><C:/Users/lenovo/AppData/Loc
+al/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvb8a.pfb><C:/Users/lenovo/AppData
+/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvr8a.pfb><C:/Users/lenovo/App
+Data/Local/Programs/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/Users/lenovo/Ap
+pData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb><C:/Users/lenovo/A
+ppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmri8a.pfb>
+Output written on report_paper.pdf (8 pages, 1100694 bytes).
 PDF statistics:
- 257 PDF objects out of 1000 (max. 8388607)
- 51 named destinations out of 1000 (max. 500000)
- 63697 words of extra memory for PDF output out of 74296 (max. 10000000)
+ 255 PDF objects out of 1000 (max. 8388607)
+ 50 named destinations out of 1000 (max. 500000)
+ 67793 words of extra memory for PDF output out of 74296 (max. 10000000)
 
