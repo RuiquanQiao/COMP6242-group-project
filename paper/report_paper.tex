@@ -18,6 +18,7 @@
 \setlength{\dblfloatsep}{5pt plus 1pt minus 1pt}
 \setlength{\abovecaptionskip}{3pt}
 \setlength{\belowcaptionskip}{1pt}
+\setlength{\columnsep}{0.24in}
 
 \makeatletter
 \setlength{\@fptop}{0pt}
@@ -242,15 +243,19 @@ Full fine-tune & 97.56 & 97.50 & +4.35 & 1068.3 & 11,181,642 \\
 \end{tabular}}
 \end{table}
 
-\begin{figure}[!htbp]
+\begin{figure*}[t]
 \centering
-\includegraphics[width=0.86\columnwidth]{../outputs/new_style_picture/eurosat_ablation/test_top1_acc.png}
-\vspace{0.35em}
-\includegraphics[width=0.86\columnwidth]{../outputs/new_style_picture/eurosat_ablation/val_top1_acc_curve.png}
-\caption{Summary of Experiment 4.1. Top: final EuroSAT test top-1 accuracy by strategy. Bottom: validation top-1 trajectories across training epochs.}
+\begin{minipage}{0.455\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{../outputs/new_style_picture/eurosat_ablation/test_top1_acc.png}
+\end{minipage}\hfill
+\begin{minipage}{0.455\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{../outputs/new_style_picture/eurosat_ablation/val_top1_acc_curve.png}
+\end{minipage}
+\caption{Summary of Experiment 4.1. Left: final EuroSAT test top-1 accuracy by strategy. Right: validation top-1 trajectories across training epochs.}
 \label{fig:main}
-\end{figure}
-\FloatBarrier
+\end{figure*}
 The results show that transfer is helpful only when the pretrained model is allowed to adapt.
 Partial unfreezing achieves performance comparable to full fine-tuning while requiring fewer trainable parameters and less computation, whereas linear probing is worst and even falls below the training-from-scratch baseline.
 
@@ -267,6 +272,7 @@ This section compares EuroSAT and CIFAR-10 under the same sample budget in order
 \small
 \caption{Cross-domain comparison.}
 \label{tab:domain}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{llrrr}
 \toprule
 Dataset & Strategy & Top-1 & Macro-F1 & Gain \\
@@ -280,17 +286,22 @@ CIFAR-10 & Linear probe & 78.20 & 78.00 & +0.07 \\
 CIFAR-10 & Partial unfreeze & \textbf{91.19} & \textbf{91.18} & \textbf{+13.06} \\
 CIFAR-10 & Full fine-tune & 90.07 & 90.03 & +11.95 \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
-\begin{figure}[H]
+\begin{figure*}[t]
 \centering
-\includegraphics[width=0.78\columnwidth]{../outputs/new_style_picture/domain_gap/test_top1_acc.png}
-\vspace{0.1em}
-\includegraphics[width=0.78\columnwidth]{../outputs/new_style_picture/domain_gap/transfer_gain_top1.png}
-\caption{Cross-domain comparison. Top: downstream test top-1 accuracy. Bottom: top-1 transfer gain over training from scratch.}
+\begin{minipage}{0.455\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{../outputs/new_style_picture/domain_gap/test_top1_acc.png}
+\end{minipage}\hfill
+\begin{minipage}{0.455\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{../outputs/new_style_picture/domain_gap/transfer_gain_top1.png}
+\end{minipage}
+\caption{Cross-domain comparison. Left: downstream test top-1 accuracy. Right: top-1 transfer gain over training from scratch.}
 \label{fig:domain}
-\end{figure}
+\end{figure*}
 
 
 
@@ -299,8 +310,6 @@ The same-size comparison preserves the pattern observed in Section~4.1: transfer
 
 Despite achieving lower absolute accuracy, CIFAR-10 benefits more from pretraining than EuroSAT. This result suggests that transferability depends not only on final task performance, but also on how effectively the task can be learned from scratch.
 
-
-\FloatBarrier
 
 \subsection{When Transfer Helps: Same-Domain Data-Size Comparison}
 This section varies the amount of EuroSAT training data in order to study whether transfer becomes more valuable in lower-data regimes. The model and target domain are fixed, while the EuroSAT training fraction is changed from 10\% to 30\%, 60\%, and 100\%. We compare training from scratch, linear probing, and full fine-tuning to represent no transfer, frozen-feature transfer, and full adaptation.
@@ -324,14 +333,19 @@ Train \% & Scratch & Linear probe & Full fine-tune & Full fine-tune gain \\
 \end{table}
 
 
-\begin{figure}[H]
+\begin{figure*}[t]
 \centering
-\includegraphics[width=0.78\columnwidth]{../outputs/new_style_picture/data_fraction/test_top1_acc.png}
-\vspace{0.1em}
-\includegraphics[width=0.78\columnwidth]{../outputs/new_style_picture/data_fraction/transfer_gain_top1.png}
-\caption{Same-domain data-size comparison. Top: EuroSAT test top-1 accuracy by training fraction. Bottom: transfer gain over training from scratch.}
+\begin{minipage}{0.455\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{../outputs/new_style_picture/data_fraction/test_top1_acc.png}
+\end{minipage}\hfill
+\begin{minipage}{0.455\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{../outputs/new_style_picture/data_fraction/transfer_gain_top1.png}
+\end{minipage}
+\caption{Same-domain data-size comparison. Left: EuroSAT test top-1 accuracy by training fraction. Right: transfer gain over training from scratch.}
 \label{fig:fraction}
-\end{figure}
+\end{figure*}
 
 This experiment focuses on how performance changes with training-set size, we report top-1 accuracy and top-1 transfer gain as the primary trend metrics.
 
@@ -366,14 +380,19 @@ Full fine-tune & 0.12 & 69.64 & 0.02 & 69.27 & 97.56 \\
 \vspace{0.15em}
 \end{table}
 
-\begin{figure}[H]
+\begin{figure*}[t]
 \centering
-\includegraphics[width=0.90\columnwidth]{../outputs/new_style_picture/forgetting_main/forgetting_top1.png}
-\vspace{0.35em}
-\includegraphics[width=0.90\columnwidth]{../outputs/new_style_picture/forgetting_main/transfer_forgetting_tradeoff.png}
-\caption{Forgetting after the main EuroSAT experiment. Top: ImageNet top-1 forgetting. Bottom: downstream accuracy and forgetting trade-off.}
+\begin{minipage}{0.455\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{../outputs/new_style_picture/forgetting_main/forgetting_top1.png}
+\end{minipage}\hfill
+\begin{minipage}{0.455\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{../outputs/new_style_picture/forgetting_main/transfer_forgetting_tradeoff.png}
+\end{minipage}
+\caption{Forgetting after the main EuroSAT experiment. Left: ImageNet top-1 forgetting. Right: downstream accuracy and forgetting trade-off.}
 \label{fig:forget-main}
-\end{figure}
+\end{figure*}
 
 The main forgetting experiment reveals a clear adaptation-retention trade-off. It is worth noting that the magnitude of forgetting is extremely large. After partial unfreezing and full fine-tuning, ImageNet top-1 accuracy falls to below 1\%, suggesting that the adapted backbone becomes almost completely incompatible with the original ImageNet classifier. This result indicates that substantial downstream adaptation can dramatically alter the learned representation, even when downstream performance improves. Future work could investigate the mechanisms behind this extreme forgetting and evaluate mitigation methods designed to preserve source-task knowledge.
 
@@ -402,14 +421,19 @@ EuroSAT & Full fine-tune & 0.13 & 69.63 & 0.03 & 69.27 & 97.31 \\
 \vspace{0.15em}
 \end{table}
 
-\begin{figure}[H]
+\begin{figure*}[t]
 \centering
-\includegraphics[width=0.90\columnwidth]{../outputs/new_style_picture/forgetting_domain_gap/forgetting_top1.png}
-\vspace{0.35em}
-\includegraphics[width=0.90\columnwidth]{../outputs/new_style_picture/forgetting_domain_gap/transfer_forgetting_tradeoff.png}
-\caption{Forgetting after same-size downstream adaptation. Top: ImageNet top-1 forgetting. Bottom: downstream accuracy and ImageNet forgetting trade-off.}
+\begin{minipage}{0.455\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{../outputs/new_style_picture/forgetting_domain_gap/forgetting_top1.png}
+\end{minipage}\hfill
+\begin{minipage}{0.455\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{../outputs/new_style_picture/forgetting_domain_gap/transfer_forgetting_tradeoff.png}
+\end{minipage}
+\caption{Forgetting after same-size downstream adaptation. Left: ImageNet top-1 forgetting. Right: downstream accuracy and ImageNet forgetting trade-off.}
 \label{fig:forget-domain}
-\end{figure}
+\end{figure*}
 
 
 The forgetting results follow the same strategy-level pattern as Section~5.1. Partial unfreezing and full fine-tuning obtain the strongest downstream accuracy, but both reduce ImageNet top-1 accuracy from 69.76\% to below 1\% on both downstream datasets. Linear probing retains more ImageNet performance because the backbone remains frozen, but it is also the weakest pretrained strategy on the downstream tasks.
@@ -440,14 +464,19 @@ Train \% & Strategy & After & Forget & EuroSAT \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[!htbp]
+\begin{figure*}[t]
 \centering
-\includegraphics[width=0.90\columnwidth]{../outputs/new_style_picture/forgetting_data_fraction/forgetting_top1_transfer_methods.png}
-\vspace{0.35em}
-\includegraphics[width=0.90\columnwidth]{../outputs/new_style_picture/forgetting_data_fraction/transfer_forgetting_tradeoff.png}
-\caption{Forgetting after the data-size experiment. Top: ImageNet top-1 forgetting by transfer method. Bottom: transfer gain and forgetting trade-off.}
+\begin{minipage}{0.455\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{../outputs/new_style_picture/forgetting_data_fraction/forgetting_top1_transfer_methods.png}
+\end{minipage}\hfill
+\begin{minipage}{0.455\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{../outputs/new_style_picture/forgetting_data_fraction/transfer_forgetting_tradeoff.png}
+\end{minipage}
+\caption{Forgetting after the data-size experiment. Left: ImageNet top-1 forgetting by transfer method. Right: transfer gain and forgetting trade-off.}
 \label{fig:forget-fraction}
-\end{figure}
+\end{figure*}
 
 
 The main result is that forgetting depends more on the training strategy than on the amount of EuroSAT data. Full fine-tuning forgets heavily at every data size: ImageNet top-1 drops from 69.76\% to about 0.20\%--1.24\%, meaning that the adapted backbone is no longer compatible with the original ImageNet classifier.
@@ -455,35 +484,31 @@ The main result is that forgetting depends more on the training strategy than on
 Linear probing preserves more ImageNet ability. Its ImageNet top-1 stays around 31\%--32\%, giving about 37--38 points of forgetting. The data-size forgetting results show that forgetting is driven more by the fine-tuning strategy than by the amount of EuroSAT data: full fine-tuning forgets heavily at every data fraction, while linear probing preserves more ImageNet accuracy but gives lower EuroSAT performance.
 
 
-\FloatBarrier
 \section{Discussion}
 The experimental findings suggest several explanations for when transfer helps and why catastrophic forgetting occurs.
 
-Linear probing performs poorly on EuroSAT because the fixed ImageNet representation is not directly aligned with remote-sensing scene categories. A linear classifier can only draw new decision boundaries on top of the existing feature space; it cannot reshape the feature extractor itself. If EuroSAT classes are not already well separated by ImageNet features, the classifier head has limited capacity to correct the mismatch. This is plausible because EuroSAT relies on overhead texture, land-cover patterns, and spatial layout, whereas ImageNet pretraining is dominated by object-centric natural images \cite{cheng2020,helber2019}. Linear probing therefore protects the pretrained representation, but it also exposes the limitation of frozen features under domain shift.
+Linear probing performs poorly on EuroSAT because the fixed ImageNet representation is not directly aligned with remote-sensing scene categories. A linear classifier can only draw new boundaries on top of the existing feature space; it cannot reshape features for overhead texture, land-cover patterns, and spatial layout \cite{cheng2020,helber2019}. Linear probing therefore protects the pretrained backbone, but exposes the limitation of frozen features under domain shift.
 
-Partial unfreezing works well because it matches the hierarchical structure of convolutional networks. Earlier convolutional layers usually encode reusable visual primitives such as edges, corners, color contrast, and local texture, while deeper residual blocks encode more task-specific combinations of those features \cite{yosinski2014}. Updating the final residual stage and the classifier lets the model move the high-level representation toward EuroSAT without disturbing all low-level filters. This gives enough flexibility to adapt to the target task, while avoiding some unnecessary parameter updates in the earlier backbone. Under the short training budget used here, the extra flexibility of full fine-tuning does not produce a clear EuroSAT advantage over partial unfreezing.
+Partial unfreezing works well because it matches the hierarchy of convolutional networks. Early layers encode reusable primitives such as edges, color contrast, and texture, while deeper residual blocks encode more task-specific combinations \cite{yosinski2014}. Updating only the final residual stage and classifier gives enough flexibility to adapt to EuroSAT without disturbing all low-level filters. Under the short training budget used here, full fine-tuning therefore does not produce a clear EuroSAT advantage over partial unfreezing.
 
-The CIFAR-10 comparison also shows why absolute accuracy and transfer gain need to be separated. CIFAR-10 has lower absolute accuracy than EuroSAT, but larger transfer gain. This is not contradictory. EuroSAT may be easier under the current split and preprocessing, so both training from scratch and fine-tuned models reach high accuracy. CIFAR-10 remains harder in absolute terms, partly because resizing small $32 \times 32$ images to $224 \times 224$ cannot create new visual detail. However, CIFAR-10 still shares more natural-image structure with ImageNet than EuroSAT does, so the pretrained filters provide a stronger optimization starting point and a larger improvement over training from scratch. This result is consistent with the general transfer-learning hypothesis that source-target similarity increases feature reusability and reduces optimization difficulty.
+The CIFAR-10 and data-size experiments show that absolute accuracy and transfer gain should be interpreted separately. CIFAR-10 has lower absolute accuracy than EuroSAT, but a larger transfer gain, partly because it shares more natural-image structure with ImageNet while remaining harder after resizing from $32 \times 32$ to $224 \times 224$. In the data-size study, pretrained features act as a useful inductive bias when EuroSAT labels are limited; as the training set grows, the scratch baseline receives more evidence and narrows the gap. Transfer in this project therefore mainly improves sample efficiency.
 
-The data-size results reflect the same principle from another angle. Deep networks have many parameters, so training from scratch requires enough labelled examples to learn useful low-level and high-level features without overfitting. When EuroSAT labels are limited, pretrained ImageNet features act as a strong inductive bias: the model starts from filters that already encode useful visual regularities instead of learning all representations from random initialization. As the training set grows, the training-from-scratch baseline receives more evidence, learns stronger features, and narrows the gap. This explains why transfer mainly improves sample efficiency in this project.
-
-Catastrophic forgetting arises because fine-tuning optimizes the shared backbone for a new 10-class objective, not for the original 1000-class ImageNet objective. Backpropagation changes any unfrozen weights in the direction that reduces downstream cross-entropy loss, even if those changes remove information that was useful for ImageNet. This behavior is consistent with prior observations that optimization on a new task can reduce performance on a previous task \cite{goodfellow2013}. Without an explicit constraint to preserve ImageNet performance, the adapted feature extractor becomes less compatible with the original ImageNet classifier. Linear probing forgets less because it freezes the backbone and only learns the downstream classification head. Since the forgetting evaluation reloads the adapted backbone into the ImageNet classifier, a mostly unchanged backbone remains more compatible with the original ImageNet task. The cost is weaker downstream performance because the representation cannot adapt deeply to EuroSAT or CIFAR-10.
-
-This explains the trade-off plots in Sections~5.1 and~5.2. Linear probing appears on the lower-forgetting side because the pretrained backbone is preserved, but it does not reach the highest downstream accuracy because only the classifier head can adapt. Partial unfreezing and full
-fine-tuning move toward higher downstream accuracy, but they also move to the higher-forgetting side because many more backbone parameters are updated. The experiments therefore do not find a strategy in the ideal upper-left region of the trade-off plots, where downstream accuracy would be high and ImageNet forgetting would be low.
+Catastrophic forgetting arises because fine-tuning optimizes the shared backbone for a new 10-class objective rather than the original 1000-class ImageNet objective. This is consistent with prior observations that training on a new task can reduce performance on a previous task \cite{goodfellow2013}. Linear probing remains on the lower-forgetting side of the trade-off plots because the backbone is frozen, but it also gives weaker downstream accuracy. Partial unfreezing and full fine-tuning move toward higher downstream accuracy while also moving toward the higher-forgetting side, leaving no method in the ideal upper-left region.
 
 The data-size forgetting results add one qualification: increasing EuroSAT data reduces the relative transfer gain, but it does not remove the source-task cost of full fine-tuning. Across all fractions, ImageNet top-1 still falls to about 0.20\%--1.24\%, consistent with evidence that fine-tuning can distort pretrained features under distribution shift \cite{kumar2022}. The non-zero drop under linear probing should also be treated carefully, because frozen convolutional weights may still be paired with shifted BatchNorm running statistics; a frozen-BatchNorm ablation would help separate true representation forgetting from normalization drift \cite{li2016adabn}.
 
-The study has several limitations. First, all experiments use a single architecture (ResNet-18), so the conclusions may not generalize to larger CNNs or transformer-based models. Second, all results are reported using a single random seed, making it difficult to assess statistical variability. Third, we intentionally keep the training budget fixed at eight epochs for fairness, but some strategies may benefit from longer optimization. Finally, the forgetting analysis relies on direct ImageNet re-evaluation and does not compare mitigation approaches such as EWC, Learning without Forgetting, rehearsal methods, or progressive freezing \cite{kirkpatrick2017,li2016}.
+The study has several limitations: it uses a single architecture, a single random seed, and a fixed eight-epoch training budget, and it does not compare mitigation methods such as EWC, Learning without Forgetting, rehearsal, or progressive freezing \cite{kirkpatrick2017,li2016}.
 
 \section{Conclusion}
 This project shows that ImageNet transfer can substantially improve EuroSAT classification, but only when the pretrained backbone is allowed to adapt. Partial unfreezing gives the strongest balance of EuroSAT accuracy and efficiency under the training budget used in this project, while linear probing retains more ImageNet ability at the cost of weaker downstream performance.
 
 Transfer is most useful when labelled target data are limited or when the target domain is closer to ImageNet. However, stronger adaptation also causes severe catastrophic forgetting on the original ImageNet task. Future work should therefore focus on mitigation methods that preserve source-task performance while retaining the downstream gains of fine-tuning.
 
-\vspace{0.2em}
-\small
+\vspace{0.1em}
+\footnotesize
 \begin{thebibliography}{10}
+\setlength{\itemsep}{0pt}
+\setlength{\parskip}{0pt}
 
 \bibitem{yosinski2014}
 J.~Yosinski, J.~Clune, Y.~Bengio, and H.~Lipson.
