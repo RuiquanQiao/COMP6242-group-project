@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1780370514.63375 "report_paper.tex" "report_paper.pdf" "report_paper" 1780370517.73596 0
+["pdflatex"] 1780377746.49597 "report_paper.tex" "report_paper.pdf" "report_paper" 1780377749.49686 0
   "../outputs/data_fraction/test_top1_acc.png" 1780341816 127393 1f7ea733af83b1a0d758d892a47579cb ""
   "../outputs/data_fraction/transfer_gain_top1.png" 1780341818 78836 7ae99084751611c98bdfaf6b9bd6aa19 ""
   "../outputs/domain_gap/test_top1_acc.png" 1780341812 90091 829ffd8d9f2da85c5a0008e591435252 ""
@@ -211,9 +211,9 @@
   "C:/Users/lenovo/AppData/Local/Programs/MiKTeX/tex/latex/url/url.sty" 1388490452 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "C:/Users/lenovo/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty" 1729265222 55384 b454dec21c2d9f45ec0b793f0995b992 ""
   "cvpr.sty" 1780288044 18477 3445318c9c9e09b8ef62b6aaa240cbba ""
-  "report_paper.aux" 1780370517 9352 effe96ff8644418300f4aff5c401d8e2 "pdflatex"
-  "report_paper.out" 1780370517 3487 466da640d7277fce7f884b7120757302 "pdflatex"
-  "report_paper.tex" 1780370487 40796 b77d25af3f52939acc29a70b9cf24011 ""
+  "report_paper.aux" 1780377749 9312 1021cbb9ae6c8052c379a89fd46add15 "pdflatex"
+  "report_paper.out" 1780377749 3487 466da640d7277fce7f884b7120757302 "pdflatex"
+  "report_paper.tex" 1780377739 41134 bd40ccd9631dc40adb80cc04c393b77e ""
   (generated)
   "report_paper.aux"
   "report_paper.log"

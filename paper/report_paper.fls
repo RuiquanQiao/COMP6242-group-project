@@ -365,6 +365,7 @@ INPUT C:\Users\lenovo\AppData\Local\Programs\MiKTeX\fonts\vf\adobe\helvetic\phvb
 INPUT C:\Users\lenovo\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\helvetic\phvb8r.tfm
 INPUT C:\Users\lenovo\AppData\Local\Programs\MiKTeX\fonts\vf\adobe\helvetic\phvr7t.vf
 INPUT C:\Users\lenovo\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\helvetic\phvr8r.tfm
+INPUT C:\Users\lenovo\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\times\ptmr7t.tfm
 INPUT C:\Users\lenovo\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmr9.tfm
 INPUT C:\Users\lenovo\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmmi9.tfm
 INPUT C:\Users\lenovo\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmsy9.tfm
@@ -386,6 +387,8 @@ INPUT ..\outputs\eurosat_ablation\val_top1_acc_curve.png
 INPUT ..\outputs\eurosat_ablation\val_top1_acc_curve.png
 INPUT ..\outputs\eurosat_ablation\val_top1_acc_curve.png
 INPUT ..\outputs\eurosat_ablation\val_top1_acc_curve.png
+INPUT C:\Users\lenovo\AppData\Local\Programs\MiKTeX\fonts\vf\adobe\times\ptmr7t.vf
+INPUT C:\Users\lenovo\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\times\ptmr8r.tfm
 INPUT C:\Users\lenovo\AppData\Local\Programs\MiKTeX\fonts\vf\adobe\times\ptmb7t.vf
 INPUT C:\Users\lenovo\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\times\ptmb8r.tfm
 INPUT ..\outputs\domain_gap\test_top1_acc.png
@@ -444,7 +447,6 @@ INPUT ..\outputs\forgetting_domain_gap\transfer_forgetting_tradeoff.png
 INPUT ..\outputs\forgetting_domain_gap\transfer_forgetting_tradeoff.png
 INPUT ..\outputs\forgetting_domain_gap\transfer_forgetting_tradeoff.png
 INPUT ..\outputs\forgetting_domain_gap\transfer_forgetting_tradeoff.png
-INPUT C:\Users\lenovo\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\times\ptmr7t.tfm
 INPUT ..\outputs\forgetting_data_fraction\forgetting_top1_transfer_methods.png
 INPUT ..\outputs\forgetting_data_fraction\forgetting_top1_transfer_methods.png
 INPUT ..\outputs\forgetting_data_fraction\forgetting_top1_transfer_methods.png
@@ -459,8 +461,6 @@ INPUT ..\outputs\forgetting_data_fraction\transfer_forgetting_tradeoff.png
 INPUT ..\outputs\forgetting_data_fraction\transfer_forgetting_tradeoff.png
 INPUT ..\outputs\forgetting_data_fraction\transfer_forgetting_tradeoff.png
 INPUT ..\outputs\forgetting_data_fraction\transfer_forgetting_tradeoff.png
-INPUT C:\Users\lenovo\AppData\Local\Programs\MiKTeX\fonts\vf\adobe\times\ptmr7t.vf
-INPUT C:\Users\lenovo\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\times\ptmr8r.tfm
 INPUT C:\Users\lenovo\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\times\ptmri7t.tfm
 INPUT C:\Users\lenovo\AppData\Local\Programs\MiKTeX\fonts\vf\adobe\times\ptmri7t.vf
 INPUT C:\Users\lenovo\AppData\Local\Programs\MiKTeX\fonts\tfm\adobe\times\ptmri8r.tfm

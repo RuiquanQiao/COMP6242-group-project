@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.2) (preloaded format=pdflatex 2026.3.31)  2 JUN 2026 13:21
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.2) (preloaded format=pdflatex 2026.3.31)  2 JUN 2026 15:22
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -945,27 +945,27 @@ n/val_top1_acc_curve.png>]
 File: ../outputs/domain_gap/test_top1_acc.png Graphic file (type png)
 <use ../outputs/domain_gap/test_top1_acc.png>
 Package pdftex.def Info: ../outputs/domain_gap/test_top1_acc.png  used on input
- line 283.
+ line 288.
 (pdftex.def)             Requested size: 184.96574pt x 122.24445pt.
 <../outputs/domain_gap/transfer_gain_top1.png, id=137, 362.3136pt x 239.4546pt>
 
 File: ../outputs/domain_gap/transfer_gain_top1.png Graphic file (type png)
 <use ../outputs/domain_gap/transfer_gain_top1.png>
 Package pdftex.def Info: ../outputs/domain_gap/transfer_gain_top1.png  used on 
-input line 285.
+input line 290.
 (pdftex.def)             Requested size: 184.96574pt x 122.24445pt.
 <../outputs/data_fraction/test_top1_acc.png, id=138, 362.3136pt x 239.4546pt>
 File: ../outputs/data_fraction/test_top1_acc.png Graphic file (type png)
 <use ../outputs/data_fraction/test_top1_acc.png>
 Package pdftex.def Info: ../outputs/data_fraction/test_top1_acc.png  used on in
-put line 321.
+put line 329.
 (pdftex.def)             Requested size: 184.96574pt x 122.24445pt.
 <../outputs/data_fraction/transfer_gain_top1.png, id=139, 347.8596pt x 239.4546
 pt>
 File: ../outputs/data_fraction/transfer_gain_top1.png Graphic file (type png)
 <use ../outputs/data_fraction/transfer_gain_top1.png>
 Package pdftex.def Info: ../outputs/data_fraction/transfer_gain_top1.png  used 
-on input line 323.
+on input line 331.
 (pdftex.def)             Requested size: 184.96574pt x 127.32686pt.
  [4 <../outputs/domain_gap/test_top1_acc.png> <../outputs/domain_gap/transfer_g
 ain_top1.png> <../outputs/data_fraction/test_top1_acc.png> <../outputs/data_fra
@@ -975,7 +975,7 @@ t>
 File: ../outputs/forgetting_main/forgetting_top1.png Graphic file (type png)
 <use ../outputs/forgetting_main/forgetting_top1.png>
 Package pdftex.def Info: ../outputs/forgetting_main/forgetting_top1.png  used o
-n input line 363.
+n input line 371.
 (pdftex.def)             Requested size: 213.4209pt x 146.8088pt.
 <../outputs/forgetting_main/transfer_forgetting_tradeoff.png, id=153, 362.5545p
 t x 239.4546pt>
@@ -983,33 +983,33 @@ File: ../outputs/forgetting_main/transfer_forgetting_tradeoff.png Graphic file
 (type png)
 <use ../outputs/forgetting_main/transfer_forgetting_tradeoff.png>
 Package pdftex.def Info: ../outputs/forgetting_main/transfer_forgetting_tradeof
-f.png  used on input line 365.
+f.png  used on input line 373.
 (pdftex.def)             Requested size: 213.4209pt x 140.9591pt.
-<../outputs/forgetting_domain_gap/forgetting_top1.png, id=154, 362.3136pt x 239
+ [5 <../outputs/forgetting_main/forgetting_top1.png> <../outputs/forgetting_mai
+n/transfer_forgetting_tradeoff.png>]
+<../outputs/forgetting_domain_gap/forgetting_top1.png, id=162, 362.3136pt x 239
 .4546pt>
 File: ../outputs/forgetting_domain_gap/forgetting_top1.png Graphic file (type p
 ng)
 <use ../outputs/forgetting_domain_gap/forgetting_top1.png>
 Package pdftex.def Info: ../outputs/forgetting_domain_gap/forgetting_top1.png  
-used on input line 399.
+used on input line 407.
 (pdftex.def)             Requested size: 213.4209pt x 141.05045pt.
-<../outputs/forgetting_domain_gap/transfer_forgetting_tradeoff.png, id=155, 362
+<../outputs/forgetting_domain_gap/transfer_forgetting_tradeoff.png, id=163, 362
 .7954pt x 239.4546pt>
 File: ../outputs/forgetting_domain_gap/transfer_forgetting_tradeoff.png Graphic
  file (type png)
 <use ../outputs/forgetting_domain_gap/transfer_forgetting_tradeoff.png>
 Package pdftex.def Info: ../outputs/forgetting_domain_gap/transfer_forgetting_t
-radeoff.png  used on input line 401.
+radeoff.png  used on input line 409.
 (pdftex.def)             Requested size: 213.4209pt x 140.86775pt.
- [5 <../outputs/forgetting_main/forgetting_top1.png> <../outputs/forgetting_mai
-n/transfer_forgetting_tradeoff.png>]
 <../outputs/forgetting_data_fraction/forgetting_top1_transfer_methods.png, id=1
 64, 362.3136pt x 239.4546pt>
 File: ../outputs/forgetting_data_fraction/forgetting_top1_transfer_methods.png 
 Graphic file (type png)
 <use ../outputs/forgetting_data_fraction/forgetting_top1_transfer_methods.png>
 Package pdftex.def Info: ../outputs/forgetting_data_fraction/forgetting_top1_tr
-ansfer_methods.png  used on input line 437.
+ansfer_methods.png  used on input line 445.
 (pdftex.def)             Requested size: 213.4209pt x 141.05045pt.
 <../outputs/forgetting_data_fraction/transfer_forgetting_tradeoff.png, id=165, 
 362.3136pt x 239.4546pt>
@@ -1017,7 +1017,7 @@ File: ../outputs/forgetting_data_fraction/transfer_forgetting_tradeoff.png Grap
 hic file (type png)
 <use ../outputs/forgetting_data_fraction/transfer_forgetting_tradeoff.png>
 Package pdftex.def Info: ../outputs/forgetting_data_fraction/transfer_forgettin
-g_tradeoff.png  used on input line 439.
+g_tradeoff.png  used on input line 447.
 (pdftex.def)             Requested size: 213.4209pt x 141.05045pt.
  [6 <../outputs/forgetting_domain_gap/forgetting_top1.png> <../outputs/forgetti
 ng_domain_gap/transfer_forgetting_tradeoff.png> <../outputs/forgetting_data_fra
@@ -1033,11 +1033,11 @@ Package rerunfilecheck Info: File `report_paper.out' has not changed.
 (rerunfilecheck)             Checksum: 466DA640D7277FCE7F884B7120757302;3487.
  ) 
 Here is how much of TeX's memory you used:
- 27927 strings out of 467867
- 528761 string characters out of 5417850
+ 27924 strings out of 467867
+ 528737 string characters out of 5417850
  981707 words of memory out of 5000000
  56006 multiletter control sequences out of 15000+600000
- 676049 words of font info for 303 fonts, out of 8000000 for 9000
+ 675930 words of font info for 301 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  84i,10n,98p,1181b,960s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/lenovo/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm
@@ -1052,7 +1052,7 @@ al/Programs/MiKTeX/fonts/type1/urw/helvetic/uhvb8a.pfb><C:/Users/lenovo/AppData
 Data/Local/Programs/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/Users/lenovo/Ap
 pData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb><C:/Users/lenovo/A
 ppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmri8a.pfb>
-Output written on report_paper.pdf (8 pages, 1101797 bytes).
+Output written on report_paper.pdf (8 pages, 1102180 bytes).
 PDF statistics:
  255 PDF objects out of 1000 (max. 8388607)
  50 named destinations out of 1000 (max. 500000)

@@ -209,7 +209,13 @@ All datasets are converted to tensors and normalized with ImageNet mean and stan
 \subsection{Training Protocol and Metrics}
 To make the strategy comparisons controlled, we keep the main optimization protocol fixed across runs: seed 42, batch size 32, 8 training epochs, AdamW optimization, learning rate $3 \times 10^{-4}$, and weight decay $10^{-4}$. This means that the experimental variable is not the amount of training budget or a separate tuning recipe for each method, but the initialization and the subset of network parameters allowed to learn. Each training run follows the standard supervised learning pipeline: images are passed through the network to produce class logits, cross-entropy loss compares these logits with the ground-truth labels, backpropagation computes gradients for the trainable parameters, and AdamW updates those parameters while applying weight decay regularization.
 
-Validation is used to monitor generalization during training. The best checkpoint is selected by validation top-1 accuracy rather than final-epoch accuracy, because the validation set gives an estimate of performance on unseen data and reduces dependence on a single last epoch. Top-1 accuracy is the primary metric throughout the report because all downstream tasks are single-label classification tasks with balanced sampling. Macro-F1 is reported as a secondary check of class-balanced performance in the main strategy, domain-gap, and corresponding forgetting experiments. The data-size experiments focus on top-1 trends for compactness. Transfer gain is computed against the training-from-scratch baseline, and forgetting is measured as the ImageNet performance drop after downstream adaptation. Loss curves are used only as diagnostic evidence for training stability.
+Validation is used to monitor generalization during training. The best checkpoint is selected by validation top-1 accuracy rather than final-epoch accuracy, because the validation set gives an estimate of performance on unseen data and reduces dependence on a single last epoch.
+
+Top-1 accuracy is the primary metric throughout the report because all downstream tasks are single-label classification tasks with balanced sampling. Top-1 accuracy is defined as the percentage of samples whose highest-probability prediction matches the ground-truth label. Macro-F1 is reported as a secondary check of class-balanced performance in the main strategy, domain-gap, and corresponding forgetting experiments. The data-size experiments focus on top-1 trends for compactness. To quantify the benefit of transfer learning, we define transfer gain as:
+\( \text{Gain}=A_{\text{transfer}}-A_{\text{scratch}},\)
+where $A_{\text{transfer}}$ is the downstream test accuracy obtained by a transfer-learning strategy and $A_{\text{scratch}}$ is the corresponding accuracy achieved when training from random initialization. To quantify catastrophic forgetting, we define forgetting as:
+\( \text{Forgetting}=A_{\text{before}}-A_{\text{after}},\)
+where $A_{\text{before}}$ is the original ImageNet top-1 accuracy of the pretrained model and $A_{\text{after}}$ is the ImageNet top-1 accuracy measured after downstream adaptation. Larger forgetting values indicate greater loss of source-task performance under the original ImageNet evaluation protocol.
 
 \subsection{Experiment Structure}
 The study has one main experiment and two supporting analyses. Section~4.1 compares four transfer strategies on EuroSAT. Section~4.2 studies when transfer helps by comparing EuroSAT and CIFAR-10 at the same sample size. Section~4.3 studies when transfer helps by varying the amount of EuroSAT training data. Chapter~5 then evaluates the resulting checkpoints on the official ImageNet validation set to measure catastrophic forgetting.
@@ -236,12 +242,6 @@ Full fine-tune & 97.56 & 97.50 & +4.35 & 1068.3 & 11,181,642 \\
 \end{tabular}}
 \end{table}
 
-The results show that transfer is helpful only when the pretrained model is allowed to adapt.
-Partial unfreezing achieves performance comparable to full fine-tuning while requiring fewer trainable parameters and less computation, whereas linear probing is worst and even falls below the training-from-scratch baseline.
-
-
-Partial unfreezing provides the strongest accuracy-efficiency trade-off in our experiments. It slightly outperforms full fine-tuning on the test set while using fewer trainable parameters and less training time, suggesting that adapting the top stage is sufficient for most of the domain shift. The convergence logs tell the same story: partial unfreezing and full fine-tuning pass the 90\% validation threshold in epoch 1, whereas training from scratch reaches it in epoch 6 and linear probing only in epoch 8.
-
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=0.86\columnwidth]{../outputs/eurosat_ablation/test_top1_acc.png}
@@ -251,6 +251,11 @@ Partial unfreezing provides the strongest accuracy-efficiency trade-off in our e
 \label{fig:main}
 \end{figure}
 \FloatBarrier
+The results show that transfer is helpful only when the pretrained model is allowed to adapt.
+Partial unfreezing achieves performance comparable to full fine-tuning while requiring fewer trainable parameters and less computation, whereas linear probing is worst and even falls below the training-from-scratch baseline.
+
+
+Partial unfreezing provides the strongest accuracy-efficiency trade-off in our experiments. It slightly outperforms full fine-tuning on the test set while using fewer trainable parameters and less training time, suggesting that adapting the top stage is sufficient for most of the domain shift. The convergence logs tell the same story: partial unfreezing and full fine-tuning pass the 90\% validation threshold in epoch 1, whereas training from scratch reaches it in epoch 6 and linear probing only in epoch 8.
 
 Overall, the EuroSAT ablation shows that transfer is beneficial only when the backbone is allowed to adapt. Linear probing is insufficient for this domain shift, while partial unfreezing gives the strongest accuracy-efficiency trade-off.
 
@@ -260,7 +265,7 @@ This section compares EuroSAT and CIFAR-10 under the same sample budget in order
 \begin{table}[!htbp]
 \centering
 \small
-\caption{Same-size cross-domain comparison.}
+\caption{Cross-domain comparison.}
 \label{tab:domain}
 \begin{tabular}{llrrr}
 \toprule
@@ -283,20 +288,22 @@ CIFAR-10 & Full fine-tune & 90.07 & 90.03 & +11.95 \\
 \includegraphics[width=0.78\columnwidth]{../outputs/domain_gap/test_top1_acc.png}
 \vspace{0.1em}
 \includegraphics[width=0.78\columnwidth]{../outputs/domain_gap/transfer_gain_top1.png}
-\caption{Same-size cross-domain comparison. Top: downstream test top-1 accuracy. Bottom: top-1 transfer gain over training from scratch.}
+\caption{Cross-domain comparison. Top: downstream test top-1 accuracy. Bottom: top-1 transfer gain over training from scratch.}
 \label{fig:domain}
 \end{figure}
 
 
-The same-size comparison preserves the main pattern from Section~4.1: transfer works best when the pretrained backbone is allowed to adapt. On EuroSAT, partial unfreezing and full fine-tuning improve test accuracy over training from scratch by 4.64 and 4.44 percentage points respectively, while linear probing falls below the training-from-scratch baseline. On CIFAR-10, the gains from partial unfreezing and full fine-tuning are larger, at 13.06 and 11.95 points over training from scratch.
 
-This comparison separates absolute accuracy from transfer benefit. EuroSAT reaches higher final accuracy, but CIFAR-10 receives the larger gain over training from scratch. This observation highlights that absolute task performance and transferability are distinct concepts. A task may achieve higher final accuracy while benefiting less from pretraining if it can already be learned effectively from scratch.
+
+The same-size comparison preserves the pattern observed in Section~4.1: transfer is most effective when the pretrained backbone is allowed to adapt. On EuroSAT, partial unfreezing and full fine-tuning improve accuracy by 4.64 and 4.44 percentage points over training from scratch, whereas the gains on CIFAR-10 are much larger (13.06 and 11.95 points).
+
+Despite achieving lower absolute accuracy, CIFAR-10 benefits more from pretraining than EuroSAT. This result suggests that transferability depends not only on final task performance, but also on how effectively the task can be learned from scratch.
 
 
 \FloatBarrier
 
 \subsection{When Transfer Helps: Same-Domain Data-Size Comparison}
-This section varies the amount of EuroSAT training data in order to study whether transfer becomes more valuable in lower-data regimes. The model and target domain are fixed, while the EuroSAT training fraction is changed from 10\% to 30\%, 60\%, and 100\%. We compare training from scratch, linear probing, and full fine-tuning to represent no transfer, frozen-feature transfer, and full adaptation. Because this experiment focuses on how performance changes with training-set size, we report top-1 accuracy and top-1 transfer gain as the primary trend metrics.
+This section varies the amount of EuroSAT training data in order to study whether transfer becomes more valuable in lower-data regimes. The model and target domain are fixed, while the EuroSAT training fraction is changed from 10\% to 30\%, 60\%, and 100\%. We compare training from scratch, linear probing, and full fine-tuning to represent no transfer, frozen-feature transfer, and full adaptation.
 
 \begin{table}[!htbp]
 \centering
@@ -316,6 +323,7 @@ Train \% & Scratch & Linear probe & Full fine-tune & Full fine-tune gain \\
 \end{tabular}}
 \end{table}
 
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.78\columnwidth]{../outputs/data_fraction/test_top1_acc.png}
@@ -325,7 +333,7 @@ Train \% & Scratch & Linear probe & Full fine-tune & Full fine-tune gain \\
 \label{fig:fraction}
 \end{figure}
 
-
+This experiment focuses on how performance changes with training-set size, we report top-1 accuracy and top-1 transfer gain as the primary trend metrics.
 
 The results show that transfer is most valuable when labeled data is limited. With only 10\% of the EuroSAT training set, full fine-tuning improves over training from scratch by 25.56 percentage points. As the training fraction increases, the model trained from scratch becomes stronger, and the gain from full fine-tuning decreases to about 7--8 points. This shows that transfer mainly improves sample efficiency in this setting.
 
